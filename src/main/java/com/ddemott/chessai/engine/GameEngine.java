@@ -4,6 +4,9 @@ import com.ddemott.chessai.State;
 import com.ddemott.chessai.ai.AIStrategy;
 import com.ddemott.chessai.ai.MinMaxStrategy;
 
+/**
+ * Manages the state and logic of the chess game.
+ */
 public class GameEngine {
     private State state;
     private AIStrategy aiStrategy;
@@ -22,11 +25,18 @@ public class GameEngine {
         return state.movePiece(from, to);
     }
 
+    public String getBestMove() {
+        return state.getBestMove();
+    }
+
     public void makeAIMove() {
-        String aiMove = state.getBestMove();
-        String[] aiPositions = aiMove.split(" ");
-        movePiece(aiPositions[0], aiPositions[1]);
-        System.out.println("AI selected move for " + state.getCurrentTurn() + ": " + aiMove);
+        String aiMove = getBestMove();
+        if (aiMove != null) {
+            String[] aiPositions = aiMove.split(" ");
+            if (aiPositions.length == 2) {
+                movePiece(aiPositions[0], aiPositions[1]);
+            }
+        }
     }
 
     public void printBoard() {

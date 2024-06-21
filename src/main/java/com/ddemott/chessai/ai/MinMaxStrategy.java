@@ -2,37 +2,39 @@ package com.ddemott.chessai.ai;
 
 import com.ddemott.chessai.Board;
 import com.ddemott.chessai.State;
-import com.ddemott.chessai.pieces.IPiece;
+import com.ddemott.chessai.Evaluation;
 
 import java.util.List;
 
+/**
+ * Implements the Minimax algorithm with alpha-beta pruning for the chess AI.
+ */
 public class MinMaxStrategy implements AIStrategy {
 
     private int maxDepth;
+    private Evaluation evaluation;
 
     public MinMaxStrategy(int maxDepth) {
         this.maxDepth = maxDepth;
+        this.evaluation = new Evaluation(); // Initialize the evaluation object
     }
 
     @Override
     public String calculateBestMove(State state, String color) {
         MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, color, true);
-        if (result == null || result.getMove() == null) {
-            System.out.println("No valid move found for AI.");
-            return null;
-        }
-        System.out.println("AI selected move for " + color + ": " + result.getMove());
-        return result.getMove();
+        return result != null ? result.getMove() : null;
     }
 
     private MoveResult minMax(State state, int depth, int alpha, int beta, String color, boolean maximizingPlayer) {
         if (depth == 0) {
-            return new MoveResult(evaluateBoard(state.getBoard(), color), null);
+            int evaluationScore = evaluation.evaluateBoard(state.getBoard(), color);
+            return new MoveResult(evaluationScore, null);
         }
 
         List<String> possibleMoves = state.getAllPossibleMoves(color);
         if (possibleMoves.isEmpty()) {
-            return new MoveResult(evaluateBoard(state.getBoard(), color), null);
+            int evaluationScore = evaluation.evaluateBoard(state.getBoard(), color);
+            return new MoveResult(evaluationScore, null);
         }
 
         MoveResult bestMove = new MoveResult(maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE, null);
@@ -43,7 +45,6 @@ public class MinMaxStrategy implements AIStrategy {
             if (positions.length != 2) {
                 continue;
             }
-
             newState.movePiece(positions[0], positions[1]);
 
             MoveResult result = minMax(newState, depth - 1, alpha, beta, toggleColor(color), !maximizingPlayer);
@@ -66,25 +67,6 @@ public class MinMaxStrategy implements AIStrategy {
         }
 
         return bestMove;
-    }
-
-    private int evaluateBoard(Board board, String color) {
-        int totalValue = 0;
-        IPiece[][] pieces = board.getBoardArray();
-
-        for (int row = 0; row < 8; row++) {
-            for (int col = 0; col < 8; col++) {
-                IPiece piece = pieces[row][col];
-                if (piece != null) {
-                    int value = piece.getValue();
-                    if (!piece.getColor().equals(color)) {
-                        value = -value;
-                    }
-                    totalValue += value;
-                }
-            }
-        }
-        return totalValue;
     }
 
     private String toggleColor(String color) {

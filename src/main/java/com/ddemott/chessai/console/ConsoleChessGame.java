@@ -7,7 +7,7 @@ import java.util.Scanner;
 public class ConsoleChessGame {
 
     public static void main(String[] args) {
-        GameEngine gameEngine = new GameEngine(6); // Set the depth as needed
+        GameEngine gameEngine = new GameEngine(4); // Set the depth as needed
 
         Scanner scanner = new Scanner(System.in);
 
