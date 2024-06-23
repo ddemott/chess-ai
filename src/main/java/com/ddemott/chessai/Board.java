@@ -1,7 +1,6 @@
 package com.ddemott.chessai;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.ddemott.chessai.pieces.Bishop;
@@ -87,20 +86,24 @@ public class Board {
     }
 
     public boolean movePiece(String from, String to) {
-        int[] fromCoords = convertPositionToCoordinates(from);
-        int[] toCoords = convertPositionToCoordinates(to);
         IPiece piece = getPieceAt(from);
 
         if (piece == null) {
+            System.out.println("No piece found at " + from);
             return false;
         }
 
+        System.out.println("Attempting to move from " + from + " to " + to);
+        System.out.println("Piece found at " + from + ": " + piece.getClass().getSimpleName() + " (" + piece.getColor() + ")");
+
         if (piece.isValidMove(to, this)) {
+            System.out.println("Move from " + from + " to " + to + " is valid.");
             setPieceAt(to, piece);
             setPieceAt(from, null);
             piece.setPosition(to);
             return true;
         } else {
+            System.out.println("Move from " + from + " to " + to + " is not valid.");
             return false;
         }
     }

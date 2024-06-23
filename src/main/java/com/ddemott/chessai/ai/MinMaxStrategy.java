@@ -1,6 +1,5 @@
 package com.ddemott.chessai.ai;
 
-import com.ddemott.chessai.Board;
 import com.ddemott.chessai.State;
 import com.ddemott.chessai.Evaluation;
 
@@ -46,6 +45,11 @@ public class MinMaxStrategy implements AIStrategy {
                 continue;
             }
             newState.movePiece(positions[0], positions[1]);
+
+            // Ensure the move does not leave the King in check
+            if (evaluation.isInCheck(newState.getBoard(), color)) {
+                continue;
+            }
 
             MoveResult result = minMax(newState, depth - 1, alpha, beta, toggleColor(color), !maximizingPlayer);
 
