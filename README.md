@@ -7,7 +7,9 @@ A comprehensive Java-based chess game with artificial intelligence that allows h
 ### ✅ Implemented
 - **Complete Chess Engine**: Full 8x8 board with all standard chess pieces
 - **Human vs AI Gameplay**: Play as White against an intelligent Black AI opponent
-- **Console Interface**: Text-based gameplay using standard chess notation (e.g., "e2 e4")
+- **Console Interface**: Text-based gameplay using stand6. **Web Interface** (core is now ready for web frontend)
+7. **Advanced AI Features** (opening books, endgame tables)
+8. **Enhanced Gameplay Features** (save/load, analysis mode) chess notation (e.g., "e2 e4")
 - **Minimax AI Algorithm**: Advanced decision-making with configurable depth
 - **Alpha-Beta Pruning**: Optimized AI performance for faster move calculation
 - **Robust Move Validation**: Comprehensive piece movement rules with turn validation
@@ -27,7 +29,14 @@ A comprehensive Java-based chess game with artificial intelligence that allows h
 - **Enhanced Console Interface**: Interactive commands for move history, undo/redo, and game export
 - **Enhanced Input/Output**: Detailed error messages, move suggestions, captured pieces display, and check/checkmate indicators
 - **Check/Checkmate Detection**: Real-time detection and display of check, checkmate, and stalemate conditions
-- **Castling**: Complete kingside and queenside castling with all validation rules (king/rook haven't moved, path clear, not in check, not through attacked squares)
+- **Castling**: Complete kingside and queenside castling with all validation rules:
+  - Kingside castling (O-O) and queenside castling (O-O-O)
+  - King and rook movement tracking validation
+  - Path clear validation between king and rook
+  - Cannot castle while in check, through check, or into check
+  - Comprehensive test suite (9/9 tests passing)
+  - Both White and Black castling support
+  - Non-recursive attack detection system
 - **Color-coded Display**: Visual highlighting of kings in check, captured pieces tracking, and enhanced board visualization
 - **Error Handling**: Graceful handling of invalid input and edge cases
 
@@ -420,32 +429,19 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🔴 Critical Missing Features
 
-#### 1. **Castling** ✅ **COMPLETED**
-- [x] Kingside castling (O-O)
-- [x] Queenside castling (O-O-O)
-- [x] Castling validation rules:
-  - [x] King and rook haven't moved
-  - [x] No pieces between king and rook
-  - [x] King not in check during castling path
-  - [x] King doesn't pass through or land on attacked squares
-- [x] Comprehensive test suite (9/9 tests passing)
-- [x] Both White and Black castling support
-- [x] Move tracking system for all pieces
-- [x] Non-recursive attack detection system
-
-#### 2. **Pawn Promotion** ❌
+#### 1. **Pawn Promotion** ❌
 - [ ] Automatic promotion when pawn reaches opposite end
 - [ ] Choice of promotion piece (Queen, Rook, Bishop, Knight)
 - [ ] UI for promotion piece selection
 - [ ] Update board state after promotion
 
-#### 3. **En Passant** ❌
+#### 2. **En Passant** ❌
 - [ ] Special pawn capture rule implementation
 - [ ] Track opponent pawn two-square moves
 - [ ] Validate en passant capture conditions
 - [ ] Remove captured pawn from board
 
-#### 4. **Game End Conditions** ❌
+#### 3. **Game End Conditions** ❌
 - [ ] **Stalemate detection** (no legal moves, not in check)
 - [ ] **Draw conditions**:
   - [ ] Threefold repetition
@@ -457,21 +453,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🟡 Important Missing Features
 
-#### 5. **Move History & Notation** ✅
-- [x] Game move recording
-- [x] Standard algebraic notation (SAN) output
-- [x] Move list display
-- [x] Undo/redo functionality
-- [x] Export games in PGN format
-
-#### 6. **Enhanced Input/Output** ✅
-- [x] Better error messages for invalid moves
-- [x] Move suggestions for beginners
-- [x] Highlight last move on board
-- [x] Show captured pieces
-- [x] Display check/checkmate status clearly
-
-#### 7. **Web Interface** ❌
+#### 4. **Web Interface** ❌
 - [ ] Complete `WebChessGame.java` implementation
 - [ ] REST API endpoints
 - [ ] HTML/CSS/JavaScript frontend
@@ -480,21 +462,21 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🟢 Nice-to-Have Features
 
-#### 8. **Advanced AI Improvements** ❌
+#### 5. **Advanced AI Improvements** ❌
 - [ ] Opening book integration
 - [ ] Endgame tablebase support
 - [ ] Time management for AI thinking
 - [ ] Multiple difficulty levels
 - [ ] AI vs AI game mode
 
-#### 9. **Testing & Quality** ❌
+#### 6. **Testing & Quality** ❌
 - [ ] Unit tests for all piece movements
 - [ ] Integration tests for game scenarios
 - [ ] AI move quality validation
 - [ ] Performance benchmarking
 - [ ] Code coverage reports
 
-#### 10. **Enhanced Gameplay** ❌
+#### 7. **Enhanced Gameplay** ❌
 - [ ] Save/load game functionality
 - [ ] Game analysis mode
 - [ ] Position setup from FEN notation
@@ -518,17 +500,16 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 ### 🎯 Recommended Implementation Order
 
 **Next Priority (High Impact):**
-1. **Pawn Promotion** (essential chess rule) - Ready for implementation
+1. **Pawn Promotion** (essential chess rule) - Ready for implementation  
 2. **En Passant** (complete standard chess rules) - Core infrastructure ready
 3. **Stalemate Detection** (essential for proper game endings)
 
 **Medium Priority:**
-4. **En Passant** (complete standard chess rules)
-5. **Move History & Notation** (foundation for draw detection)
-6. **Enhanced Unit Testing** (expand current test framework)
+4. **Stalemate Detection** (essential for proper game endings)
+5. **Enhanced Unit Testing** (expand current test framework)
 
 **Lower Priority:**
-7. **Web Interface** (core is now ready for web frontend)
+6. **Web Interface** (core is now ready for web frontend)
 8. **Advanced AI Features** (opening books, endgame tables)
 9. **Enhanced Gameplay Features** (save/load, analysis mode)
 
