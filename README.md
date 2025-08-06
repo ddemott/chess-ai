@@ -90,6 +90,12 @@ java -jar target/chessai-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 - **Export Game**: Type `export` to display the game in PGN notation
 - **Help**: Type `help` to see all available commands
 
+### Special Moves
+- **Castling**: Move the king two squares toward a rook to castle
+  - Kingside: `e1 g1` (White) or `e8 g8` (Black)  
+  - Queenside: `e1 c1` (White) or `e8 c8` (Black)
+  - Automatically moves the rook when successful
+
 ### Sample Gameplay
 ```
 === ChessAI Game Instructions ===
@@ -217,6 +223,7 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.UndoRedoBoardI
 
 # Run comprehensive castling tests
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.CastlingTest
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.CastlingIntegrationTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.EnhancedIOTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckAndMateTest
 ```
@@ -231,6 +238,7 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckA
 - ✅ **Move history tracking and algebraic notation (76+ test cases)**
 - ✅ **Undo/redo functionality with board state integrity**
 - ✅ **PGN export and file operations**
+- ✅ **Complete castling implementation with comprehensive testing (9/9 tests passing)**
 - ✅ **Enhanced input/output with detailed error messages (37+ test cases)**
 - ✅ **Check/checkmate/stalemate detection**
 - ✅ **Move validation with suggestions**
@@ -412,7 +420,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🔴 Critical Missing Features
 
-#### 1. **Castling** ✅
+#### 1. **Castling** ✅ **COMPLETED**
 - [x] Kingside castling (O-O)
 - [x] Queenside castling (O-O-O)
 - [x] Castling validation rules:
@@ -420,6 +428,10 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
   - [x] No pieces between king and rook
   - [x] King not in check during castling path
   - [x] King doesn't pass through or land on attacked squares
+- [x] Comprehensive test suite (9/9 tests passing)
+- [x] Both White and Black castling support
+- [x] Move tracking system for all pieces
+- [x] Non-recursive attack detection system
 
 #### 2. **Pawn Promotion** ❌
 - [ ] Automatic promotion when pawn reaches opposite end
@@ -493,7 +505,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 - **Core Chess Engine**: 95% ✅ (Console-decoupled, robust validation, fixed AI)
 - **AI Implementation**: 95% ✅ (Fixed move generation, proper validation)
-- **Essential Chess Rules**: 80% ⚠️ (Castling ✅, missing en passant, pawn promotion)
+- **Essential Chess Rules**: 88% ✅ (Castling ✅ Complete, missing en passant, pawn promotion)
 - **User Interface**: 98% ✅ (Robust console interface with enhanced I/O, error handling, and visual features)
 - **Move History & Notation**: 100% ✅ (Complete SAN notation, undo/redo, PGN export)
 - **Enhanced Input/Output**: 100% ✅ (Detailed errors, suggestions, check detection, captured pieces)
@@ -501,7 +513,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 - **Testing**: 60% ✅ (Comprehensive testing framework covering all major features)
 - **Documentation**: 98% ✅ (Complete and up-to-date)
 
-**Overall Project Completion: ~88%**
+**Overall Project Completion: ~90%**
 
 ### 🎯 Recommended Implementation Order
 

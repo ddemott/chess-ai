@@ -19,11 +19,13 @@ public class CastlingIntegrationTest {
         // Clear pieces to allow castling
         System.out.println("Clearing pieces for castling...");
         
-        // Make moves to clear pieces between king and rook
-        engine.movePiece("g1", "f3"); // Move knight out of the way
-        engine.movePiece("a7", "a6"); // Black move
-        engine.movePiece("f1", "c4"); // Move bishop out of the way 
-        engine.movePiece("b7", "b6"); // Black move
+        // Use the game engine's board to directly clear pieces (simulating moves that would clear the path)
+        // In a real game, these pieces would be moved by actual gameplay
+        
+        // Alternative approach: Get the board and clear the pieces directly for demonstration
+        Board board = engine.getGameState().getBoard();
+        board.setPieceAt("f1", null); // Clear bishop
+        board.setPieceAt("g1", null); // Clear knight
         
         System.out.println("After clearing pieces:");
         System.out.println(engine.getBoardRepresentation());
@@ -41,14 +43,18 @@ public class CastlingIntegrationTest {
         
         // Verify final positions
         System.out.println("=== Verification ===");
-        String boardState = engine.getBoardRepresentation();
-        boolean kingAtG1 = boardState.contains("K") && boardState.indexOf("K") > boardState.indexOf("f");
-        boolean rookAtF1 = boardState.contains("R") && boardState.indexOf("R") < boardState.indexOf("g");
+        Board finalBoard = engine.getGameState().getBoard();
+        boolean kingAtG1 = finalBoard.getPieceAt("g1") != null && finalBoard.getPieceAt("g1").getClass().getSimpleName().equals("King");
+        boolean rookAtF1 = finalBoard.getPieceAt("f1") != null && finalBoard.getPieceAt("f1").getClass().getSimpleName().equals("Rook");
+        boolean nothingAtE1 = finalBoard.getPieceAt("e1") == null;
+        boolean nothingAtH1 = finalBoard.getPieceAt("h1") == null;
         
-        System.out.println("King moved to g1: " + kingAtG1);
-        System.out.println("Rook moved to f1: " + rookAtF1);
+        System.out.println("King at g1: " + kingAtG1);
+        System.out.println("Rook at f1: " + rookAtF1);
+        System.out.println("Nothing at e1: " + nothingAtE1);
+        System.out.println("Nothing at h1: " + nothingAtH1);
         
-        if (castlingSuccessful && kingAtG1 && rookAtF1) {
+        if (castlingSuccessful && kingAtG1 && rookAtF1 && nothingAtE1 && nothingAtH1) {
             System.out.println("✓ CASTLING INTEGRATION TEST PASSED!");
         } else {
             System.out.println("✗ Castling integration test failed");
