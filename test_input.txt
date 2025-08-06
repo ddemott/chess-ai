@@ -1,0 +1,9 @@
+e2 e4
+g1 f3
+history
+undo
+history
+redo
+history
+export
+exit

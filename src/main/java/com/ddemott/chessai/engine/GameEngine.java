@@ -1,6 +1,8 @@
 package com.ddemott.chessai.engine;
 
 import com.ddemott.chessai.State;
+import com.ddemott.chessai.MoveHistory;
+import com.ddemott.chessai.Move;
 import com.ddemott.chessai.ai.AIStrategy;
 import com.ddemott.chessai.ai.MinMaxStrategy;
 
@@ -53,5 +55,42 @@ public class GameEngine {
 
     public void printBoard() {
         state.getBoard().printBoard();
+    }
+
+    // Move history related methods
+    public MoveHistory getMoveHistory() {
+        return state.getMoveHistory();
+    }
+
+    public String getMoveListDisplay() {
+        return state.getMoveHistory().getMoveListDisplay();
+    }
+
+    public Move getLastMove() {
+        return state.getMoveHistory().getLastMove();
+    }
+
+    public boolean undoLastMove() {
+        return state.undoLastMove();
+    }
+
+    public boolean redoLastMove() {
+        return state.redoLastMove();
+    }
+
+    public boolean canUndo() {
+        return state.getMoveHistory().canUndo();
+    }
+
+    public boolean canRedo() {
+        return state.getMoveHistory().canRedo();
+    }
+
+    public String exportGameToPGN(String whitePlayer, String blackPlayer, String result) {
+        return state.getMoveHistory().exportToPGN(whitePlayer, blackPlayer, result);
+    }
+
+    public boolean saveGameToPGNFile(String filename, String whitePlayer, String blackPlayer, String result) {
+        return state.getMoveHistory().saveToPGNFile(filename, whitePlayer, blackPlayer, result);
     }
 }

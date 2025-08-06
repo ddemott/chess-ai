@@ -21,6 +21,13 @@ A comprehensive Java-based chess game with artificial intelligence that allows h
   - Piece protection analysis
   - Positional bonuses and penalties
 - **Console Display**: Clear visual board representation with chess notation
+- **Move History & Notation**: Complete move tracking with standard algebraic notation (SAN)
+- **Undo/Redo Functionality**: Full game state management with move reversal capabilities
+- **PGN Export**: Save and export games in standard Portable Game Notation format
+- **Enhanced Console Interface**: Interactive commands for move history, undo/redo, and game export
+- **Enhanced Input/Output**: Detailed error messages, move suggestions, captured pieces display, and check/checkmate indicators
+- **Check/Checkmate Detection**: Real-time detection and display of check, checkmate, and stalemate conditions
+- **Color-coded Display**: Visual highlighting of kings in check, captured pieces tracking, and enhanced board visualization
 - **Error Handling**: Graceful handling of invalid input and edge cases
 
 ### 🏗️ Architecture
@@ -75,8 +82,27 @@ java -jar target/chessai-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 3. **AI Response**: After each valid move, the AI automatically calculates and plays its response
 4. **Exit Game**: Type `exit` to quit the game
 
+### Enhanced Commands
+- **Move History**: Type `history` or `moves` to see all moves played
+- **Undo/Redo**: Type `undo` to reverse moves, `redo` to replay them
+- **Save Game**: Type `save <filename>` to save the game in PGN format
+- **Export Game**: Type `export` to display the game in PGN notation
+- **Help**: Type `help` to see all available commands
+
 ### Sample Gameplay
 ```
+=== ChessAI Game Instructions ===
+• Enter moves: 'e2 e4' (from square to square)
+• Commands:
+  - 'help': Show this help
+  - 'history' or 'moves': Show move history
+  - 'undo': Undo last move (yours and AI's)
+  - 'redo': Redo undone move
+  - 'save <filename>': Save game to PGN file
+  - 'export': Export game in PGN format
+  - 'exit' or 'quit': End the game
+==================================
+
   a b c d e f g h
 8 r n b q k b n r 8
 7 p p p p p p p p 7
@@ -89,8 +115,10 @@ java -jar target/chessai-0.0.1-SNAPSHOT-jar-with-dependencies.jar
   a b c d e f g h
 
 Current turn: White
-Enter your move (e.g., a2 a3): e2 e4
-Move from e2 to e4 is valid.
+Enter your move or command: e2 e4
+Move: e4 (e2 to e4)
+AI is thinking...
+AI played: Nc6 (b8 to c6)
 
   a b c d e f g h
 8 r . b q k b n r 8
@@ -103,8 +131,16 @@ Move from e2 to e4 is valid.
 1 R N B Q K B N R 1
   a b c d e f g h
 
+Last move: Nc6 (b8 to c6)
 Current turn: White
-Enter your move (e.g., a2 a3): 
+Enter your move or command: history
+
+Move History:
+=============
+1. e4      Nc6
+
+Current turn: White
+Enter your move or command: 
 ```
 
 ## 🏗️ Project Structure
@@ -112,7 +148,9 @@ Enter your move (e.g., a2 a3):
 ```
 src/main/java/com/ddemott/chessai/
 ├── Board.java                  # Chess board representation and logic
-├── State.java                  # Game state management
+├── Move.java                   # Individual chess move representation
+├── MoveHistory.java            # Move history tracking and algebraic notation
+├── State.java                  # Game state management with move history
 ├── Evaluation.java             # Position evaluation for AI
 ├── Player.java                 # Player representation
 ├── ai/
@@ -121,7 +159,9 @@ src/main/java/com/ddemott/chessai/
 │   └── MoveResult.java         # AI move calculation results
 ├── console/
 │   ├── ConsoleChessGame.java   # Main game loop and user interface
-│   └── ConsoleDisplay.java     # Board display utilities
+│   ├── ConsoleDisplay.java     # Basic board display utilities
+│   ├── EnhancedConsoleDisplay.java # Enhanced display with colors and status
+│   └── MoveValidator.java      # Move validation with detailed error feedback
 ├── engine/
 │   └── GameEngine.java         # Core game engine coordination
 ├── interfaces/
@@ -168,6 +208,15 @@ The core chess engine has been decoupled from the console interface, enabling co
 # Compile and run the comprehensive functionality test
 javac -cp target/classes -d target/test-classes src/test/java/com/ddemott/chessai/GameEngineTest.java
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.GameEngineTest
+
+# Run comprehensive move history and undo/redo tests
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.ComprehensiveMoveHistoryTest
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.MoveClassTest
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.UndoRedoBoardIntegrityTest
+
+# Run enhanced input/output and check detection tests
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.EnhancedIOTest
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckAndMateTest
 ```
 
 **Current Test Coverage:**
@@ -177,6 +226,14 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.GameEngineTest
 - ✅ Invalid move rejection (empty squares, opponent pieces)
 - ✅ Board state representation
 - ✅ Console-free game state access
+- ✅ **Move history tracking and algebraic notation (76+ test cases)**
+- ✅ **Undo/redo functionality with board state integrity**
+- ✅ **PGN export and file operations**
+- ✅ **Enhanced input/output with detailed error messages (37+ test cases)**
+- ✅ **Check/checkmate/stalemate detection**
+- ✅ **Move validation with suggestions**
+- ✅ **Color-coded display and captured pieces tracking**
+- ✅ **Edge cases and boundary conditions**
 
 ### Manual Testing
 For additional verification:
@@ -386,19 +443,19 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🟡 Important Missing Features
 
-#### 5. **Move History & Notation** ❌
-- [ ] Game move recording
-- [ ] Standard algebraic notation (SAN) output
-- [ ] Move list display
-- [ ] Undo/redo functionality
-- [ ] Export games in PGN format
+#### 5. **Move History & Notation** ✅
+- [x] Game move recording
+- [x] Standard algebraic notation (SAN) output
+- [x] Move list display
+- [x] Undo/redo functionality
+- [x] Export games in PGN format
 
-#### 6. **Enhanced Input/Output** ❌
-- [ ] Better error messages for invalid moves
-- [ ] Move suggestions for beginners
-- [ ] Highlight last move on board
-- [ ] Show captured pieces
-- [ ] Display check/checkmate status clearly
+#### 6. **Enhanced Input/Output** ✅
+- [x] Better error messages for invalid moves
+- [x] Move suggestions for beginners
+- [x] Highlight last move on board
+- [x] Show captured pieces
+- [x] Display check/checkmate status clearly
 
 #### 7. **Web Interface** ❌
 - [ ] Complete `WebChessGame.java` implementation
@@ -435,12 +492,14 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 - **Core Chess Engine**: 95% ✅ (Console-decoupled, robust validation, fixed AI)
 - **AI Implementation**: 95% ✅ (Fixed move generation, proper validation)
 - **Essential Chess Rules**: 60% ⚠️ (Missing castling, en passant, pawn promotion)
-- **User Interface**: 85% ✅ (Robust console interface with error handling)
+- **User Interface**: 98% ✅ (Robust console interface with enhanced I/O, error handling, and visual features)
+- **Move History & Notation**: 100% ✅ (Complete SAN notation, undo/redo, PGN export)
+- **Enhanced Input/Output**: 100% ✅ (Detailed errors, suggestions, check detection, captured pieces)
 - **Web Interface**: 5% ❌ (Placeholder only)
-- **Testing**: 40% ✅ (Comprehensive console-free testing framework)
+- **Testing**: 60% ✅ (Comprehensive testing framework covering all major features)
 - **Documentation**: 98% ✅ (Complete and up-to-date)
 
-**Overall Project Completion: ~75%**
+**Overall Project Completion: ~85%**
 
 ### 🎯 Recommended Implementation Order
 

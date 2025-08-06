@@ -198,4 +198,99 @@ public class Board {
         }
         return piece.getColor().equals("White") ? String.valueOf(symbol) : String.valueOf(Character.toLowerCase(symbol));
     }
+
+    /**
+     * Check if the king of the specified color is in check
+     */
+    public boolean isKingInCheck(String kingColor) {
+        // Find the king position
+        String kingPosition = findKingPosition(kingColor);
+        if (kingPosition == null) {
+            return false; // No king found (shouldn't happen in normal game)
+        }
+        
+        // Check if any opponent piece can attack the king
+        String opponentColor = kingColor.equals("White") ? "Black" : "White";
+        List<String> opponentMoves = getAllPossibleMoves(opponentColor);
+        
+        for (String move : opponentMoves) {
+            String[] parts = move.split(" ");
+            if (parts.length == 2 && parts[1].equals(kingPosition)) {
+                return true; // Opponent can attack the king
+            }
+        }
+        
+        return false;
+    }
+
+    /**
+     * Find the position of the king for the specified color
+     */
+    public String findKingPosition(String kingColor) {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                IPiece piece = board[row][col];
+                if (piece instanceof King && piece.getColor().equals(kingColor)) {
+                    return convertCoordinatesToPosition(row, col);
+                }
+            }
+        }
+        return null; // King not found
+    }
+
+    /**
+     * Check if the specified player is in checkmate
+     */
+    public boolean isCheckmate(String playerColor) {
+        if (!isKingInCheck(playerColor)) {
+            return false; // Not in check, so can't be checkmate
+        }
+        
+        // Try all possible moves to see if any gets out of check
+        List<String> possibleMoves = getAllPossibleMoves(playerColor);
+        
+        for (String move : possibleMoves) {
+            String[] parts = move.split(" ");
+            if (parts.length == 2) {
+                // Simulate the move
+                Board clonedBoard = this.clone();
+                if (clonedBoard.movePiece(parts[0], parts[1])) {
+                    // Check if this move gets out of check
+                    if (!clonedBoard.isKingInCheck(playerColor)) {
+                        return false; // Found a move that gets out of check
+                    }
+                }
+            }
+        }
+        
+        return true; // No moves get out of check - checkmate
+    }
+
+    /**
+     * Check if the specified player is in stalemate
+     */
+    public boolean isStalemate(String playerColor) {
+        if (isKingInCheck(playerColor)) {
+            return false; // In check, so can't be stalemate
+        }
+        
+        // Check if player has any legal moves
+        List<String> possibleMoves = getAllPossibleMoves(playerColor);
+        
+        for (String move : possibleMoves) {
+            String[] parts = move.split(" ");
+            if (parts.length == 2) {
+                // Simulate the move
+                Board clonedBoard = this.clone();
+                if (clonedBoard.movePiece(parts[0], parts[1])) {
+                    // Check if this move puts own king in check
+                    if (!clonedBoard.isKingInCheck(playerColor)) {
+                        return false; // Found a legal move
+                    }
+                }
+            }
+        }
+        
+        return true; // No legal moves available - stalemate
+    }
 }
