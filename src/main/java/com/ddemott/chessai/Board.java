@@ -282,15 +282,36 @@ public class Board {
 
     /**
      * Check if a square is under attack by the opponent
+     * Uses a non-recursive approach to avoid infinite loops during castling validation
      */
     public boolean isSquareUnderAttack(String position, String defendingColor) {
         String attackingColor = defendingColor.equals("White") ? "Black" : "White";
-        List<String> attackingMoves = getAllPossibleMoves(attackingColor);
         
-        for (String move : attackingMoves) {
-            String[] parts = move.split(" ");
-            if (parts.length == 2 && parts[1].equals(position)) {
-                return true; // Square is under attack
+        // Check each opposing piece to see if it can attack the position
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                IPiece piece = board[row][col];
+                if (piece != null && piece.getColor().equals(attackingColor)) {
+                    // For non-king pieces, use normal validation
+                    if (!(piece instanceof King)) {
+                        if (piece.isValidMove(position, this)) {
+                            return true;
+                        }
+                    } else {
+                        // For king pieces, only check normal moves (not castling) to avoid recursion
+                        String currentPos = piece.getPosition();
+                        int[] currentCoords = convertPositionToCoordinates(currentPos);
+                        int[] targetCoords = convertPositionToCoordinates(position);
+                        
+                        int dx = Math.abs(targetCoords[0] - currentCoords[0]);
+                        int dy = Math.abs(targetCoords[1] - currentCoords[1]);
+                        
+                        // King can attack one square in any direction
+                        if (dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)) {
+                            return true;
+                        }
+                    }
+                }
             }
         }
         

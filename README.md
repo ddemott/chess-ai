@@ -27,6 +27,7 @@ A comprehensive Java-based chess game with artificial intelligence that allows h
 - **Enhanced Console Interface**: Interactive commands for move history, undo/redo, and game export
 - **Enhanced Input/Output**: Detailed error messages, move suggestions, captured pieces display, and check/checkmate indicators
 - **Check/Checkmate Detection**: Real-time detection and display of check, checkmate, and stalemate conditions
+- **Castling**: Complete kingside and queenside castling with all validation rules (king/rook haven't moved, path clear, not in check, not through attacked squares)
 - **Color-coded Display**: Visual highlighting of kings in check, captured pieces tracking, and enhanced board visualization
 - **Error Handling**: Graceful handling of invalid input and edge cases
 
@@ -214,7 +215,8 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.ComprehensiveM
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.MoveClassTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.UndoRedoBoardIntegrityTest
 
-# Run enhanced input/output and check detection tests
+# Run comprehensive castling tests
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.CastlingTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.EnhancedIOTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckAndMateTest
 ```
@@ -349,7 +351,7 @@ The ChessAI project has a **solid foundation** with many core chess features ful
 - **Knights**: ✅ L-shaped movement (2+1 squares) jumping over pieces
 - **Bishops**: ✅ Diagonal movement with path blocking detection
 - **Queens**: ✅ Combined rook + bishop movement (8 directions)
-- **Kings**: ✅ One square movement in all directions
+- **Kings**: ✅ One square movement in all directions + **castling support**
 
 ### 🛡️ **Game Logic & Validation**
 - **Comprehensive Move Validation**: Prevents illegal moves for all piece types
@@ -410,14 +412,14 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🔴 Critical Missing Features
 
-#### 1. **Castling** ❌
-- [ ] Kingside castling (O-O)
-- [ ] Queenside castling (O-O-O)
-- [ ] Castling validation rules:
-  - [ ] King and rook haven't moved
-  - [ ] No pieces between king and rook
-  - [ ] King not in check during castling path
-  - [ ] King doesn't pass through or land on attacked squares
+#### 1. **Castling** ✅
+- [x] Kingside castling (O-O)
+- [x] Queenside castling (O-O-O)
+- [x] Castling validation rules:
+  - [x] King and rook haven't moved
+  - [x] No pieces between king and rook
+  - [x] King not in check during castling path
+  - [x] King doesn't pass through or land on attacked squares
 
 #### 2. **Pawn Promotion** ❌
 - [ ] Automatic promotion when pawn reaches opposite end
@@ -491,7 +493,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 - **Core Chess Engine**: 95% ✅ (Console-decoupled, robust validation, fixed AI)
 - **AI Implementation**: 95% ✅ (Fixed move generation, proper validation)
-- **Essential Chess Rules**: 60% ⚠️ (Missing castling, en passant, pawn promotion)
+- **Essential Chess Rules**: 80% ⚠️ (Castling ✅, missing en passant, pawn promotion)
 - **User Interface**: 98% ✅ (Robust console interface with enhanced I/O, error handling, and visual features)
 - **Move History & Notation**: 100% ✅ (Complete SAN notation, undo/redo, PGN export)
 - **Enhanced Input/Output**: 100% ✅ (Detailed errors, suggestions, check detection, captured pieces)
@@ -499,13 +501,13 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 - **Testing**: 60% ✅ (Comprehensive testing framework covering all major features)
 - **Documentation**: 98% ✅ (Complete and up-to-date)
 
-**Overall Project Completion: ~85%**
+**Overall Project Completion: ~88%**
 
 ### 🎯 Recommended Implementation Order
 
 **Next Priority (High Impact):**
-1. **Castling** (essential chess rule) - Ready for implementation
-2. **Pawn Promotion** (essential chess rule) - Core infrastructure ready
+1. **Pawn Promotion** (essential chess rule) - Ready for implementation
+2. **En Passant** (complete standard chess rules) - Core infrastructure ready
 3. **Stalemate Detection** (essential for proper game endings)
 
 **Medium Priority:**

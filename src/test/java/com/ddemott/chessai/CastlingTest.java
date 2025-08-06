@@ -266,6 +266,10 @@ public class CastlingTest {
             board.setPieceAt("f1", null);
             board.setPieceAt("g1", null);
             
+            // Clear pawn path so rook can attack king
+            board.setPieceAt("e2", null); // Remove white pawn
+            board.setPieceAt("e7", null); // Remove black pawn
+            
             // Place black rook attacking the king
             board.setPieceAt("e8", new Rook("Black", "e8"));
             
@@ -286,6 +290,10 @@ public class CastlingTest {
             // Clear pieces for castling
             board.setPieceAt("f1", null);
             board.setPieceAt("g1", null);
+            
+            // Clear pawn path so rook can attack f1
+            board.setPieceAt("f2", null); // Remove white pawn
+            board.setPieceAt("f7", null); // Remove black pawn
             
             // Place black rook attacking f1 (square king passes through)
             board.setPieceAt("f8", new Rook("Black", "f8"));
