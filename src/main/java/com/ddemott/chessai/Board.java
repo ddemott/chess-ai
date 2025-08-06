@@ -97,6 +97,12 @@ public class Board {
         //System.out.println("Piece found at " + from + ": " + piece.getClass().getSimpleName() + " (" + piece.getColor() + ")");
 
         if (piece.isValidMove(to, this)) {
+            // Check if this is a castling move
+            if (piece instanceof King && Math.abs(convertPositionToCoordinates(to)[1] - convertPositionToCoordinates(from)[1]) == 2) {
+                return executeCastling(from, to);
+            }
+            
+            // Regular move
             setPieceAt(to, piece);
             setPieceAt(from, null);
             piece.setPosition(to);
@@ -104,6 +110,42 @@ public class Board {
         } else {
             return false;
         }
+    }
+    
+    /**
+     * Execute castling move - moves both king and rook
+     */
+    private boolean executeCastling(String kingFrom, String kingTo) {
+        IPiece king = getPieceAt(kingFrom);
+        int[] kingFromCoords = convertPositionToCoordinates(kingFrom);
+        int[] kingToCoords = convertPositionToCoordinates(kingTo);
+        
+        // Determine if kingside or queenside castling
+        boolean isKingside = kingToCoords[1] > kingFromCoords[1];
+        
+        // Get rook positions
+        String rookFrom, rookTo;
+        if (isKingside) {
+            rookFrom = convertCoordinatesToPosition(kingFromCoords[0], 7); // h-file
+            rookTo = convertCoordinatesToPosition(kingFromCoords[0], 5);   // f-file
+        } else {
+            rookFrom = convertCoordinatesToPosition(kingFromCoords[0], 0); // a-file
+            rookTo = convertCoordinatesToPosition(kingFromCoords[0], 3);   // d-file
+        }
+        
+        IPiece rook = getPieceAt(rookFrom);
+        
+        // Move king
+        setPieceAt(kingTo, king);
+        setPieceAt(kingFrom, null);
+        king.setPosition(kingTo);
+        
+        // Move rook
+        setPieceAt(rookTo, rook);
+        setPieceAt(rookFrom, null);
+        rook.setPosition(rookTo);
+        
+        return true;
     }
 
     public List<String> getAllPossibleMoves(String color) {
@@ -236,6 +278,23 @@ public class Board {
             }
         }
         return null; // King not found
+    }
+
+    /**
+     * Check if a square is under attack by the opponent
+     */
+    public boolean isSquareUnderAttack(String position, String defendingColor) {
+        String attackingColor = defendingColor.equals("White") ? "Black" : "White";
+        List<String> attackingMoves = getAllPossibleMoves(attackingColor);
+        
+        for (String move : attackingMoves) {
+            String[] parts = move.split(" ");
+            if (parts.length == 2 && parts[1].equals(position)) {
+                return true; // Square is under attack
+            }
+        }
+        
+        return false;
     }
 
     /**

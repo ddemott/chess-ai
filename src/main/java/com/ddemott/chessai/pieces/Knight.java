@@ -60,6 +60,8 @@ public class Knight extends Piece {
 
     @Override
     public IPiece clonePiece() {
-        return new Knight(color, position);
+        Knight cloned = new Knight(color, position);
+        cloned.setHasMoved(this.hasMoved());
+        return cloned;
     }
 }

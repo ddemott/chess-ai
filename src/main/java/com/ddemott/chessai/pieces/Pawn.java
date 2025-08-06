@@ -90,6 +90,8 @@ public class Pawn extends Piece {
 
     @Override
     public IPiece clonePiece() {
-        return new Pawn(color, position);
+        Pawn cloned = new Pawn(color, position);
+        cloned.setHasMoved(this.hasMoved());
+        return cloned;
     }
 }

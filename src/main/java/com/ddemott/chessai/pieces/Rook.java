@@ -58,7 +58,9 @@ public class Rook extends Piece {
 
     @Override
     public IPiece clonePiece() {
-        return new Rook(getColor(), getPosition());
+        Rook cloned = new Rook(getColor(), getPosition());
+        cloned.setHasMoved(this.hasMoved());
+        return cloned;
     }
 
     @Override

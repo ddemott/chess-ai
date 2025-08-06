@@ -1,7 +1,0 @@
-com\ddemott\chessai\console\EnhancedIOTest.class
-com\ddemott\chessai\MoveHistoryTest.class
-com\ddemott\chessai\UndoRedoBoardIntegrityTest.class
-com\ddemott\chessai\MoveClassTest.class
-com\ddemott\chessai\ComprehensiveMoveHistoryTest.class
-com\ddemott\chessai\GameEngineTest.class
-com\ddemott\chessai\console\CheckAndMateTest.class

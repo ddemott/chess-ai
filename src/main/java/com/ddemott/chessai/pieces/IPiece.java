@@ -12,4 +12,6 @@ public interface IPiece {
     List<String> getAllPossibleMoves(Board board);
     int getValue();
     IPiece clonePiece();
+    boolean hasMoved();
+    void setHasMoved(boolean hasMoved);
 }
