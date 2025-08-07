@@ -13,9 +13,11 @@ import com.ddemott.chessai.pieces.Rook;
 
 public class Board {
     private IPiece[][] board; // 2D array to represent the board
+    private String enPassantTarget; // Target square for en passant capture (e.g., "e3")
 
     public Board() {
         board = new IPiece[8][8]; // 8x8 chess board
+        enPassantTarget = null; // No en passant target initially
         initializeBoard();
     }
 
@@ -99,13 +101,37 @@ public class Board {
         if (piece.isValidMove(to, this)) {
             // Check if this is a castling move
             if (piece instanceof King && Math.abs(convertPositionToCoordinates(to)[1] - convertPositionToCoordinates(from)[1]) == 2) {
-                return executeCastling(from, to);
+                boolean castlingSuccess = executeCastling(from, to);
+                if (castlingSuccess) {
+                    // Clear en passant target after any move
+                    enPassantTarget = null;
+                }
+                return castlingSuccess;
+            }
+            
+            // Check if this is an en passant capture
+            if (piece instanceof Pawn && isEnPassantCapture(from, to)) {
+                return executeEnPassant(from, to);
+            }
+            
+            // Track pawn two-square moves for en passant
+            if (piece instanceof Pawn && isPawnTwoSquareMove(from, to)) {
+                // Calculate en passant target square (square behind the pawn)
+                int[] fromCoords = convertPositionToCoordinates(from);
+                int[] toCoords = convertPositionToCoordinates(to);
+                int targetRow = (fromCoords[0] + toCoords[0]) / 2; // Middle square
+                int targetCol = fromCoords[1];
+                enPassantTarget = convertCoordinatesToPosition(targetRow, targetCol);
+            } else {
+                // Clear en passant target if not a pawn two-square move
+                enPassantTarget = null;
             }
             
             // Regular move
             setPieceAt(to, piece);
             setPieceAt(from, null);
             piece.setPosition(to);
+            piece.setHasMoved(true);
             return true;
         } else {
             return false;
@@ -148,6 +174,55 @@ public class Board {
         return true;
     }
 
+    /**
+     * Check if a move is a pawn two-square move that enables en passant
+     */
+    private boolean isPawnTwoSquareMove(String from, String to) {
+        int[] fromCoords = convertPositionToCoordinates(from);
+        int[] toCoords = convertPositionToCoordinates(to);
+        
+        // Check if it's a pawn moving exactly 2 squares vertically
+        return Math.abs(toCoords[0] - fromCoords[0]) == 2 && fromCoords[1] == toCoords[1];
+    }
+
+    /**
+     * Check if a move is an en passant capture
+     */
+    private boolean isEnPassantCapture(String from, String to) {
+        if (enPassantTarget == null) {
+            return false;
+        }
+        
+        // Check if the destination matches the en passant target
+        return to.equals(enPassantTarget);
+    }
+
+    /**
+     * Execute an en passant capture
+     */
+    private boolean executeEnPassant(String from, String to) {
+        IPiece pawn = getPieceAt(from);
+        int[] toCoords = convertPositionToCoordinates(to);
+        
+        // Determine the captured pawn's position
+        int capturedPawnRow = pawn.getColor().equals("White") ? toCoords[0] - 1 : toCoords[0] + 1;
+        String capturedPawnPosition = convertCoordinatesToPosition(capturedPawnRow, toCoords[1]);
+        
+        // Move the capturing pawn
+        setPieceAt(to, pawn);
+        setPieceAt(from, null);
+        pawn.setPosition(to);
+        pawn.setHasMoved(true);
+        
+        // Remove the captured pawn
+        setPieceAt(capturedPawnPosition, null);
+        
+        // Clear en passant target
+        enPassantTarget = null;
+        
+        return true;
+    }
+
     public List<String> getAllPossibleMoves(String color) {
         List<String> possibleMoves = new ArrayList<>();
         for (int row = 0; row < 8; row++) {
@@ -178,7 +253,25 @@ public class Board {
                 }
             }
         }
+        // Copy en passant target state
+        newBoard.enPassantTarget = this.enPassantTarget;
         return newBoard;
+    }
+
+    /**
+     * Get the current en passant target square
+     * @return the target square (e.g., "e3") or null if no en passant is possible
+     */
+    public String getEnPassantTarget() {
+        return enPassantTarget;
+    }
+
+    /**
+     * Set the en passant target square
+     * @param target the target square (e.g., "e3") or null to clear
+     */
+    public void setEnPassantTarget(String target) {
+        this.enPassantTarget = target;
     }
 
     // Method to get board representation as string for display purposes

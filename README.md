@@ -37,6 +37,14 @@ A comprehensive Java-based chess game with artificial intelligence that allows h
   - Comprehensive test suite (9/9 tests passing)
   - Both White and Black castling support
   - Non-recursive attack detection system
+- **En Passant**: Complete special pawn capture rule implementation:
+  - Tracks opponent pawn two-square moves automatically
+  - Validates en passant capture conditions (timing, positioning)
+  - Executes en passant captures with captured pawn removal
+  - Clears en passant target after each move appropriately
+  - Comprehensive test suite (8/8 tests passing)
+  - Works for both White and Black pawns on all files
+  - Integration with move generation and AI systems
 - **Color-coded Display**: Visual highlighting of kings in check, captured pieces tracking, and enhanced board visualization
 - **Error Handling**: Graceful handling of invalid input and edge cases
 
@@ -104,6 +112,10 @@ java -jar target/chessai-0.0.1-SNAPSHOT-jar-with-dependencies.jar
   - Kingside: `e1 g1` (White) or `e8 g8` (Black)  
   - Queenside: `e1 c1` (White) or `e8 c8` (Black)
   - Automatically moves the rook when successful
+- **En Passant**: Special pawn capture when opponent pawn moves two squares
+  - Capture diagonally to the square the opponent pawn "passed through"
+  - Must be done immediately after opponent's two-square pawn move
+  - Example: If Black plays `f7 f5`, White can play `e5 f6` to capture en passant
 
 ### Sample Gameplay
 ```
@@ -233,6 +245,10 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.UndoRedoBoardI
 # Run comprehensive castling tests
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.CastlingTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.CastlingIntegrationTest
+
+# Run comprehensive en passant tests  
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.EnPassantTest
+java -cp "target/classes;target/test-classes" com.ddemott.chessai.EnPassantIntegrationTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.EnhancedIOTest
 java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckAndMateTest
 ```
@@ -248,6 +264,7 @@ java -cp "target/classes;target/test-classes" com.ddemott.chessai.console.CheckA
 - ✅ **Undo/redo functionality with board state integrity**
 - ✅ **PGN export and file operations**
 - ✅ **Complete castling implementation with comprehensive testing (9/9 tests passing)**
+- ✅ **Complete en passant implementation with comprehensive testing (8/8 tests passing)**
 - ✅ **Enhanced input/output with detailed error messages (37+ test cases)**
 - ✅ **Check/checkmate/stalemate detection**
 - ✅ **Move validation with suggestions**
@@ -363,12 +380,27 @@ The ChessAI project has a **solid foundation** with many core chess features ful
   - Positional bonuses for piece placement
 
 ### ♟️ **Complete Piece Movement Rules**
-- **Pawns**: ✅ One/two square initial moves, diagonal captures, proper directional movement
+- **Pawns**: ✅ One/two square initial moves, diagonal captures, proper directional movement, **en passant captures**
 - **Rooks**: ✅ Horizontal and vertical movement with path blocking detection
 - **Knights**: ✅ L-shaped movement (2+1 squares) jumping over pieces
 - **Bishops**: ✅ Diagonal movement with path blocking detection
 - **Queens**: ✅ Combined rook + bishop movement (8 directions)
 - **Kings**: ✅ One square movement in all directions + **castling support**
+
+### 🏰 **Special Chess Rules**
+- **Castling**: ✅ Complete kingside and queenside castling implementation
+  - King and rook movement tracking validation
+  - Path clear validation between king and rook
+  - Cannot castle while in check, through check, or into check
+  - Comprehensive test suite (9/9 tests passing)
+  - Both White and Black castling support
+- **En Passant**: ✅ Complete special pawn capture rule implementation
+  - Automatic tracking of opponent pawn two-square moves
+  - Validates en passant capture conditions (timing, positioning)
+  - Executes en passant captures with captured pawn removal
+  - Clears en passant target appropriately after each move
+  - Comprehensive test suite (8/8 tests passing)
+  - Works for both White and Black pawns on all files
 
 ### 🛡️ **Game Logic & Validation**
 - **Comprehensive Move Validation**: Prevents illegal moves for all piece types
@@ -435,13 +467,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 - [ ] UI for promotion piece selection
 - [ ] Update board state after promotion
 
-#### 2. **En Passant** ❌
-- [ ] Special pawn capture rule implementation
-- [ ] Track opponent pawn two-square moves
-- [ ] Validate en passant capture conditions
-- [ ] Remove captured pawn from board
-
-#### 3. **Game End Conditions** ❌
+#### 2. **Game End Conditions** ❌
 - [ ] **Stalemate detection** (no legal moves, not in check)
 - [ ] **Draw conditions**:
   - [ ] Threefold repetition
@@ -453,7 +479,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🟡 Important Missing Features
 
-#### 4. **Web Interface** ❌
+#### 3. **Web Interface** ❌
 - [ ] Complete `WebChessGame.java` implementation
 - [ ] REST API endpoints
 - [ ] HTML/CSS/JavaScript frontend
@@ -462,21 +488,21 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 ### 🟢 Nice-to-Have Features
 
-#### 5. **Advanced AI Improvements** ❌
+#### 4. **Advanced AI Improvements** ❌
 - [ ] Opening book integration
 - [ ] Endgame tablebase support
 - [ ] Time management for AI thinking
 - [ ] Multiple difficulty levels
 - [ ] AI vs AI game mode
 
-#### 6. **Testing & Quality** ❌
+#### 5. **Testing & Quality** ❌
 - [ ] Unit tests for all piece movements
 - [ ] Integration tests for game scenarios
 - [ ] AI move quality validation
 - [ ] Performance benchmarking
 - [ ] Code coverage reports
 
-#### 7. **Enhanced Gameplay** ❌
+#### 6. **Enhanced Gameplay** ❌
 - [ ] Save/load game functionality
 - [ ] Game analysis mode
 - [ ] Position setup from FEN notation
@@ -487,7 +513,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 - **Core Chess Engine**: 95% ✅ (Console-decoupled, robust validation, fixed AI)
 - **AI Implementation**: 95% ✅ (Fixed move generation, proper validation)
-- **Essential Chess Rules**: 88% ✅ (Castling ✅ Complete, missing en passant, pawn promotion)
+- **Essential Chess Rules**: 95% ✅ (Castling ✅ Complete, En Passant ✅ Complete, missing pawn promotion)
 - **User Interface**: 98% ✅ (Robust console interface with enhanced I/O, error handling, and visual features)
 - **Move History & Notation**: 100% ✅ (Complete SAN notation, undo/redo, PGN export)
 - **Enhanced Input/Output**: 100% ✅ (Detailed errors, suggestions, check detection, captured pieces)
@@ -495,25 +521,23 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 - **Testing**: 60% ✅ (Comprehensive testing framework covering all major features)
 - **Documentation**: 98% ✅ (Complete and up-to-date)
 
-**Overall Project Completion: ~90%**
+**Overall Project Completion: ~92%**
 
 ### 🎯 Recommended Implementation Order
 
 **Next Priority (High Impact):**
 1. **Pawn Promotion** (essential chess rule) - Ready for implementation  
-2. **En Passant** (complete standard chess rules) - Core infrastructure ready
-3. **Stalemate Detection** (essential for proper game endings)
+2. **Stalemate Detection** (essential for proper game endings)
 
 **Medium Priority:**
-4. **Stalemate Detection** (essential for proper game endings)
-5. **Enhanced Unit Testing** (expand current test framework)
+3. **Enhanced Unit Testing** (expand current test framework)
 
 **Lower Priority:**
-6. **Web Interface** (core is now ready for web frontend)
-8. **Advanced AI Features** (opening books, endgame tables)
-9. **Enhanced Gameplay Features** (save/load, analysis mode)
+4. **Web Interface** (core is now ready for web frontend)
+5. **Advanced AI Features** (opening books, endgame tables)
+6. **Enhanced Gameplay Features** (save/load, analysis mode)
 
-**Foundation Complete ✅**: Core engine, AI, validation, testing framework, console interface
+**Foundation Complete ✅**: Core engine, AI, validation, testing framework, console interface, castling, en passant
 
 
 
