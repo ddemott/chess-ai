@@ -466,4 +466,145 @@ public class Board {
         
         return true; // No legal moves available - stalemate
     }
+    
+    /**
+     * Move piece with optional pawn promotion
+     * @param from Starting position
+     * @param to Ending position  
+     * @param promotionPiece Piece to promote to (Q, R, B, N) or null for no promotion
+     * @return true if move was successful
+     */
+    public boolean movePiece(String from, String to, String promotionPiece) {
+        IPiece piece = getPieceAt(from);
+
+        if (piece == null) {
+            return false;
+        }
+
+        // Check if this is a pawn promotion move
+        if (piece instanceof Pawn && isPawnPromotion(from, to)) {
+            if (promotionPiece == null || !isValidPromotionPiece(promotionPiece)) {
+                return false; // Must provide valid promotion piece
+            }
+            return executePromotion(from, to, promotionPiece);
+        }
+        
+        // If promotion piece was specified but this isn't a promotion move, reject it
+        if (promotionPiece != null) {
+            return false;
+        }
+        
+        // For non-promotion moves, use regular movePiece method
+        return movePiece(from, to);
+    }
+    
+    /**
+     * Check if a pawn move is a promotion
+     */
+    private boolean isPawnPromotion(String from, String to) {
+        IPiece piece = getPieceAt(from);
+        if (!(piece instanceof Pawn)) {
+            return false;
+        }
+        
+        int[] toCoords = convertPositionToCoordinates(to);
+        int destinationRank = toCoords[0];
+        
+        // White pawns promote on rank 8 (row 7), Black pawns promote on rank 1 (row 0)
+        if (piece.getColor().equals("White") && destinationRank == 7) {
+            return true;
+        }
+        if (piece.getColor().equals("Black") && destinationRank == 0) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Validate promotion piece type
+     */
+     private boolean isValidPromotionPiece(String promotionPiece) {
+        // Only Queen, Rook, Bishop, and Knight are allowed for promotion
+        return promotionPiece.equals("Q") || promotionPiece.equals("R") || 
+               promotionPiece.equals("B") || promotionPiece.equals("N");
+    }
+    
+    /**
+     * Execute pawn promotion
+     */
+    private boolean executePromotion(String from, String to, String promotionPiece) {
+        IPiece pawn = getPieceAt(from);
+        
+        // First validate the pawn move itself
+        if (!pawn.isValidMove(to, this)) {
+            return false;
+        }
+        
+        // Create the promoted piece
+        IPiece promotedPiece = createPromotionPiece(promotionPiece, pawn.getColor(), to);
+        if (promotedPiece == null) {
+            return false;
+        }
+        
+        // Clear en passant target
+        enPassantTarget = null;
+        
+        // Execute the move by placing promoted piece and removing pawn
+        setPieceAt(to, promotedPiece);
+        setPieceAt(from, null);
+        
+        return true;
+    }
+    
+    /**
+     * Create a piece for promotion
+     */
+    private IPiece createPromotionPiece(String pieceType, String color, String position) {
+        switch (pieceType) {
+            case "Q":
+                return new Queen(color, position);
+            case "R":
+                return new Rook(color, position);
+            case "B":
+                return new Bishop(color, position);
+            case "N":
+                return new Knight(color, position);
+            default:
+                return null;
+        }
+    }
+    
+    /**
+     * Generate algebraic notation for promotion moves
+     */
+    public String getPromotionNotation(String from, String to, String promotionPiece) {
+        StringBuilder notation = new StringBuilder();
+        
+        int[] fromCoords = convertPositionToCoordinates(from);
+        IPiece capturedPiece = getPieceAt(to);
+        
+        if (capturedPiece != null) {
+            // Capture promotion: exf8=Q
+            char fromFile = (char)('a' + fromCoords[1]);
+            notation.append(fromFile).append("x").append(to);
+        } else {
+            // Non-capture promotion: e8=Q
+            notation.append(to);
+        }
+        
+        notation.append("=").append(promotionPiece);
+        return notation.toString();
+    }
+    
+    /**
+     * Add clearBoard method for testing
+     */
+    public void clearBoard() {
+        for (int row = 0; row < 8; row++) {
+            for (int col = 0; col < 8; col++) {
+                board[row][col] = null;
+            }
+        }
+    }
 }

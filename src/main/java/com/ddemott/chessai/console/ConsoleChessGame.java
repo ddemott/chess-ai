@@ -68,6 +68,15 @@ public class ConsoleChessGame {
                 continue;
             }
 
+            // Check if this is a pawn promotion move
+            String promotionPiece = null;
+            if (isPawnPromotionMove(gameEngine, positions[0], positions[1])) {
+                promotionPiece = promptForPromotionPiece(scanner);
+                if (promotionPiece == null) {
+                    continue; // User cancelled or invalid input
+                }
+            }
+
             // Validate move with detailed feedback
             MoveValidationResult validation = MoveValidator.validateMove(
                 positions[0], positions[1], gameEngine.getCurrentTurn(), gameEngine.getGameState().getBoard());
@@ -91,7 +100,12 @@ public class ConsoleChessGame {
             // Track captured piece for display
             Move lastMoveBeforeNew = gameEngine.getLastMove();
             
-            boolean moveSuccessful = gameEngine.movePiece(positions[0], positions[1]);
+            boolean moveSuccessful;
+            if (promotionPiece != null) {
+                moveSuccessful = gameEngine.movePiece(positions[0], positions[1], promotionPiece);
+            } else {
+                moveSuccessful = gameEngine.movePiece(positions[0], positions[1]);
+            }
             if (!moveSuccessful) {
                 display.displayInvalidMoveError(positions[0], positions[1], "Move execution failed");
                 continue;
@@ -247,5 +261,68 @@ public class ConsoleChessGame {
         System.out.println("\n=== Game in PGN Format ===");
         System.out.println(pgn);
         System.out.println("==========================\n");
+    }
+    
+    /**
+     * Check if a move is a pawn promotion
+     */
+    private static boolean isPawnPromotionMove(GameEngine gameEngine, String from, String to) {
+        var piece = gameEngine.getGameState().getBoard().getPieceAt(from);
+        if (piece == null || !piece.getClass().getSimpleName().equals("Pawn")) {
+            return false;
+        }
+        
+        int[] toCoords = gameEngine.getGameState().getBoard().convertPositionToCoordinates(to);
+        int destinationRank = toCoords[0];
+        
+        // White pawns promote on rank 8 (row 7), Black pawns promote on rank 1 (row 0)
+        if (piece.getColor().equals("White") && destinationRank == 7) {
+            return true;
+        }
+        if (piece.getColor().equals("Black") && destinationRank == 0) {
+            return true;
+        }
+        
+        return false;
+    }
+    
+    /**
+     * Prompt user to select promotion piece
+     */
+    private static String promptForPromotionPiece(Scanner scanner) {
+        System.out.println("🎉 Pawn Promotion! Choose your piece:");
+        System.out.println("  Q - Queen (most powerful)");
+        System.out.println("  R - Rook");
+        System.out.println("  B - Bishop");
+        System.out.println("  N - Knight");
+        System.out.print("Enter your choice (Q/R/B/N): ");
+        
+        if (!scanner.hasNextLine()) {
+            return null;
+        }
+        
+        String choice = scanner.nextLine().trim().toUpperCase();
+        
+        if (choice.equals("Q") || choice.equals("R") || choice.equals("B") || choice.equals("N")) {
+            String pieceName = getPieceFullName(choice);
+            System.out.println("✅ Promoting to " + pieceName + "!");
+            return choice;
+        } else {
+            System.out.println("❌ Invalid choice. Please enter Q, R, B, or N.");
+            return promptForPromotionPiece(scanner); // Recursive retry
+        }
+    }
+    
+    /**
+     * Get full piece name for display
+     */
+    private static String getPieceFullName(String pieceCode) {
+        switch (pieceCode) {
+            case "Q": return "Queen";
+            case "R": return "Rook";
+            case "B": return "Bishop";
+            case "N": return "Knight";
+            default: return "Unknown";
+        }
     }
 }

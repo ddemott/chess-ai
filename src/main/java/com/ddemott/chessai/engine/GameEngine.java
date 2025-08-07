@@ -26,6 +26,10 @@ public class GameEngine {
     public boolean movePiece(String from, String to) {
         return state.movePiece(from, to);
     }
+    
+    public boolean movePiece(String from, String to, String promotionPiece) {
+        return state.movePiece(from, to, promotionPiece);
+    }
 
     public String getBestMove() {
         return state.getBestMove();

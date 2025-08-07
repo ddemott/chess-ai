@@ -56,6 +56,25 @@ public class State {
         }
         return moveSuccessful;
     }
+    
+    public boolean movePiece(String from, String to, String promotionPiece) {
+        // First check if it's the correct player's turn
+        IPiece piece = board.getPieceAt(from);
+        if (piece == null || !piece.getColor().equals(currentTurn)) {
+            return false;
+        }
+        
+        // Check for captured piece before move
+        IPiece capturedPiece = board.getPieceAt(to);
+        
+        boolean moveSuccessful = board.movePiece(from, to, promotionPiece);
+        if (moveSuccessful) {
+            // Record the move in history with promotion info
+            moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn, promotionPiece);
+            toggleTurn();
+        }
+        return moveSuccessful;
+    }
 
     public String getBestMove() {
         return aiStrategy.calculateBestMove(this, currentTurn);

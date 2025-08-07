@@ -6,8 +6,11 @@ com\ddemott\chessai\EnPassantIntegrationTest.class
 com\ddemott\chessai\MoveClassTest.class
 com\ddemott\chessai\ComprehensiveMoveHistoryTest.class
 com\ddemott\chessai\console\CheckAndMateTest.class
+com\ddemott\chessai\SimplePawnPromotionDemo.class
+com\ddemott\chessai\PawnPromotionIntegrationTest.class
 com\ddemott\chessai\console\EnhancedIOTest.class
 com\ddemott\chessai\MoveHistoryTest.class
+com\ddemott\chessai\PawnPromotionTest.class
 com\ddemott\chessai\SimpleCastlingDemo.class
 com\ddemott\chessai\SimpleEnPassantDemo.class
 com\ddemott\chessai\EnPassantTest.class

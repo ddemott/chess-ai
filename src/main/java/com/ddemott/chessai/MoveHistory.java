@@ -35,16 +35,24 @@ public class MoveHistory {
      */
     public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, 
                        Board board, String playerColor) {
+        addMove(from, to, movingPiece, capturedPiece, board, playerColor, null);
+    }
+    
+    /**
+     * Adds a move to the history with promotion support
+     */
+    public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, 
+                       Board board, String playerColor, String promotionPiece) {
         // Remove any moves after current position (for undo/redo support)
         while (moves.size() > currentMoveIndex + 1) {
             moves.remove(moves.size() - 1);
         }
 
         int moveNumber = (moves.size() / 2) + 1;
-        String algebraicNotation = generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board);
+        String algebraicNotation = generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board, promotionPiece);
         
         Move move = new Move(from, to, movingPiece, capturedPiece, algebraicNotation, 
-                           moveNumber, playerColor, false, false, false, false, null);
+                           moveNumber, playerColor, false, false, false, false, promotionPiece);
         
         moves.add(move);
         currentMoveIndex++;
@@ -55,9 +63,17 @@ public class MoveHistory {
      */
     private String generateAlgebraicNotation(String from, String to, IPiece movingPiece, 
                                            IPiece capturedPiece, Board board) {
+        return generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board, null);
+    }
+    
+    /**
+     * Generates Standard Algebraic Notation (SAN) for a move with promotion support
+     */
+    private String generateAlgebraicNotation(String from, String to, IPiece movingPiece, 
+                                           IPiece capturedPiece, Board board, String promotionPiece) {
         StringBuilder notation = new StringBuilder();
 
-        // Handle castling (to be implemented when castling is added)
+        // Handle castling
         if (movingPiece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2) {
             if (to.charAt(0) > from.charAt(0)) {
                 return "O-O"; // Kingside castling
@@ -86,8 +102,10 @@ public class MoveHistory {
         // Add destination square
         notation.append(to);
 
-        // Add promotion (to be implemented when pawn promotion is added)
-        // if (isPromotion) { notation.append("=").append(promotionPiece); }
+        // Add promotion
+        if (promotionPiece != null) {
+            notation.append("=").append(promotionPiece);
+        }
 
         // Add check/checkmate indicators (to be properly implemented)
         // This is a placeholder - proper check detection would be needed

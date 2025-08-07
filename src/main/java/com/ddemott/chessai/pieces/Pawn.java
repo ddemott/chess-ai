@@ -64,7 +64,18 @@ public class Pawn extends Piece {
         int row = currentCoords[0] + direction;
         int col = currentCoords[1];
         if (row >= 0 && row < 8 && board.getPieceAt(board.convertCoordinatesToPosition(row, col)) == null) {
-            possibleMoves.add(currentPosition + " " + board.convertCoordinatesToPosition(row, col));
+            String movePosition = board.convertCoordinatesToPosition(row, col);
+            
+            // Check if this is a promotion move
+            if (isPromotionRank(row)) {
+                // Add all promotion options
+                possibleMoves.add(currentPosition + " " + movePosition + " Q");
+                possibleMoves.add(currentPosition + " " + movePosition + " R");
+                possibleMoves.add(currentPosition + " " + movePosition + " B");
+                possibleMoves.add(currentPosition + " " + movePosition + " N");
+            } else {
+                possibleMoves.add(currentPosition + " " + movePosition);
+            }
             
             // Forward move (two squares from starting position)
             if (currentCoords[0] == startRow) {
@@ -87,7 +98,15 @@ public class Pawn extends Piece {
                 
                 // Regular diagonal capture
                 if (piece != null && !piece.getColor().equals(color)) {
-                    possibleMoves.add(currentPosition + " " + capturePosition);
+                    if (isPromotionRank(captureRow)) {
+                        // Promotion capture - add all promotion options
+                        possibleMoves.add(currentPosition + " " + capturePosition + " Q");
+                        possibleMoves.add(currentPosition + " " + capturePosition + " R");
+                        possibleMoves.add(currentPosition + " " + capturePosition + " B");
+                        possibleMoves.add(currentPosition + " " + capturePosition + " N");
+                    } else {
+                        possibleMoves.add(currentPosition + " " + capturePosition);
+                    }
                 }
                 
                 // En passant capture
@@ -98,6 +117,19 @@ public class Pawn extends Piece {
         }
 
         return possibleMoves;
+    }
+    
+    /**
+     * Check if the given rank is a promotion rank for this pawn
+     */
+    private boolean isPromotionRank(int rank) {
+        if (color.equals("White") && rank == 7) { // 8th rank for White
+            return true;
+        }
+        if (color.equals("Black") && rank == 0) { // 1st rank for Black  
+            return true;
+        }
+        return false;
     }
 
     @Override
