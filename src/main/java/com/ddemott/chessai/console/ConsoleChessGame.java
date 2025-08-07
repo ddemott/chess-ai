@@ -5,6 +5,7 @@ import com.ddemott.chessai.Move;
 import com.ddemott.chessai.console.EnhancedConsoleDisplay;
 import com.ddemott.chessai.console.MoveValidator;
 import com.ddemott.chessai.console.MoveValidator.MoveValidationResult;
+import com.ddemott.chessai.ai.AIDifficulty;
 
 import java.util.Scanner;
 import java.util.List;
@@ -55,6 +56,15 @@ public class ConsoleChessGame {
                 continue;
             } else if (input.toLowerCase().startsWith("export")) {
                 handleExportGame(gameEngine);
+                continue;
+            } else if (input.toLowerCase().startsWith("load ")) {
+                handleLoadGame(gameEngine, input);
+                continue;
+            } else if (input.equalsIgnoreCase("difficulty")) {
+                handleChangeDifficulty(gameEngine, scanner);
+                continue;
+            } else if (input.equalsIgnoreCase("aivsai")) {
+                handleAIvsAI();
                 continue;
             } else if (input.equalsIgnoreCase("suggest") || input.equalsIgnoreCase("hint")) {
                 display.displayMoveSuggestions(gameEngine.getCurrentTurn());
@@ -187,7 +197,10 @@ public class ConsoleChessGame {
         System.out.println("  - 'undo': Undo last move (yours and AI's)");
         System.out.println("  - 'redo': Redo undone move");
         System.out.println("  - 'save <filename>': Save game to PGN file");
+        System.out.println("  - 'load <filename>': Load game from PGN file");
         System.out.println("  - 'export': Export game in PGN format");
+        System.out.println("  - 'difficulty': Change AI difficulty level");
+        System.out.println("  - 'aivsai': Start AI vs AI game mode");
         System.out.println("  - 'exit' or 'quit': End the game");
         System.out.println("• Features:");
         System.out.println("  - Kings in check are highlighted in red");
@@ -325,4 +338,62 @@ public class ConsoleChessGame {
             default: return "Unknown";
         }
     }
+    
+    /**
+     * Handle loading a game from PGN file
+     */
+    private static void handleLoadGame(GameEngine gameEngine, String input) {
+        String[] parts = input.split(" ", 2);
+        if (parts.length < 2) {
+            System.out.println("Please specify a filename: load <filename.pgn>");
+            return;
+        }
+        
+        String filename = parts[1];
+        if (!filename.endsWith(".pgn")) {
+            filename += ".pgn";
+        }
+        
+        boolean loaded = gameEngine.loadGameFromPGNFile(filename);
+        if (loaded) {
+            System.out.println("Game loaded from " + filename);
+            System.out.println("Use 'history' to see the loaded moves.");
+        } else {
+            System.out.println("Failed to load game from " + filename);
+        }
+    }
+    
+    /**
+     * Handle changing AI difficulty
+     */
+    private static void handleChangeDifficulty(GameEngine gameEngine, Scanner scanner) {
+        System.out.println("Current AI difficulty: " + gameEngine.getAIDifficulty());
+        System.out.println("\n" + AIDifficulty.getAllDifficulties());
+        
+        System.out.print("Enter new difficulty (1-" + AIDifficulty.values().length + "): ");
+        try {
+            int choice = scanner.nextInt();
+            scanner.nextLine(); // Clear buffer
+            
+            if (choice >= 1 && choice <= AIDifficulty.values().length) {
+                AIDifficulty newDifficulty = AIDifficulty.values()[choice - 1];
+                gameEngine.setAIDifficulty(newDifficulty);
+                System.out.println("AI difficulty changed to: " + newDifficulty);
+            } else {
+                System.out.println("Invalid choice.");
+            }
+        } catch (Exception e) {
+            System.out.println("Invalid input.");
+            scanner.nextLine(); // Clear invalid input
+        }
+    }
+    
+    /**
+     * Handle AI vs AI game mode
+     */
+    private static void handleAIvsAI() {
+        System.out.println("Starting AI vs AI game mode...");
+        AIvsAIChessGame.main(new String[0]);
+    }
+}
 }

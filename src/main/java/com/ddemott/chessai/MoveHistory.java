@@ -285,6 +285,166 @@ public class MoveHistory {
     }
 
     /**
+     * Loads a game from a PGN file
+     * @param filename The PGN file to load
+     * @return PGNGameData containing headers and moves, or null if failed
+     */
+    public static PGNGameData loadFromPGNFile(String filename) {
+        try {
+            Path path = Paths.get(filename);
+            if (!Files.exists(path)) {
+                System.err.println("PGN file not found: " + filename);
+                return null;
+            }
+            
+            String content = Files.readString(path);
+            return parsePGN(content);
+        } catch (IOException e) {
+            System.err.println("Error reading PGN file: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Parses PGN content and extracts headers and moves
+     * @param pgnContent The PGN content as a string
+     * @return PGNGameData containing parsed information
+     */
+    public static PGNGameData parsePGN(String pgnContent) {
+        PGNGameData gameData = new PGNGameData();
+        String[] lines = pgnContent.split("\n");
+        
+        boolean inHeaders = true;
+        StringBuilder moveText = new StringBuilder();
+        
+        for (String line : lines) {
+            line = line.trim();
+            
+            if (line.isEmpty()) {
+                if (inHeaders) {
+                    inHeaders = false; // Empty line separates headers from moves
+                }
+                continue;
+            }
+            
+            if (inHeaders && line.startsWith("[") && line.endsWith("]")) {
+                // Parse header
+                parseHeader(line, gameData);
+            } else if (!inHeaders) {
+                // Accumulate move text
+                moveText.append(line).append(" ");
+            }
+        }
+        
+        // Parse moves
+        if (moveText.length() > 0) {
+            gameData.moves = parseMoves(moveText.toString().trim());
+        }
+        
+        return gameData;
+    }
+
+    /**
+     * Parses a PGN header line
+     */
+    private static void parseHeader(String headerLine, PGNGameData gameData) {
+        // Remove brackets and split on first quote
+        String content = headerLine.substring(1, headerLine.length() - 1);
+        int firstQuote = content.indexOf('"');
+        if (firstQuote == -1) return;
+        
+        String key = content.substring(0, firstQuote).trim();
+        String value = content.substring(firstQuote + 1);
+        if (value.endsWith("\"")) {
+            value = value.substring(0, value.length() - 1);
+        }
+        
+        switch (key) {
+            case "Event": gameData.event = value; break;
+            case "Site": gameData.site = value; break;
+            case "Date": gameData.date = value; break;
+            case "Round": gameData.round = value; break;
+            case "White": gameData.whitePlayer = value; break;
+            case "Black": gameData.blackPlayer = value; break;
+            case "Result": gameData.result = value; break;
+        }
+    }
+
+    /**
+     * Parses move text and extracts algebraic notation moves
+     */
+    private static List<String> parseMoves(String moveText) {
+        List<String> moves = new ArrayList<>();
+        
+        // Remove result notation at the end
+        moveText = moveText.replaceAll("\\s+(1-0|0-1|1/2-1/2|\\*)\\s*$", "");
+        
+        // Split by move numbers and process
+        String[] tokens = moveText.split("\\s+");
+        
+        for (String token : tokens) {
+            token = token.trim();
+            if (token.isEmpty()) continue;
+            
+            // Skip move numbers (e.g., "1.", "2.", etc.)
+            if (token.matches("\\d+\\.")) continue;
+            
+            // Skip comments in braces or parentheses
+            if (token.startsWith("{") || token.startsWith("(")) continue;
+            
+            // Clean up the move notation
+            token = cleanMoveNotation(token);
+            
+            if (!token.isEmpty() && isValidMoveNotation(token)) {
+                moves.add(token);
+            }
+        }
+        
+        return moves;
+    }
+
+    /**
+     * Cleans move notation by removing annotations
+     */
+    private static String cleanMoveNotation(String move) {
+        // Remove check (+), checkmate (#), annotation (!,?, etc.)
+        return move.replaceAll("[+#!?]", "");
+    }
+
+    /**
+     * Basic validation of move notation
+     */
+    private static boolean isValidMoveNotation(String move) {
+        if (move.length() < 2) return false;
+        
+        // Castling
+        if (move.equals("O-O") || move.equals("O-O-O")) return true;
+        
+        // Standard notation should end with a square (e.g., e4, Nf3, axb5)
+        return move.matches(".*[a-h][1-8].*");
+    }
+
+    /**
+     * Data class to hold parsed PGN information
+     */
+    public static class PGNGameData {
+        public String event = "";
+        public String site = "";
+        public String date = "";
+        public String round = "";
+        public String whitePlayer = "";
+        public String blackPlayer = "";
+        public String result = "";
+        public List<String> moves = new ArrayList<>();
+        
+        @Override
+        public String toString() {
+            return String.format("PGN Game: %s vs %s (%s) - %d moves", 
+                whitePlayer, blackPlayer, result, moves.size());
+        }
+    }
+
+    /**
      * Clears the move history
      */
     public void clear() {
