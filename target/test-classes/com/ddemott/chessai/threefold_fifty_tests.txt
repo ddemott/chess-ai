@@ -1,0 +1,54 @@
+    @Test
+    void testThreefoldRepetition() {
+        GameEngine engine = new GameEngine(1);
+        
+        // Create a threefold repetition by moving knights back and forth
+        // Initial position
+        String[] sequence = {
+            "g1 f3", "g8 f6",  // Move out
+            "f3 g1", "f6 g8",  // Move back
+            "g1 f3", "g8 f6",  // Repeat
+            "f3 g1", "f6 g8",  // Repeat
+            "g1 f3", "g8 f6"   // Final repetition
+        };
+        
+        for (String move : sequence) {
+            String[] parts = move.split(" ");
+            engine.movePiece(parts[0], parts[1]);
+            System.out.println("After move " + move + ":");
+            System.out.println(engine.getBoardRepresentation());
+        }
+        
+        assertTrue(isThreefoldRepetition(engine), "Position should be repeated three times");
+    }
+
+    @Test
+    void testFiftyMoveRule() {
+        GameEngine engine = new GameEngine(1);
+        
+        // Clear all pawns to avoid pawn moves
+        for (char file = 'a'; file <= 'h'; file++) {
+            engine.getGameState().getBoard().setPieceAt(file + "2", null);
+            engine.getGameState().getBoard().setPieceAt(file + "7", null);
+        }
+        
+        // Move knights back and forth 50 times
+        for (int i = 0; i < 50; i++) {
+            engine.movePiece("g1", "f3");
+            engine.movePiece("g8", "f6");
+            engine.movePiece("f3", "g1");
+            engine.movePiece("f6", "g8");
+        }
+        
+        assertTrue(isFiftyMoveRule(engine), "Fifty move rule should be triggered");
+    }
+
+    private boolean isThreefoldRepetition(GameEngine engine) {
+        // This would be implemented in your State class
+        return engine.getGameState().isThreefoldRepetition();
+    }
+
+    private boolean isFiftyMoveRule(GameEngine engine) {
+        // This would be implemented in your State class
+        return engine.getGameState().isFiftyMoveRule();
+    }
