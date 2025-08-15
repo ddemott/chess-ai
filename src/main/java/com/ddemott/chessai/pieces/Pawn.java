@@ -22,22 +22,23 @@ public class Pawn extends Piece {
 
         int rowDiff = newCoords[0] - currentCoords[0];
         int colDiff = newCoords[1] - currentCoords[1];
+        
+        IPiece destinationPiece = board.getPieceAt(newPosition);
 
         // Forward move (one square)
-        if (colDiff == 0 && rowDiff == direction && board.getPieceAt(newPosition) == null) {
+        if (colDiff == 0 && rowDiff == direction && destinationPiece == null) {
             return true;
         }
 
         // Forward move (two squares from starting position)
         if (currentCoords[0] == startRow && colDiff == 0 && rowDiff == 2 * direction &&
             board.getPieceAt(board.convertCoordinatesToPosition(currentCoords[0] + direction, currentCoords[1])) == null &&
-            board.getPieceAt(newPosition) == null) {
+            destinationPiece == null) {
             return true;
         }
 
         // Diagonal capture (regular)
         if (Math.abs(colDiff) == 1 && rowDiff == direction) {
-            IPiece destinationPiece = board.getPieceAt(newPosition);
             if (destinationPiece != null && !destinationPiece.getColor().equals(color)) {
                 return true;
             }
@@ -45,6 +46,25 @@ public class Pawn extends Piece {
             // En passant capture
             if (destinationPiece == null && newPosition.equals(board.getEnPassantTarget())) {
                 return true;
+            }
+        }
+        
+        // Special case for pawn promotion - allow forward moves and captures to promotion rank
+        int targetRow = newCoords[0];
+        if ((color.equals("White") && targetRow == 7) || (color.equals("Black") && targetRow == 0)) {
+            // Forward move to promotion rank (empty square)
+            if (colDiff == 0 && rowDiff == direction && destinationPiece == null) {
+                return true;
+            }
+            // Forward move to promotion rank (capture - special for promotion)
+            if (colDiff == 0 && rowDiff == direction && destinationPiece != null && !destinationPiece.getColor().equals(color)) {
+                return true;
+            }
+            // Diagonal capture move to promotion rank
+            if (Math.abs(colDiff) == 1 && rowDiff == direction) {
+                if (destinationPiece != null && !destinationPiece.getColor().equals(color)) {
+                    return true;
+                }
             }
         }
 

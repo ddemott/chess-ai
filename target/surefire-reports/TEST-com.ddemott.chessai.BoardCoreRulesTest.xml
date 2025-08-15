@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.console.EnhancedIOTest" time="0.027" tests="8" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.BoardCoreRulesTest" time="0.018" tests="11" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -58,42 +58,140 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testCapturedPiecesTracking" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testDisplayFeatures" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.009">
-    <system-out><![CDATA[&amp#27;[1mCaptured Pieces:&amp#27;[0m
-&amp#27;[37m&amp#27;[1mWhite lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
-&amp#27;[37m&amp#27;[1mBlack lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
+  <testcase name="testEnPassantCapture" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.002">
+    <system-out><![CDATA[  a b c d e f g h
+8 r n b q k b n r 8
+7 p p p p p p p p 7
+6 . . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . P . . . 4
+3 . . . . . . . . 3
+2 P P P P . P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
 
-    a  b  c  d  e  f  g  h 
- 8 &amp#27;[34m&amp#27;[1m r &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m q &amp#27;[0m&amp#27;[34m&amp#27;[1m k &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m r &amp#27;[0m 8
- 7 &amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m 7
- 6  .  .  .  .  .  .  .  .  6
- 5  .  .  .  .  .  .  .  .  5
- 4  .  .  .  .  .  .  .  .  4
- 3  .  .  .  .  .  .  .  .  3
- 2 &amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m 2
- 1 &amp#27;[37m&amp#27;[1m R &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m Q &amp#27;[0m&amp#27;[37m&amp#27;[1m K &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m R &amp#27;[0m 1
-    a  b  c  d  e  f  g  h 
-&amp#27;[1mCurrent turn: White&amp#27;[0m
+  a b c d e f g h
+8 r n b q k b n r 8
+7 p p p . p p p p 7
+6 . . . . . . . . 6
+5 . . . p . . . . 5
+4 . . . . P . . . 4
+3 . . . . . . . . 3
+2 P P P P . P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
+
+En passant target after d7-d5: d6
+En passant move success: true
+  a b c d e f g h
+8 r n b q k b n r 8
+7 p p p . p p p p 7
+6 . . . . . . . . 6
+5 . . . P . . . . 5
+4 . . . . . . . . 4
+3 . . . . . . . . 3
+2 P P P P . P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
 
 ]]></system-out>
   </testcase>
-  <testcase name="testCheckDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
-  <testcase name="testCheckmateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.0"/>
-  <testcase name="testMoveValidation" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testErrorMessages" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[31m&amp#27;[1m❌ Invalid move: e2 to e5&amp#27;[0m
-&amp#27;[31mReason: Test error message&amp#27;[0m
+  <testcase name="testThreefoldRepetition" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.001"/>
+  <testcase name="testFiftyMoveRule" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.001"/>
+  <testcase name="testCastlingKingSideAndQueenSide" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.002"/>
+  <testcase name="testInsufficientMaterial" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.001"/>
+  <testcase name="testEnPassantEdgeCases" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.0"/>
+  <testcase name="testPinnedPieceCannotMove" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.003">
+    <system-out><![CDATA[Board before move attempt:
+  a b c d e f g h
+8 . . . . r . . . 8
+7 . . . . . . . . 7
+6 . . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . . . . . 4
+3 . . . . . . . . 3
+2 . . . . B . . . 2
+1 . . . . K . . . 1
+  a b c d e f g h
+
+Is king in check before move: false
+Would moving bishop expose king: true
+Bishop can move: false
+Board after move attempt:
+  a b c d e f g h
+8 . . . . r . . . 8
+7 . . . . . . . . 7
+6 . . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . . . . . 4
+3 . . . . . . . . 3
+2 . . . . B . . . 2
+1 . . . . K . . . 1
+  a b c d e f g h
 
 ]]></system-out>
   </testcase>
-  <testcase name="testMoveSuggestions" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[33m&amp#27;[1m💡 Move suggestions:&amp#27;[0m
-  • b1 c3
-  • b1 a3
-  • g1 h3
+  <testcase name="testPawnPromotion" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.001">
+    <system-out><![CDATA[  a b c d e f g h
+8 . n b q k b n r 8
+7 . p p p p p p . 7
+6 . . . . . . . p 6
+5 . . . . . . . . 5
+4 P . . . . . . . 4
+3 . . . . . . . . 3
+2 . P P P P P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
+
+  a b c d e f g h
+8 . n b q k b n r 8
+7 . p p p p p p . 7
+6 . . . . . . . . 6
+5 P . . . . . . p 5
+4 . . . . . . . . 4
+3 . . . . . . . . 3
+2 . P P P P P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
+
+  a b c d e f g h
+8 . n b q k b n r 8
+7 . p p p p p p . 7
+6 P . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . . . . p 4
+3 . . . . . . . . 3
+2 . P P P P P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
+
+  a b c d e f g h
+8 . n b q k b n r 8
+7 P p p p p p p . 7
+6 . . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . . . . . 4
+3 . . . . . . . p 3
+2 . P P P P P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
+
+Pawn before promotion: P
+Promotion move success: true
+  a b c d e f g h
+8 Q n b q k b n r 8
+7 . p p p p p p . 7
+6 . . . . . . . . 6
+5 . . . . . . . . 5
+4 . . . . . . . . 4
+3 . . . . . . . p 3
+2 . P P P P P P P 2
+1 R N B Q K B N R 1
+  a b c d e f g h
 
 ]]></system-out>
   </testcase>
-  <testcase name="testStalemateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
+  <testcase name="testStalemateDetection" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.0"/>
+  <testcase name="testCastlingEdgeCases" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.0"/>
+  <testcase name="testPromotionToAllPieceTypes" classname="com.ddemott.chessai.BoardCoreRulesTest" time="0.002"/>
 </testsuite>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.console.EnhancedIOTest" time="0.027" tests="8" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.StalemateAndDrawTest" time="0.032" tests="1" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -15,8 +15,9 @@
     <property name="sun.java.launcher" value="SUN_STANDARD"/>
     <property name="user.country" value="US"/>
     <property name="sun.boot.library.path" value="D:\development\Languages\Java\21\bin"/>
-    <property name="sun.java.command" value="C:\Users\daled\AppData\Local\Temp\surefire14773517868110683851\surefirebooter-20250815075038470_3.jar C:\Users\daled\AppData\Local\Temp\surefire14773517868110683851 2025-08-15T07-50-38_384-jvmRun1 surefire-20250815075038470_1tmp surefire_0-20250815075038470_2tmp"/>
+    <property name="sun.java.command" value="C:\Users\daled\AppData\Local\Temp\surefire13502487400378575312\surefirebooter-20250815075126849_3.jar C:\Users\daled\AppData\Local\Temp\surefire13502487400378575312 2025-08-15T07-51-26_776-jvmRun1 surefire-20250815075126849_1tmp surefire_0-20250815075126849_2tmp"/>
     <property name="jdk.debug" value="release"/>
+    <property name="test" value="StalemateAndDrawTest#testBasicStalemate"/>
     <property name="surefire.test.class.path" value="C:\Users\daled\OneDrive\Documents\GitHub\Java\ChessAI\target\test-classes;C:\Users\daled\OneDrive\Documents\GitHub\Java\ChessAI\target\classes;C:\Users\daled\.m2\repository\org\junit\jupiter\junit-jupiter\5.10.0\junit-jupiter-5.10.0.jar;C:\Users\daled\.m2\repository\org\junit\jupiter\junit-jupiter-api\5.10.0\junit-jupiter-api-5.10.0.jar;C:\Users\daled\.m2\repository\org\opentest4j\opentest4j\1.3.0\opentest4j-1.3.0.jar;C:\Users\daled\.m2\repository\org\junit\platform\junit-platform-commons\1.10.0\junit-platform-commons-1.10.0.jar;C:\Users\daled\.m2\repository\org\apiguardian\apiguardian-api\1.1.2\apiguardian-api-1.1.2.jar;C:\Users\daled\.m2\repository\org\junit\jupiter\junit-jupiter-params\5.10.0\junit-jupiter-params-5.10.0.jar;C:\Users\daled\.m2\repository\org\junit\jupiter\junit-jupiter-engine\5.10.0\junit-jupiter-engine-5.10.0.jar;C:\Users\daled\.m2\repository\org\junit\platform\junit-platform-engine\1.10.0\junit-platform-engine-1.10.0.jar;"/>
     <property name="sun.cpu.endian" value="little"/>
     <property name="user.home" value="C:\Users\daled"/>
@@ -30,7 +31,7 @@
     <property name="line.separator" value="&#10;"/>
     <property name="java.vm.specification.vendor" value="Oracle Corporation"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
-    <property name="surefire.real.class.path" value="C:\Users\daled\AppData\Local\Temp\surefire14773517868110683851\surefirebooter-20250815075038470_3.jar"/>
+    <property name="surefire.real.class.path" value="C:\Users\daled\AppData\Local\Temp\surefire13502487400378575312\surefirebooter-20250815075126849_3.jar"/>
     <property name="user.script" value=""/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Tiered Compilers"/>
     <property name="java.runtime.version" value="21.0.8+12-LTS-250"/>
@@ -58,42 +59,5 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testCapturedPiecesTracking" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testDisplayFeatures" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.009">
-    <system-out><![CDATA[&amp#27;[1mCaptured Pieces:&amp#27;[0m
-&amp#27;[37m&amp#27;[1mWhite lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
-&amp#27;[37m&amp#27;[1mBlack lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
-
-    a  b  c  d  e  f  g  h 
- 8 &amp#27;[34m&amp#27;[1m r &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m q &amp#27;[0m&amp#27;[34m&amp#27;[1m k &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m r &amp#27;[0m 8
- 7 &amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m 7
- 6  .  .  .  .  .  .  .  .  6
- 5  .  .  .  .  .  .  .  .  5
- 4  .  .  .  .  .  .  .  .  4
- 3  .  .  .  .  .  .  .  .  3
- 2 &amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m 2
- 1 &amp#27;[37m&amp#27;[1m R &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m Q &amp#27;[0m&amp#27;[37m&amp#27;[1m K &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m R &amp#27;[0m 1
-    a  b  c  d  e  f  g  h 
-&amp#27;[1mCurrent turn: White&amp#27;[0m
-
-]]></system-out>
-  </testcase>
-  <testcase name="testCheckDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
-  <testcase name="testCheckmateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.0"/>
-  <testcase name="testMoveValidation" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testErrorMessages" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[31m&amp#27;[1m❌ Invalid move: e2 to e5&amp#27;[0m
-&amp#27;[31mReason: Test error message&amp#27;[0m
-
-]]></system-out>
-  </testcase>
-  <testcase name="testMoveSuggestions" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[33m&amp#27;[1m💡 Move suggestions:&amp#27;[0m
-  • b1 c3
-  • b1 a3
-  • g1 h3
-
-]]></system-out>
-  </testcase>
-  <testcase name="testStalemateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
+  <testcase name="testBasicStalemate" classname="com.ddemott.chessai.StalemateAndDrawTest" time="0.019"/>
 </testsuite>

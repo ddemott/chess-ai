@@ -6,7 +6,6 @@ import com.ddemott.chessai.Move;
 import com.ddemott.chessai.ai.AIStrategy;
 import com.ddemott.chessai.ai.MinMaxStrategy;
 import com.ddemott.chessai.ai.AIDifficulty;
-import java.util.List;
 
 /**
  * Manages the state and logic of the chess game.

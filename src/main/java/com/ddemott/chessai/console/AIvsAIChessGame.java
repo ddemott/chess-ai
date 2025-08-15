@@ -37,24 +37,23 @@ public class AIvsAIChessGame {
     }
     
     private static AIDifficulty selectDifficulty(String playerColor) {
-        Scanner scanner = new Scanner(System.in);
-        
-        System.out.println("Select difficulty for " + playerColor + " AI:");
-        System.out.println(AIDifficulty.getAllDifficulties());
-        
-        while (true) {
-            System.out.print("Enter choice (1-" + AIDifficulty.values().length + "): ");
-            try {
-                int choice = scanner.nextInt();
-                if (choice >= 1 && choice <= AIDifficulty.values().length) {
-                    AIDifficulty selected = AIDifficulty.values()[choice - 1];
-                    System.out.println("Selected " + selected.getDisplayName() + " for " + playerColor + "\n");
-                    return selected;
+        try (Scanner scanner = new Scanner(System.in)) {
+            System.out.println("Select difficulty for " + playerColor + " AI:");
+            System.out.println(AIDifficulty.getAllDifficulties());
+            while (true) {
+                System.out.print("Enter choice (1-" + AIDifficulty.values().length + "): ");
+                try {
+                    int choice = scanner.nextInt();
+                    if (choice >= 1 && choice <= AIDifficulty.values().length) {
+                        AIDifficulty selected = AIDifficulty.values()[choice - 1];
+                        System.out.println("Selected " + selected.getDisplayName() + " for " + playerColor + "\n");
+                        return selected;
+                    }
+                    System.out.println("Invalid choice. Please try again.");
+                } catch (Exception e) {
+                    System.out.println("Invalid input. Please enter a number.");
+                    scanner.nextLine(); // Clear invalid input
                 }
-                System.out.println("Invalid choice. Please try again.");
-            } catch (Exception e) {
-                System.out.println("Invalid input. Please enter a number.");
-                scanner.nextLine(); // Clear invalid input
             }
         }
     }
@@ -117,8 +116,7 @@ public class AIvsAIChessGame {
             
             System.out.println("🤖 " + currentPlayer + " (" + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
             
-            // Track move for display
-            Move lastMoveBeforeAI = gameEngine.getLastMove();
+            // ...existing code...
             
             // Make AI move
             gameEngine.makeAIMove();
@@ -211,7 +209,7 @@ public class AIvsAIChessGame {
         System.out.println("\\n=== Game Summary ===");
         System.out.println("White: " + whiteDifficulty);
         System.out.println("Black: " + blackDifficulty);
-        System.out.println("Total moves: " + gameEngine.getMoveHistory().getMoves().size());
+        System.out.println("Total moves: " + gameEngine.getMoveHistory().getAllMoves().size());
         System.out.println("\\nMove history:");
         System.out.println(gameEngine.getMoveListDisplay());
     }

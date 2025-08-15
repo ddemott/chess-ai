@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.console.EnhancedIOTest" time="0.027" tests="8" errors="0" skipped="0" failures="0">
+<testsuite xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="https://maven.apache.org/surefire/maven-surefire-plugin/xsd/surefire-test-report-3.0.xsd" version="3.0" name="com.ddemott.chessai.AIvsAITest" time="0.756" tests="5" errors="0" skipped="0" failures="0">
   <properties>
     <property name="java.specification.version" value="21"/>
     <property name="sun.cpu.isalist" value="amd64"/>
@@ -58,42 +58,9 @@
     <property name="sun.io.unicode.encoding" value="UnicodeLittle"/>
     <property name="java.class.version" value="65.0"/>
   </properties>
-  <testcase name="testCapturedPiecesTracking" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testDisplayFeatures" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.009">
-    <system-out><![CDATA[&amp#27;[1mCaptured Pieces:&amp#27;[0m
-&amp#27;[37m&amp#27;[1mWhite lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
-&amp#27;[37m&amp#27;[1mBlack lost: &amp#27;[0m&amp#27;[37mnone&amp#27;[0m
-
-    a  b  c  d  e  f  g  h 
- 8 &amp#27;[34m&amp#27;[1m r &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m q &amp#27;[0m&amp#27;[34m&amp#27;[1m k &amp#27;[0m&amp#27;[34m&amp#27;[1m b &amp#27;[0m&amp#27;[34m&amp#27;[1m n &amp#27;[0m&amp#27;[34m&amp#27;[1m r &amp#27;[0m 8
- 7 &amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m&amp#27;[34m&amp#27;[1m p &amp#27;[0m 7
- 6  .  .  .  .  .  .  .  .  6
- 5  .  .  .  .  .  .  .  .  5
- 4  .  .  .  .  .  .  .  .  4
- 3  .  .  .  .  .  .  .  .  3
- 2 &amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m&amp#27;[37m&amp#27;[1m P &amp#27;[0m 2
- 1 &amp#27;[37m&amp#27;[1m R &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m Q &amp#27;[0m&amp#27;[37m&amp#27;[1m K &amp#27;[0m&amp#27;[37m&amp#27;[1m B &amp#27;[0m&amp#27;[37m&amp#27;[1m N &amp#27;[0m&amp#27;[37m&amp#27;[1m R &amp#27;[0m 1
-    a  b  c  d  e  f  g  h 
-&amp#27;[1mCurrent turn: White&amp#27;[0m
-
-]]></system-out>
-  </testcase>
-  <testcase name="testCheckDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
-  <testcase name="testCheckmateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.0"/>
-  <testcase name="testMoveValidation" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.002"/>
-  <testcase name="testErrorMessages" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[31m&amp#27;[1m❌ Invalid move: e2 to e5&amp#27;[0m
-&amp#27;[31mReason: Test error message&amp#27;[0m
-
-]]></system-out>
-  </testcase>
-  <testcase name="testMoveSuggestions" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.004">
-    <system-out><![CDATA[&amp#27;[33m&amp#27;[1m💡 Move suggestions:&amp#27;[0m
-  • b1 c3
-  • b1 a3
-  • g1 h3
-
-]]></system-out>
-  </testcase>
-  <testcase name="testStalemateDetection" classname="com.ddemott.chessai.console.EnhancedIOTest" time="0.001"/>
+  <testcase name="testAISwitching" classname="com.ddemott.chessai.AIvsAITest" time="0.702"/>
+  <testcase name="testDifferentDifficultiesCompete" classname="com.ddemott.chessai.AIvsAITest" time="0.004"/>
+  <testcase name="testGameProgression" classname="com.ddemott.chessai.AIvsAITest" time="0.016"/>
+  <testcase name="testAIvsAIGameCreation" classname="com.ddemott.chessai.AIvsAITest" time="0.001"/>
+  <testcase name="testGameStateManagement" classname="com.ddemott.chessai.AIvsAITest" time="0.014"/>
 </testsuite>

@@ -22,7 +22,14 @@ import com.ddemott.chessai.pieces.King;
  * and PGN export functionality.
  */
 public class MoveHistory {
-    private final List<Move> moves;
+
+    /**
+     * Returns a copy of the moves list (for compatibility with legacy code)
+     */
+    public List<Move> getMoves() {
+        return new ArrayList<>(moves);
+    }
+    private final ArrayList<Move> moves;
     private int currentMoveIndex;
 
     public MoveHistory() {
@@ -58,13 +65,6 @@ public class MoveHistory {
         currentMoveIndex++;
     }
 
-    /**
-     * Generates Standard Algebraic Notation (SAN) for a move
-     */
-    private String generateAlgebraicNotation(String from, String to, IPiece movingPiece, 
-                                           IPiece capturedPiece, Board board) {
-        return generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board, null);
-    }
     
     /**
      * Generates Standard Algebraic Notation (SAN) for a move with promotion support
@@ -450,5 +450,70 @@ public class MoveHistory {
     public void clear() {
         moves.clear();
         currentMoveIndex = -1;
+        positionHistory.clear();
+        halfmoveClock = 0;
+    }
+
+    // Position repetition tracking
+    private final ArrayList<String> positionHistory = new ArrayList<>();
+    private int halfmoveClock = 0;
+
+    /**
+     * Gets the history of positions for threefold repetition checking
+     */
+    public List<String> getPositionHistory() {
+        return new ArrayList<>(positionHistory);
+    }
+
+    /**
+     * Adds a position to the history and returns true if it's a threefold repetition
+     */
+    public void addPosition(String position) {
+        positionHistory.add(position);
+        
+        // Remove any positions after the current index (for undo/redo support)
+        while (positionHistory.size() > currentMoveIndex + 2) { // +2 because we add position before the move is recorded
+            positionHistory.remove(positionHistory.size() - 1);
+        }
+    }
+
+    /**
+     * Checks if the current position has appeared three times
+     */
+    public boolean isThreefoldRepetition() {
+        if (positionHistory.isEmpty()) return false;
+        String currentPosition = positionHistory.get(positionHistory.size() - 1);
+        int repetitions = 0;
+        
+        for (String position : positionHistory) {
+            if (position.equals(currentPosition)) {
+                repetitions++;
+                if (repetitions >= 3) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    /**
+     * Gets the half-move clock for fifty-move rule checking
+     * Increments on each move, resets on pawn moves and captures
+     */
+    public int getHalfmoveClock() {
+        return halfmoveClock;
+    }
+
+    /**
+     * Updates the half-move clock
+     * @param isPawnMove true if a pawn was moved
+     * @param isCapture true if a piece was captured
+     */
+    public void updateHalfmoveClock(boolean isPawnMove, boolean isCapture) {
+        if (isPawnMove || isCapture) {
+            halfmoveClock = 0;
+        } else {
+            halfmoveClock++;
+        }
     }
 }

@@ -2,8 +2,6 @@ package com.ddemott.chessai.console;
 
 import com.ddemott.chessai.engine.GameEngine;
 import com.ddemott.chessai.Move;
-import com.ddemott.chessai.console.EnhancedConsoleDisplay;
-import com.ddemott.chessai.console.MoveValidator;
 import com.ddemott.chessai.console.MoveValidator.MoveValidationResult;
 import com.ddemott.chessai.ai.AIDifficulty;
 
@@ -108,7 +106,7 @@ public class ConsoleChessGame {
             }
 
             // Track captured piece for display
-            Move lastMoveBeforeNew = gameEngine.getLastMove();
+            // ...existing code...
             
             boolean moveSuccessful;
             if (promotionPiece != null) {
@@ -152,7 +150,7 @@ public class ConsoleChessGame {
                 System.out.println("🤖 AI is thinking...");
                 
                 // Track AI's captured piece
-                Move lastMoveBeforeAI = gameEngine.getLastMove();
+                // ...existing code...
                 
                 gameEngine.makeAIMove();
                 Move aiMove = gameEngine.getLastMove();
@@ -395,5 +393,4 @@ public class ConsoleChessGame {
         System.out.println("Starting AI vs AI game mode...");
         AIvsAIChessGame.main(new String[0]);
     }
-}
 }

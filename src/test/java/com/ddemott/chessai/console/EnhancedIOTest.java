@@ -1,271 +1,140 @@
+
 package com.ddemott.chessai.console;
 
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
+
 import com.ddemott.chessai.engine.GameEngine;
-import com.ddemott.chessai.console.MoveValidator;
 import com.ddemott.chessai.console.MoveValidator.MoveValidationResult;
 import com.ddemott.chessai.console.MoveValidator.MoveError;
-import com.ddemott.chessai.console.EnhancedConsoleDisplay;
 
 /**
- * Comprehensive test suite for Enhanced Input/Output features
+ * JUnit 5 test suite for Enhanced Input/Output features
  */
 public class EnhancedIOTest {
-    
-    private static int testsPassed = 0;
-    private static int totalTests = 0;
-    
-    public static void main(String[] args) {
-        System.out.println("=== Enhanced Input/Output Test Suite ===\n");
-        
-        testMoveValidation();
-        testErrorMessages();
-        testCheckDetection();
-        testCheckmateDetection();
-        testStalemateDetection();
-        testCapturedPiecesTracking();
-        testMoveSuggestions();
-        testDisplayFeatures();
-        
-        System.out.println("\n=== Test Summary ===");
-        System.out.println("Tests Passed: " + testsPassed + "/" + totalTests);
-        if (testsPassed == totalTests) {
-            System.out.println("🎉 ALL ENHANCED I/O TESTS PASSED!");
-        } else {
-            System.out.println("❌ Some enhanced I/O tests failed.");
-        }
-    }
-    
-    private static void testMoveValidation() {
-        System.out.println("Test 1: Move Validation with Detailed Feedback");
+
+    @Test
+    void testMoveValidation() {
         GameEngine engine = new GameEngine(3);
-        
         // Test valid move
         MoveValidationResult result = MoveValidator.validateMove("e2", "e4", "White", engine.getGameState().getBoard());
-        assertEqual("Valid move e2-e4", true, result.isValid());
-        assertNull("No error for valid move", result.getError());
-        
+        assertTrue(result.isValid(), "Valid move e2-e4");
+        assertNull(result.getError(), "No error for valid move");
+
         // Test no piece at source
         result = MoveValidator.validateMove("e3", "e4", "White", engine.getGameState().getBoard());
-        assertEqual("No piece at e3", false, result.isValid());
-        assertEqual("Correct error type", MoveError.NO_PIECE_AT_SOURCE, result.getError());
-        
+        assertFalse(result.isValid(), "No piece at e3");
+        assertEquals(MoveError.NO_PIECE_AT_SOURCE, result.getError(), "Correct error type");
+
         // Test wrong player piece
         result = MoveValidator.validateMove("e7", "e5", "White", engine.getGameState().getBoard());
-        assertEqual("Wrong player piece", false, result.isValid());
-        assertEqual("Correct error type", MoveError.WRONG_PLAYER_PIECE, result.getError());
-        
+        assertFalse(result.isValid(), "Wrong player piece");
+        assertEquals(MoveError.WRONG_PLAYER_PIECE, result.getError(), "Correct error type");
+
         // Test invalid move format
         result = MoveValidator.validateMove("", "e4", "White", engine.getGameState().getBoard());
-        assertEqual("Invalid format", false, result.isValid());
-        assertEqual("Correct error type", MoveError.INVALID_FORMAT, result.getError());
-        
+        assertFalse(result.isValid(), "Invalid format");
+        assertEquals(MoveError.INVALID_FORMAT, result.getError(), "Correct error type");
+
         // Test out of bounds
         result = MoveValidator.validateMove("e2", "z9", "White", engine.getGameState().getBoard());
-        assertEqual("Out of bounds", false, result.isValid());
-        assertEqual("Correct error type", MoveError.OUT_OF_BOUNDS, result.getError());
-        
-        System.out.println("✅ Move validation tests passed\n");
+        assertFalse(result.isValid(), "Out of bounds");
+        assertEquals(MoveError.OUT_OF_BOUNDS, result.getError(), "Correct error type");
     }
+
+    // ...convert other test methods to @Test in the same way...
     
-    private static void testErrorMessages() {
-        System.out.println("Test 2: Error Message Generation");
+    @Test
+    void testErrorMessages() {
         GameEngine engine = new GameEngine(3);
         EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
-        
         // Test that error display doesn't crash
-        try {
-            display.displayInvalidMoveError("e2", "e5", "Test error message");
-            testsPassed++; // If we get here without exception, test passed
-            System.out.println("  ✓ Error message display works");
-        } catch (Exception e) {
-            System.out.println("  ✗ Error message display failed: " + e.getMessage());
-        }
-        totalTests++;
-        
+        assertDoesNotThrow(() -> display.displayInvalidMoveError("e2", "e5", "Test error message"), "Error message display should not throw");
         // Test move validation feedback
         String feedback = display.validateMoveWithFeedback("e3", "e4");
-        assertNotNull("Feedback for invalid move", feedback);
-        assertContains("Feedback mentions no piece", feedback, "No piece");
-        
-        System.out.println("✅ Error message tests passed\n");
+        assertNotNull(feedback, "Feedback for invalid move");
+        assertTrue(feedback.toLowerCase().contains("no piece"), "Feedback mentions no piece");
     }
     
-    private static void testCheckDetection() {
-        System.out.println("Test 3: Check Detection");
+    @Test
+    void testCheckDetection() {
         GameEngine engine = new GameEngine(3);
-        
         // Initial position should have no check
         boolean whiteInCheck = engine.getGameState().getBoard().isKingInCheck("White");
         boolean blackInCheck = engine.getGameState().getBoard().isKingInCheck("Black");
-        
-        assertEqual("White not in check initially", false, whiteInCheck);
-        assertEqual("Black not in check initially", false, blackInCheck);
-        
+        assertFalse(whiteInCheck, "White not in check initially");
+        assertFalse(blackInCheck, "Black not in check initially");
         // Test king position finding
         String whiteKingPos = engine.getGameState().getBoard().findKingPosition("White");
         String blackKingPos = engine.getGameState().getBoard().findKingPosition("Black");
-        
-        assertEqual("White king at e1", "e1", whiteKingPos);
-        assertEqual("Black king at e8", "e8", blackKingPos);
-        
-        System.out.println("✅ Check detection tests passed\n");
+        assertEquals("e1", whiteKingPos, "White king at e1");
+        assertEquals("e8", blackKingPos, "Black king at e8");
     }
     
-    private static void testCheckmateDetection() {
-        System.out.println("Test 4: Checkmate Detection");
+    @Test
+    void testCheckmateDetection() {
         GameEngine engine = new GameEngine(3);
-        
         // Initial position should not be checkmate
         boolean whiteCheckmate = engine.getGameState().getBoard().isCheckmate("White");
         boolean blackCheckmate = engine.getGameState().getBoard().isCheckmate("Black");
-        
-        assertEqual("White not in checkmate initially", false, whiteCheckmate);
-        assertEqual("Black not in checkmate initially", false, blackCheckmate);
-        
-        System.out.println("✅ Checkmate detection tests passed\n");
+        assertFalse(whiteCheckmate, "White not in checkmate initially");
+        assertFalse(blackCheckmate, "Black not in checkmate initially");
     }
     
-    private static void testStalemateDetection() {
-        System.out.println("Test 5: Stalemate Detection");
+    @Test
+    void testStalemateDetection() {
         GameEngine engine = new GameEngine(3);
-        
         // Initial position should not be stalemate
         boolean whiteStalemate = engine.getGameState().getBoard().isStalemate("White");
         boolean blackStalemate = engine.getGameState().getBoard().isStalemate("Black");
-        
-        assertEqual("White not in stalemate initially", false, whiteStalemate);
-        assertEqual("Black not in stalemate initially", false, blackStalemate);
-        
-        System.out.println("✅ Stalemate detection tests passed\n");
+        assertFalse(whiteStalemate, "White not in stalemate initially");
+        assertFalse(blackStalemate, "Black not in stalemate initially");
     }
     
-    private static void testCapturedPiecesTracking() {
-        System.out.println("Test 6: Captured Pieces Tracking");
+    @Test
+    void testCapturedPiecesTracking() {
         GameEngine engine = new GameEngine(3);
         EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
-        
         // Make a capture move
         engine.movePiece("e2", "e4");
         engine.movePiece("d7", "d5");
-        
         // Get the pawn that will be captured
         var capturedPawn = engine.getGameState().getBoard().getPieceAt("d5");
-        
         // Make capturing move
         boolean captureSuccess = engine.movePiece("e4", "d5");
-        assertEqual("Capture move successful", true, captureSuccess);
-        
+        assertTrue(captureSuccess, "Capture move successful");
         // Test that captured piece can be added to display
         if (capturedPawn != null) {
-            try {
-                display.addCapturedPiece(capturedPawn);
-                testsPassed++;
-                System.out.println("  ✓ Captured piece tracking works");
-            } catch (Exception e) {
-                System.out.println("  ✗ Captured piece tracking failed: " + e.getMessage());
-            }
-        } else {
-            testsPassed++; // No piece to capture, but that's okay
-            System.out.println("  ✓ No piece captured (as expected)");
+            assertDoesNotThrow(() -> display.addCapturedPiece(capturedPawn), "Captured piece tracking should not throw");
         }
-        totalTests++;
-        
-        System.out.println("✅ Captured pieces tracking tests passed\n");
     }
     
-    private static void testMoveSuggestions() {
-        System.out.println("Test 7: Move Suggestions");
+    @Test
+    void testMoveSuggestions() {
         GameEngine engine = new GameEngine(3);
         EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
-        
         // Test generating suggestions
         var suggestions = display.generateMoveSuggestions("White");
-        assertNotNull("Suggestions generated", suggestions);
-        
+        assertNotNull(suggestions, "Suggestions generated");
         // Test suggestion display doesn't crash
-        try {
-            display.displayMoveSuggestions("White");
-            testsPassed++;
-            System.out.println("  ✓ Move suggestions display works");
-        } catch (Exception e) {
-            System.out.println("  ✗ Move suggestions display failed: " + e.getMessage());
-        }
-        totalTests++;
-        
+        assertDoesNotThrow(() -> display.displayMoveSuggestions("White"), "Move suggestions display should not throw");
         // Test move validator suggestions
         var validatorSuggestions = MoveValidator.generateMoveSuggestions("e2", engine.getGameState().getBoard(), "White");
-        assertNotNull("Validator suggestions generated", validatorSuggestions);
-        
-        System.out.println("✅ Move suggestions tests passed\n");
+        assertNotNull(validatorSuggestions, "Validator suggestions generated");
     }
     
-    private static void testDisplayFeatures() {
-        System.out.println("Test 8: Display Features");
+    @Test
+    void testDisplayFeatures() {
         GameEngine engine = new GameEngine(3);
         EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
-        
         // Test enhanced board display
-        try {
-            display.displayBoard();
-            testsPassed++;
-            System.out.println("  ✓ Enhanced board display works");
-        } catch (Exception e) {
-            System.out.println("  ✗ Enhanced board display failed: " + e.getMessage());
-        }
-        totalTests++;
-        
+    assertDoesNotThrow((org.junit.jupiter.api.function.Executable) display::displayBoard, "Enhanced board display should not throw");
         // Test color enable/disable
-        try {
+        assertDoesNotThrow((org.junit.jupiter.api.function.Executable) () -> {
             display.disableColors();
             display.enableColors();
-            testsPassed++;
-            System.out.println("  ✓ Color toggle works");
-        } catch (Exception e) {
-            System.out.println("  ✗ Color toggle failed: " + e.getMessage());
-        }
-        totalTests++;
-        
-        System.out.println("✅ Display features tests passed\n");
+        }, "Color toggle should not throw");
     }
     
-    // Helper assertion methods
-    private static void assertEqual(String testName, Object expected, Object actual) {
-        totalTests++;
-        if ((expected == null && actual == null) || (expected != null && expected.equals(actual))) {
-            testsPassed++;
-            System.out.println("  ✓ " + testName + ": " + actual);
-        } else {
-            System.out.println("  ✗ " + testName + ": Expected " + expected + ", got " + actual);
-        }
-    }
-    
-    private static void assertNotNull(String testName, Object actual) {
-        totalTests++;
-        if (actual != null) {
-            testsPassed++;
-            System.out.println("  ✓ " + testName + ": not null");
-        } else {
-            System.out.println("  ✗ " + testName + ": Expected not null, got null");
-        }
-    }
-    
-    private static void assertNull(String testName, Object actual) {
-        totalTests++;
-        if (actual == null) {
-            testsPassed++;
-            System.out.println("  ✓ " + testName + ": null");
-        } else {
-            System.out.println("  ✗ " + testName + ": Expected null, got " + actual);
-        }
-    }
-    
-    private static void assertContains(String testName, String haystack, String needle) {
-        totalTests++;
-        if (haystack != null && haystack.toLowerCase().contains(needle.toLowerCase())) {
-            testsPassed++;
-            System.out.println("  ✓ " + testName + ": Contains '" + needle + "'");
-        } else {
-            System.out.println("  ✗ " + testName + ": Does not contain '" + needle + "'");
-        }
-    }
+    // JUnit 5 assertions are now used; all custom assertion helpers and counters removed.
 }

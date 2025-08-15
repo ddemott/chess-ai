@@ -1,6 +1,5 @@
 package com.ddemott.chessai;
 
-import com.ddemott.chessai.Board;
 import com.ddemott.chessai.pieces.Pawn;
 
 /**

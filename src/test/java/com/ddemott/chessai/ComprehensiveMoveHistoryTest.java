@@ -137,7 +137,7 @@ public class ComprehensiveMoveHistoryTest {
         engine.movePiece("g1", "f3");
         engine.makeAIMove();
         
-        String afterAllMoves = engine.getBoardRepresentation();
+    engine.getBoardRepresentation();
         
         // Undo all moves
         engine.undoLastMove(); // Undo AI move

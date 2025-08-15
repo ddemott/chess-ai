@@ -1,6 +1,5 @@
 package com.ddemott.chessai;
 
-import com.ddemott.chessai.MoveHistory;
 import com.ddemott.chessai.engine.GameEngine;
 import com.ddemott.chessai.ai.AIDifficulty;
 
@@ -227,8 +226,7 @@ public class PGNLoadingTest {
             }
             
             // Test parsing invalid PGN
-            MoveHistory.PGNGameData result2 = MoveHistory.parsePGN("Invalid PGN content");
-            // Should not crash, even with invalid content
+            MoveHistory.parsePGN("Invalid PGN content");
             
             return true;
         } catch (Exception e) {

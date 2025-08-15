@@ -1,6 +1,5 @@
 package com.ddemott.chessai;
 
-import com.ddemott.chessai.Board;
 import com.ddemott.chessai.engine.GameEngine;
 import com.ddemott.chessai.pieces.Pawn;
 
@@ -79,7 +78,7 @@ public class ComprehensivePawnPromotionBehaviorTest {
     private static void testGameEngineMovement() {
         System.out.println("\n\n*** SCENARIO 2: GameEngine.movePiece() calls ***\n");
         
-        GameEngine engine = new GameEngine(1);
+    new GameEngine(1);
         
         System.out.println("Note: GameEngine uses the same Board.movePiece() methods internally,");
         System.out.println("so it has the same behavior:");

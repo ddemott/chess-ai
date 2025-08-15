@@ -150,8 +150,18 @@ public class King extends Piece {
      * Basic castling validation without check detection (to avoid recursion)
      */
     private boolean isBasicCastlingValid(String from, String to, Board board) {
+        // Validate input parameters
+        if (from == null || to == null) {
+            return false;
+        }
+        
         int[] fromCoords = board.convertPositionToCoordinates(from);
         int[] toCoords = board.convertPositionToCoordinates(to);
+        
+        // Check for invalid coordinates
+        if (fromCoords == null || toCoords == null) {
+            return false;
+        }
         
         // Determine if this is kingside (right) or queenside (left) castling
         boolean isKingside = toCoords[1] > fromCoords[1];
@@ -164,6 +174,11 @@ public class King extends Piece {
             rookPosition = board.convertCoordinatesToPosition(fromCoords[0], 0); // a-file
         }
         
+        // Check if rook position is valid
+        if (rookPosition == null) {
+            return false;
+        }
+        
         // Check if rook exists and hasn't moved
         IPiece rook = board.getPieceAt(rookPosition);
         if (rook == null || !rook.getClass().getSimpleName().equals("Rook") || 
@@ -172,13 +187,18 @@ public class King extends Piece {
         }
         
         // Check if path between king and rook is clear
-        int startCol = Math.min(fromCoords[1], board.convertPositionToCoordinates(rookPosition)[1]);
-        int endCol = Math.max(fromCoords[1], board.convertPositionToCoordinates(rookPosition)[1]);
+        int[] rookCoords = board.convertPositionToCoordinates(rookPosition);
+        if (rookCoords == null) {
+            return false;
+        }
+        
+        int startCol = Math.min(fromCoords[1], rookCoords[1]);
+        int endCol = Math.max(fromCoords[1], rookCoords[1]);
         
         for (int col = startCol + 1; col < endCol; col++) {
             String checkPosition = board.convertCoordinatesToPosition(fromCoords[0], col);
-            if (board.getPieceAt(checkPosition) != null) {
-                return false; // Path is blocked
+            if (checkPosition == null || board.getPieceAt(checkPosition) != null) {
+                return false; // Path is blocked or invalid position
             }
         }
         

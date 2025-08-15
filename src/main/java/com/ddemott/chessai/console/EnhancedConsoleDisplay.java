@@ -3,7 +3,6 @@ package com.ddemott.chessai.console;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
-import java.util.HashSet;
 
 import com.ddemott.chessai.Board;
 import com.ddemott.chessai.State;
@@ -21,7 +20,6 @@ public class EnhancedConsoleDisplay {
     private static final String ANSI_GREEN = "\u001B[32m";
     private static final String ANSI_YELLOW = "\u001B[33m";
     private static final String ANSI_BLUE = "\u001B[34m";
-    private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
     private static final String ANSI_BG_YELLOW = "\u001B[43m";

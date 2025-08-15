@@ -3,123 +3,194 @@ package com.ddemott.chessai.console;
 import com.ddemott.chessai.engine.GameEngine;
 import com.ddemott.chessai.Board;
 import com.ddemott.chessai.pieces.*;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Test check and checkmate detection in various scenarios
+ * JUnit test for check and checkmate detection in various scenarios
  */
 public class CheckAndMateTest {
-    
-    private static int testsPassed = 0;
-    private static int totalTests = 0;
-    
-    public static void main(String[] args) {
-        System.out.println("=== Check and Checkmate Detection Tests ===\n");
-        
-        testBasicCheckDetection();
-        testKingPositionFinding();
-        testCheckAfterMove();
-        testCheckmateScenarios();
-        
-        System.out.println("\n=== Check/Mate Test Summary ===");
-        System.out.println("Tests Passed: " + testsPassed + "/" + totalTests);
-        if (testsPassed == totalTests) {
-            System.out.println("🎉 ALL CHECK/MATE TESTS PASSED!");
-        } else {
-            System.out.println("❌ Some check/mate tests failed.");
-        }
-    }
-    
-    private static void testBasicCheckDetection() {
-        System.out.println("Test 1: Basic Check Detection");
+
+    @Test
+    void testBasicCheckDetection() {
         GameEngine engine = new GameEngine(3);
         Board board = engine.getGameState().getBoard();
-        
-        // Initial position - no check
-        assertEqual("White not in check initially", false, board.isKingInCheck("White"));
-        assertEqual("Black not in check initially", false, board.isKingInCheck("Black"));
-        
-        System.out.println("✅ Basic check detection tests passed\n");
+        assertFalse(board.isKingInCheck("White"), "White not in check initially");
+        assertFalse(board.isKingInCheck("Black"), "Black not in check initially");
     }
-    
-    private static void testKingPositionFinding() {
-        System.out.println("Test 2: King Position Finding");
+
+    @Test
+    void testKingPositionFinding() {
         GameEngine engine = new GameEngine(3);
         Board board = engine.getGameState().getBoard();
-        
-        // Find king positions
-        String whiteKingPos = board.findKingPosition("White");
-        String blackKingPos = board.findKingPosition("Black");
-        
-        assertEqual("White king found at e1", "e1", whiteKingPos);
-        assertEqual("Black king found at e8", "e8", blackKingPos);
-        
-        // Test with invalid color
-        String invalidKingPos = board.findKingPosition("Green");
-        assertEqual("Invalid color returns null", null, invalidKingPos);
-        
-        System.out.println("✅ King position finding tests passed\n");
+        assertEquals("e1", board.findKingPosition("White"), "White king found at e1");
+        assertEquals("e8", board.findKingPosition("Black"), "Black king found at e8");
+        assertNull(board.findKingPosition("Green"), "Invalid color returns null");
     }
-    
-    private static void testCheckAfterMove() {
-        System.out.println("Test 3: Check Detection After Moves");
+
+    @Test
+    void testCheckAfterMove() {
         GameEngine engine = new GameEngine(3);
         Board board = engine.getGameState().getBoard();
-        
-        // Make some moves to potentially create check scenarios
         engine.movePiece("e2", "e4");
-        engine.movePiece("f7", "f6"); // Weakening black king position
-        engine.movePiece("d1", "h5"); // Queen attacking
-        
-        // Check if black king is now in check
-        boolean blackInCheck = board.isKingInCheck("Black");
-        // This specific sequence should create check
-        assertEqual("Black king in check after Queen to h5", true, blackInCheck);
-        
-        System.out.println("✅ Check after move tests passed\n");
+        engine.movePiece("f7", "f6");
+        engine.movePiece("d1", "h5");
+        assertTrue(board.isKingInCheck("Black"), "Black king in check after Queen to h5");
     }
-    
-    private static void testCheckmateScenarios() {
-        System.out.println("Test 4: Checkmate Detection");
+
+    @Test
+    void testCheckmateScenarios() {
         GameEngine engine = new GameEngine(3);
         Board board = engine.getGameState().getBoard();
-        
-        // Test that initial position is not checkmate
-        assertEqual("White not in checkmate initially", false, board.isCheckmate("White"));
-        assertEqual("Black not in checkmate initially", false, board.isCheckmate("Black"));
-        
-        // Create a simple checkmate scenario - Scholar's mate
+        assertFalse(board.isCheckmate("White"), "White not in checkmate initially");
+        assertFalse(board.isCheckmate("Black"), "Black not in checkmate initially");
+        // Scholar's mate
         engine.movePiece("e2", "e4");
         engine.movePiece("e7", "e5");
         engine.movePiece("f1", "c4");
         engine.movePiece("b8", "c6");
         engine.movePiece("d1", "h5");
         engine.movePiece("g8", "f6");
-        
-        // This should be checkmate
         boolean moveSuccessful = engine.movePiece("h5", "f7");
         if (moveSuccessful) {
-            boolean blackCheckmate = board.isCheckmate("Black");
-            // Note: This might not be actual checkmate depending on board state
-            // but we're testing the detection mechanism
-            System.out.println("  ✓ Checkmate detection mechanism tested");
-            testsPassed++;
-        } else {
-            System.out.println("  ✓ Move validation working (prevented invalid checkmate setup)");
-            testsPassed++;
+            assertTrue(board.isCheckmate("Black"), "Black should be in checkmate after Scholar's mate");
         }
-        totalTests++;
-        
-        System.out.println("✅ Checkmate detection tests passed\n");
     }
     
-    // Helper assertion methods
-    private static void assertEqual(String testName, Object expected, Object actual) {
-        totalTests++;
-        if ((expected == null && actual == null) || (expected != null && expected.equals(actual))) {
-            testsPassed++;
-            System.out.println("  ✓ " + testName + ": " + actual);
-        } else {
-            System.out.println("  ✗ " + testName + ": Expected " + expected + ", got " + actual);
-        }
+    @Test
+    void testEscapingCheck() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a position with the king in check but with escape squares
+        engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+        engine.getGameState().getBoard().setPieceAt("e8", new Rook("Black", "e8")); // Rook giving check
+        engine.getGameState().getBoard().setPieceAt("a8", new King("Black", "a8")); // Black king needed
+        
+        engine.getGameState().setCurrentTurn("White");
+        
+        // Verify check detection
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("White"), "King should be in check");
+        assertFalse(engine.getGameState().getBoard().isCheckmate("White"), "King should not be in checkmate as it can escape");
+        
+        // Move king out of check
+        boolean moveSuccessful = engine.movePiece("e1", "d1");
+        assertTrue(moveSuccessful, "King should be able to escape check");
+        
+        // Verify king is no longer in check
+        assertFalse(engine.getGameState().getBoard().isKingInCheck("White"), "King should not be in check after moving");
+    }
+    
+    @Test
+    void testBlockingCheck() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a position where check can be blocked
+        engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+        engine.getGameState().getBoard().setPieceAt("e8", new Rook("Black", "e8")); // Rook giving check
+        engine.getGameState().getBoard().setPieceAt("d2", new Queen("White", "d2")); // Queen to block check
+        engine.getGameState().getBoard().setPieceAt("a8", new King("Black", "a8")); // Black king needed
+        
+        engine.getGameState().setCurrentTurn("White");
+        
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("White"), "King should be in check");
+        assertFalse(engine.getGameState().getBoard().isCheckmate("White"), "King should not be in checkmate as check can be blocked");
+        
+        // Block check with queen
+        boolean moveSuccessful = engine.movePiece("d2", "e2");
+        assertTrue(moveSuccessful, "Queen should be able to block check");
+        
+        // Verify king is no longer in check
+        assertFalse(engine.getGameState().getBoard().isKingInCheck("White"), "King should not be in check after blocking");
+    }
+    
+    @Test
+    void testCaptureCheckingPiece() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a position where the checking piece can be captured
+        engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+        engine.getGameState().getBoard().setPieceAt("g3", new Knight("Black", "g3")); // Knight giving check
+        engine.getGameState().getBoard().setPieceAt("f2", new Queen("White", "f2")); // Queen to capture knight
+        engine.getGameState().getBoard().setPieceAt("a8", new King("Black", "a8")); // Black king needed
+        
+        engine.getGameState().setCurrentTurn("White");
+        
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("White"), "King should be in check from knight");
+        assertFalse(engine.getGameState().getBoard().isCheckmate("White"), "King should not be in checkmate as the knight can be captured");
+        
+        // Capture the knight
+        boolean moveSuccessful = engine.movePiece("f2", "g3");
+        assertTrue(moveSuccessful, "Queen should be able to capture the checking knight");
+        
+        // Verify king is no longer in check
+        assertFalse(engine.getGameState().getBoard().isKingInCheck("White"), "King should not be in check after capturing the attacker");
+    }
+    
+    @Test
+    void testBackrankCheckmate() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a back-rank checkmate
+        engine.getGameState().getBoard().setPieceAt("h1", new King("White", "h1"));
+        engine.getGameState().getBoard().setPieceAt("g2", new Pawn("White", "g2"));
+        engine.getGameState().getBoard().setPieceAt("h2", new Pawn("White", "h2"));
+        engine.getGameState().getBoard().setPieceAt("a1", new Rook("Black", "a1"));
+        engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Black king needed
+        
+        engine.getGameState().setCurrentTurn("White");
+        
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("White"), "White king should be in check");
+        assertTrue(engine.getGameState().getBoard().isCheckmate("White"), "White king should be in checkmate");
+    }
+    
+    @Test
+    void testSmotheredCheckmate() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a smothered mate: Black king on h8, own pieces on g7, h7, Black rook on g8, White knight on f7
+        engine.getGameState().getBoard().setPieceAt("h8", new King("Black", "h8"));
+        engine.getGameState().getBoard().setPieceAt("g7", new Pawn("Black", "g7"));
+        engine.getGameState().getBoard().setPieceAt("h7", new Pawn("Black", "h7"));
+        engine.getGameState().getBoard().setPieceAt("g8", new Rook("Black", "g8"));
+        engine.getGameState().getBoard().setPieceAt("f7", new Knight("White", "f7")); // Knight delivering checkmate
+        engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1")); // White king needed
+        
+        engine.getGameState().setCurrentTurn("Black");
+        
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("Black"), "Black king should be in check");
+        assertTrue(engine.getGameState().getBoard().isCheckmate("Black"), "Black king should be in checkmate");
+    }
+    
+    @Test
+    void testDiscoveredCheck() {
+        GameEngine engine = new GameEngine(3);
+        clearBoard(engine);
+        
+        // Set up a discovered check position
+        engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+        engine.getGameState().getBoard().setPieceAt("e5", new Bishop("Black", "e5")); // Bishop that will give check
+        engine.getGameState().getBoard().setPieceAt("e3", new Knight("Black", "e3")); // Knight blocking the check
+        engine.getGameState().getBoard().setPieceAt("a5", new King("Black", "a5")); // Black king needed
+        
+        engine.getGameState().setCurrentTurn("Black");
+        
+        assertFalse(engine.getGameState().getBoard().isKingInCheck("White"), "White king should not be in check initially");
+        
+        // Move knight to deliver discovered check
+        boolean moveSuccessful = engine.movePiece("e3", "c4"); // Knight moves, revealing bishop check
+        assertTrue(moveSuccessful, "Knight should be able to move and deliver discovered check");
+        
+        // Verify king is now in check
+        assertTrue(engine.getGameState().getBoard().isKingInCheck("White"), "White king should be in check after discovered check");
+    }
+    
+    // Helper method to clear the board
+    private void clearBoard(GameEngine engine) {
+        engine.getGameState().getBoard().clearBoard();
     }
 }

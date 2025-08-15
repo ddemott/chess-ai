@@ -1,9 +1,7 @@
 package com.ddemott.chessai;
 
 import com.ddemott.chessai.ai.AIDifficulty;
-import com.ddemott.chessai.console.AIvsAIChessGame;
 import com.ddemott.chessai.engine.GameEngine;
-import com.ddemott.chessai.MoveHistory;
 
 /**
  * Interactive demo showcasing new PGN loading and AI difficulty features
@@ -143,19 +141,13 @@ public class NewFeaturesDemo {
     }
     
     private static void demoAIvsAI() {
-        System.out.println("\\n\\n=== Demo 3: AI vs AI Gameplay ===");
-        
+        System.out.println("\n\n=== Demo 3: AI vs AI Gameplay ===");
         System.out.println("Setting up AI vs AI match: Beginner vs Advanced");
-        
         try {
             GameEngine engine = new GameEngine(AIDifficulty.BEGINNER, AIDifficulty.ADVANCED);
-            
-            System.out.println("\\nPlaying 8 moves (4 per side)...");
-            
+            System.out.println("\nPlaying 8 moves (4 per side)...");
             for (int moveCount = 0; moveCount < 8; moveCount++) {
                 String currentPlayer = engine.getCurrentTurn();
-                
-                // Set appropriate difficulty for current player
                 AIDifficulty currentDifficulty;
                 if (currentPlayer.equals("White")) {
                     currentDifficulty = AIDifficulty.BEGINNER;
@@ -166,30 +158,21 @@ public class NewFeaturesDemo {
                     engine.setAIDifficulty(currentDifficulty);
                     System.out.print("Move " + (moveCount + 1) + " - Advanced (Black): ");
                 }
-                
-                // Time the AI thinking
                 long startTime = System.currentTimeMillis();
                 String aiMove = engine.getBestMove();
                 long thinkTime = System.currentTimeMillis() - startTime;
-                
                 if (aiMove == null) {
                     System.out.println("No move available");
                     break;
                 }
-                
-                // Execute the move
                 String[] positions = aiMove.split(" ");
                 engine.movePiece(positions[0], positions[1]);
-                
-                // Display the move
                 if (engine.getLastMove() != null) {
                     System.out.println(engine.getLastMove().getAlgebraicNotation() + 
                                      " (" + aiMove + ") [" + thinkTime + "ms]");
                 } else {
                     System.out.println(aiMove + " [" + thinkTime + "ms]");
                 }
-                
-                // Small delay for readability
                 try {
                     Thread.sleep(500);
                 } catch (InterruptedException e) {
@@ -197,22 +180,15 @@ public class NewFeaturesDemo {
                     break;
                 }
             }
-            
-            // Show final position
-            System.out.println("\\nFinal board position:");
+            System.out.println("\nFinal board position:");
             System.out.println(engine.getBoardRepresentation());
-            
-            // Show game statistics
-            System.out.println("\\nGame Statistics:");
+            System.out.println("\nGame Statistics:");
             System.out.println("Total moves: " + engine.getMoveHistory().getMoves().size());
             System.out.println("Current turn: " + engine.getCurrentTurn());
-            
-            // Save the AI vs AI game
-            System.out.println("\\nSaving AI vs AI game...");
+            System.out.println("\nSaving AI vs AI game...");
             boolean saved = engine.saveGameToPGNFile("ai_vs_ai_demo.pgn", 
                 "AI_Beginner", "AI_Advanced", "*");
             System.out.println("Save result: " + (saved ? "SUCCESS" : "FAILED"));
-            
         } catch (Exception e) {
             System.out.println("Error in AI vs AI demo: " + e.getMessage());
         }
@@ -231,6 +207,6 @@ public class NewFeaturesDemo {
         AIDifficultyTest.main(new String[0]);
         
         System.out.println("\\n3. AI vs AI Tests:");
-        AIvsAITest.main(new String[0]);
+    // Removed call to AIvsAITest.main(), as tests are now run via JUnit
     }
 }
