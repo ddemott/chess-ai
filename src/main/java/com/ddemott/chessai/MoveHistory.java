@@ -512,8 +512,10 @@ public class MoveHistory {
     public void updateHalfmoveClock(boolean isPawnMove, boolean isCapture) {
         if (isPawnMove || isCapture) {
             halfmoveClock = 0;
+            // Debug output removed
         } else {
             halfmoveClock++;
+            // Debug output removed
         }
     }
 }

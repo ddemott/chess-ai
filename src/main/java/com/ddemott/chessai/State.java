@@ -247,24 +247,21 @@ public class State {
     public boolean isThreefoldRepetition() {
         // Get all positions from move history
         List<String> positions = moveHistory.getPositionHistory();
-        if (positions.size() < 5) { // Need at least 5 moves for a threefold repetition
+        if (positions.size() < 3) { // Need at least 3 occurrences for threefold repetition
             return false;
         }
 
         // Get current position FEN (without move numbers and counters)
         String currentPosition = board.toFEN().split(" ")[0];
-        
+
         // Count occurrences of current position
-        int repetitions = 1; // Count current position
+        int repetitions = 0;
         for (String position : positions) {
             if (position.split(" ")[0].equals(currentPosition)) {
                 repetitions++;
-                if (repetitions >= 3) {
-                    return true;
-                }
             }
         }
-        return false;
+        return repetitions >= 3;
     }
 
     /**

@@ -21,27 +21,13 @@ public class Queen extends Piece {
         boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math.abs(newCoords[1] - currentCoords[1]);
 
         if (isRookMove || isBishopMove) {
-            return isPathClear(currentCoords, newCoords, board) && isDestinationValid(newCoords, board);
+            return board.isPathClear(currentPosition, newPosition) && isDestinationValid(newCoords, board);
         }
 
         return false;
     }
 
-    private boolean isPathClear(int[] currentCoords, int[] newCoords, Board board) {
-        int rowStep = Integer.signum(newCoords[0] - currentCoords[0]);
-        int colStep = Integer.signum(newCoords[1] - currentCoords[1]);
-
-        int currentRow = currentCoords[0] + rowStep;
-        int currentCol = currentCoords[1] + colStep;
-        while (currentRow != newCoords[0] || currentCol != newCoords[1]) {
-            if (board.getPieceAt(board.convertCoordinatesToPosition(currentRow, currentCol)) != null) {
-                return false; // Path is blocked
-            }
-            currentRow += rowStep;
-            currentCol += colStep;
-        }
-        return true; // Path is clear
-    }
+    // Removed local isPathClear; now uses Board.isPathClear
 
     private boolean isDestinationValid(int[] newCoords, Board board) {
         IPiece pieceAtDestination = board.getPieceAt(board.convertCoordinatesToPosition(newCoords[0], newCoords[1]));

@@ -57,6 +57,9 @@ public class Board {
 
     public IPiece getPieceAt(String position) {
         int[] coords = convertPositionToCoordinates(position);
+        if (coords == null) {
+            return null; // Out of bounds or invalid
+        }
         if (coords[0] < 0 || coords[0] >= 8 || coords[1] < 0 || coords[1] >= 8) {
             return null; // Out of bounds
         }
@@ -65,6 +68,9 @@ public class Board {
 
     public void setPieceAt(String position, IPiece piece) {
         int[] coords = convertPositionToCoordinates(position);
+        if (coords == null) {
+            return; // Out of bounds or invalid
+        }
         if (coords[0] < 0 || coords[0] >= 8 || coords[1] < 0 || coords[1] >= 8) {
             return; // Out of bounds
         }
@@ -81,7 +87,12 @@ public class Board {
         }
         char column = position.charAt(0);
         int row = position.charAt(1) - '1';
-        return new int[]{row, column - 'a'};
+        int col = column - 'a';
+        // Check bounds
+        if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+            return null;
+        }
+        return new int[]{row, col};
     }
 
     public String convertCoordinatesToPosition(int row, int col) {
@@ -502,91 +513,35 @@ public class Board {
             for (int col = 0; col < 8; col++) {
                 IPiece piece = board[row][col];
                 if (piece != null && piece.getColor().equals(opponentColor)) {
-                    String from = convertCoordinatesToPosition(row, col);
-                    
-                    // Special case for back rank mate test
-                    if (kingPosition.equals("g8") && from.equals("a8") && 
-                        piece instanceof Queen && piece.getColor().equals("White")) {
-                        return true;
-                    }
-                    
-                    // Knight check detection (improved)
-                    if (piece instanceof Knight) {
-                        int[] pieceCoords = convertPositionToCoordinates(from);
-                        int rowDiff = Math.abs(pieceCoords[0] - kingCoords[0]);
-                        int colDiff = Math.abs(pieceCoords[1] - kingCoords[1]);
-                        if ((rowDiff == 1 && colDiff == 2) || (rowDiff == 2 && colDiff == 1)) {
+                    // For non-king pieces, use normal validation
+                    if (!(piece instanceof King)) {
+                        if (piece.isValidMove(kingPosition, this)) {
+                            // Debug output removed
                             return true;
                         }
-                    }
-                    // Rook check detection (improved)
-                    else if (piece instanceof Rook) {
-                        if (kingCoords[0] == convertPositionToCoordinates(from)[0] || 
-                            kingCoords[1] == convertPositionToCoordinates(from)[1]) {
-                            // Check if path is clear
-                            if (isPathClear(from, kingPosition)) {
-                                return true;
-                            }
+                    } else {
+                        // For king pieces, do NOT count adjacent kings as attacking each other
+                        // Kings cannot legally move next to each other
+                        String currentPos = piece.getPosition();
+                        int[] currentCoords = convertPositionToCoordinates(currentPos);
+                        int[] targetCoords = convertPositionToCoordinates(kingPosition);
+                        int dx = Math.abs(targetCoords[0] - currentCoords[0]);
+                        int dy = Math.abs(targetCoords[1] - currentCoords[1]);
+                        // If kings are adjacent, do NOT count as check
+                        if (dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)) {
+                            continue;
                         }
-                    }
-                    // Bishop check detection (improved)
-                    else if (piece instanceof Bishop) {
-                        int[] pieceCoords = convertPositionToCoordinates(from);
-                        if (Math.abs(pieceCoords[0] - kingCoords[0]) == Math.abs(pieceCoords[1] - kingCoords[1])) {
-                            // Check if path is clear
-                            if (isPathClear(from, kingPosition)) {
-                                return true;
-                            }
-                        }
-                    }
-                    // Queen check detection (combines Rook and Bishop logic)
-                    else if (piece instanceof Queen) {
-                        int[] pieceCoords = convertPositionToCoordinates(from);
-                        boolean sameDiagonal = Math.abs(pieceCoords[0] - kingCoords[0]) == Math.abs(pieceCoords[1] - kingCoords[1]);
-                        boolean sameRowOrCol = kingCoords[0] == pieceCoords[0] || kingCoords[1] == pieceCoords[1];
-                        
-                        if ((sameDiagonal || sameRowOrCol) && isPathClear(from, kingPosition)) {
-                            return true;
-                        }
-                    }
-                    // King check detection (for completeness)
-                    else if (piece instanceof King) {
-                        int[] pieceCoords = convertPositionToCoordinates(from);
-                        if (Math.abs(pieceCoords[0] - kingCoords[0]) <= 1 && 
-                            Math.abs(pieceCoords[1] - kingCoords[1]) <= 1) {
-                            return true;
-                        }
-                    }
-                    // Pawn check detection (improved)
-                    else if (piece instanceof Pawn) {
-                        int[] pieceCoords = convertPositionToCoordinates(from);
-                        int rowDiff = kingCoords[0] - pieceCoords[0];
-                        int colDiff = Math.abs(kingCoords[1] - pieceCoords[1]);
-                        
-                        // White pawns attack up, Black pawns attack down
-                        boolean correctDirection = (piece.getColor().equals("White") && rowDiff == 1) || 
-                                                 (piece.getColor().equals("Black") && rowDiff == -1);
-                        
-                        if (correctDirection && colDiff == 1) {
-                            return true;
-                        }
-                    }
-                    
-                    // General check for any piece type
-                    if (piece.isValidMove(kingPosition, this)) {
-                        return true;
                     }
                 }
             }
         }
-        
         return false;
     }
     
     /**
      * Helper method to check if the path between two positions is clear
      */
-    private boolean isPathClear(String from, String to) {
+    public boolean isPathClear(String from, String to) {
         int[] fromCoords = convertPositionToCoordinates(from);
         int[] toCoords = convertPositionToCoordinates(to);
         
@@ -629,7 +584,6 @@ public class Board {
      */
     public boolean isSquareUnderAttack(String position, String defendingColor) {
         String attackingColor = defendingColor.equals("White") ? "Black" : "White";
-        
         // Check each opposing piece to see if it can attack the position
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
@@ -638,6 +592,7 @@ public class Board {
                     // For non-king pieces, use normal validation
                     if (!(piece instanceof King)) {
                         if (piece.isValidMove(position, this)) {
+                            // Debug output removed
                             return true;
                         }
                     } else {
@@ -645,12 +600,11 @@ public class Board {
                         String currentPos = piece.getPosition();
                         int[] currentCoords = convertPositionToCoordinates(currentPos);
                         int[] targetCoords = convertPositionToCoordinates(position);
-                        
                         int dx = Math.abs(targetCoords[0] - currentCoords[0]);
                         int dy = Math.abs(targetCoords[1] - currentCoords[1]);
-                        
                         // King can attack one square in any direction
                         if (dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)) {
+                            // Debug output removed
                             return true;
                         }
                     }
@@ -886,50 +840,87 @@ public class Board {
         if (piece == null) {
             return false;
         }
-        
+
         String kingPosition = findKingPosition(piece.getColor());
         if (kingPosition == null) {
             return false;
         }
-        
-        // Get all possible moves for this piece
+
+        int[] kingCoords = convertPositionToCoordinates(kingPosition);
+        int[] pieceCoords = convertPositionToCoordinates(position);
+        if (kingCoords == null || pieceCoords == null) {
+            return false;
+        }
+
+        int dRow = Integer.signum(pieceCoords[0] - kingCoords[0]);
+        int dCol = Integer.signum(pieceCoords[1] - kingCoords[1]);
+        boolean isOrthogonal = (dRow == 0 || dCol == 0);
+        boolean isDiagonal = (Math.abs(pieceCoords[0] - kingCoords[0]) == Math.abs(pieceCoords[1] - kingCoords[1]));
+        if (isOrthogonal || isDiagonal) {
+            // Check for pinning attacker in the direction from piece away from king
+            int attRow = pieceCoords[0] + dRow;
+            int attCol = pieceCoords[1] + dCol;
+            while (attRow >= 0 && attRow < 8 && attCol >= 0 && attCol < 8) {
+                IPiece att = board[attRow][attCol];
+                if (att != null) {
+                    if (!att.getColor().equals(piece.getColor())) {
+                        if ((isOrthogonal && (att instanceof Rook || att instanceof Queen)) ||
+                            (isDiagonal && (att instanceof Bishop || att instanceof Queen))) {
+                            // Check that there are no other pieces between piece and attacker
+                            int checkRow = kingCoords[0] + dRow;
+                            int checkCol = kingCoords[1] + dCol;
+                            boolean clear = true;
+                            while ((checkRow != pieceCoords[0] || checkCol != pieceCoords[1]) && clear) {
+                                if (board[checkRow][checkCol] != null) {
+                                    clear = false;
+                                }
+                                checkRow += dRow;
+                                checkCol += dCol;
+                            }
+                            if (clear) {
+                                return true;
+                            }
+                        }
+                    }
+                    break;
+                }
+                attRow += dRow;
+                attCol += dCol;
+            }
+        }
+
+        // For knights, if aligned and attacker present, already handled above
+        if (piece instanceof Knight) {
+            return false;
+        }
+
+        // Fallback: check if every move exposes king to check
         List<String> possibleMoves = piece.getAllPossibleMoves(this);
         if (possibleMoves.isEmpty()) {
             return false; // No moves to check
         }
-        
-        // For each move, check if it would expose the king to check
+        boolean foundPin = false;
         for (String move : possibleMoves) {
             String[] parts = move.split(" ");
             if (parts.length == 2) {
                 String to = parts[1];
-                
-                // Skip moves that aren't valid according to the piece's movement rules
                 if (!piece.isValidMove(to, this)) {
                     continue;
                 }
-                
-                // Simulate the move
                 Board clonedBoard = this.clone();
                 IPiece capturedPiece = clonedBoard.getPieceAt(to);
-                
-                // Execute the move on the cloned board
                 clonedBoard.setPieceAt(to, piece.clonePiece());
                 clonedBoard.setPieceAt(position, null);
-                
-                // Check if the king is in check after this move
                 if (!clonedBoard.isKingInCheck(piece.getColor())) {
-                    return false; // Found at least one legal move, not pinned
+                    return false; // Found a legal move, not pinned
+                } else {
+                    foundPin = true;
                 }
-                
-                // Restore captured piece for next simulation
                 clonedBoard.setPieceAt(position, piece.clonePiece());
                 clonedBoard.setPieceAt(to, capturedPiece);
             }
         }
-        
-        // If we get here, all moves would expose the king to check
-        return true;
+        return foundPin;
     }
     
     /**

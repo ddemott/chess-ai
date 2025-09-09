@@ -181,7 +181,7 @@ public class EnhancedConsoleDisplay {
     /**
      * Get piece display with appropriate coloring
      */
-    private String getPieceDisplay(IPiece piece) {
+    String getPieceDisplay(IPiece piece) {
         if (piece == null) {
             return " . ";
         }

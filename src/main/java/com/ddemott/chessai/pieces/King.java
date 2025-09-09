@@ -19,13 +19,18 @@ public class King extends Piece {
 
         int dx = Math.abs(newCoords[0] - currentCoords[0]);
         int dy = Math.abs(newCoords[1] - currentCoords[1]);
-        
+
         // Normal king move (one square in any direction)
         if (dx <= 1 && dy <= 1) {
             IPiece pieceAtDestination = board.getPieceAt(newPosition);
+            // Prevent moving into squares attacked by the opponent
+            String opponentColor = getColor().equals("White") ? "Black" : "White";
+            if (board.isSquareUnderAttack(newPosition, opponentColor)) {
+                return false;
+            }
             return pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor());
         }
-        
+
         // Check for castling (king moves two squares horizontally)
         if (dx == 0 && dy == 2 && !hasMoved()) {
             return isValidCastling(currentPosition, newPosition, board);
