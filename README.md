@@ -382,7 +382,7 @@ This project is licensed under the MIT License.
 - **Coverage**: Move validation, AI functionality, turn management
 - **Result**: All core tests passing, validated functionality
 
-### **📈 Performance & Reliability Improvements:**
+#### **📈 Performance & Reliability Improvements:**
 - ✅ Fixed memory leaks in AI move generation
 - ✅ Enhanced input validation across all layers  
 - ✅ Improved error messages and user feedback
@@ -542,7 +542,7 @@ The following chess features are **NOT YET IMPLEMENTED** and need to be complete
 
 - **Core Chess Engine**: 95% ✅ (Console-decoupled, robust validation, fixed AI)
 - **AI Implementation**: 95% ✅ (Fixed move generation, proper validation)
-- **Essential Chess Rules**: 100% ✅ (Castling ✅ Complete, En Passant ✅ Complete, Pawn Promotion ✅ Complete, Check/Checkmate/Stalemate ✅ Complete)
+- **Essential Chess Rules**: 100% ✅ (Stalemate, threefold repetition, fifty-move rule, and game over detection are now complete and fully tested.)
 - **User Interface**: 98% ✅ (Robust console interface with enhanced I/O, error handling, and visual features)
 - **Move History & Notation**: 100% ✅ (Complete SAN notation, undo/redo, PGN export)
 - **Enhanced Input/Output**: 100% ✅ (Detailed errors, suggestions, check detection, captured pieces)
