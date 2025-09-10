@@ -14,6 +14,8 @@ import com.ddemott.chessai.pieces.Rook;
 public class Board {
     private IPiece[][] board; // 2D array to represent the board
     private String enPassantTarget; // Target square for en passant capture (e.g., "e3")
+    private List<IPiece> capturedWhitePieces = new ArrayList<>();
+    private List<IPiece> capturedBlackPieces = new ArrayList<>();
 
     public Board() {
         board = new IPiece[8][8]; // 8x8 chess board
@@ -146,6 +148,14 @@ public class Board {
             }
         }
         // Regular move
+        IPiece captured = getPieceAt(to);
+        if (captured != null) {
+            if (captured.getColor().equals("White")) {
+                capturedWhitePieces.add(captured);
+            } else {
+                capturedBlackPieces.add(captured);
+            }
+        }
         setPieceAt(to, piece);
         setPieceAt(from, null);
         piece.setPosition(to);
@@ -988,11 +998,18 @@ public class Board {
         }
         
         // Regular move
+        IPiece captured = getPieceAt(to);
+        if (captured != null) {
+            if (captured.getColor().equals("White")) {
+                capturedWhitePieces.add(captured);
+            } else {
+                capturedBlackPieces.add(captured);
+            }
+        }
         setPieceAt(to, piece);
         setPieceAt(from, null);
         piece.setPosition(to);
         piece.setHasMoved(true);
-        
         // Track pawn two-square moves for en passant
         if (piece instanceof Pawn && isPawnTwoSquareMove(from, to)) {
             int[] fromCoords = convertPositionToCoordinates(from);
@@ -1003,7 +1020,6 @@ public class Board {
         } else {
             enPassantTarget = null;
         }
-        
         return true;
     }
     
@@ -1146,5 +1162,31 @@ public class Board {
         }
         
         return piece.getColor().equals("White") ? symbol : Character.toLowerCase(symbol);
+    }
+    /**
+     * Get captured pieces for each side
+     */
+    public List<IPiece> getCapturedPieces(String color) {
+        if (color.equals("White")) {
+            return capturedWhitePieces;
+        } else {
+            return capturedBlackPieces;
+        }
+    }
+
+    /**
+     * Print captured pieces for both sides
+     */
+    public void printCapturedPieces() {
+        System.out.print("White captured: ");
+        for (IPiece p : capturedWhitePieces) {
+            System.out.print(getPieceSymbol(p) + " ");
+        }
+        System.out.println();
+        System.out.print("Black captured: ");
+        for (IPiece p : capturedBlackPieces) {
+            System.out.print(getPieceSymbol(p) + " ");
+        }
+        System.out.println();
     }
 }
