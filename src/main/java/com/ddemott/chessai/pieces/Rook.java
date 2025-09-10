@@ -27,6 +27,10 @@ public class Rook extends Piece {
     }
 
     private boolean isStraightMove(int[] currentCoords, int[] newCoords) {
+        // Added null check to prevent NullPointerException on out-of-bounds moves
+        if(newCoords == null) {
+            return false;
+        }
         return currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
     }
 

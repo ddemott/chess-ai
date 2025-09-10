@@ -16,14 +16,31 @@ public class Queen extends Piece {
         String currentPosition = getPosition();
         int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
         int[] newCoords = board.convertPositionToCoordinates(newPosition);
-
-        boolean isRookMove = currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
-        boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math.abs(newCoords[1] - currentCoords[1]);
-
-        if (isRookMove || isBishopMove) {
-            return board.isPathClear(currentPosition, newPosition) && isDestinationValid(newCoords, board);
+        if (currentCoords == null || newCoords == null) {
+            return false;
         }
-
+        // Valid rook move (horizontal/vertical)
+        boolean isRookMove = currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
+        // Valid bishop move (diagonal)
+        boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math.abs(newCoords[1] - currentCoords[1]);
+        // Invalid L-shape (knight move)
+        int rowDiff = Math.abs(newCoords[0] - currentCoords[0]);
+        int colDiff = Math.abs(newCoords[1] - currentCoords[1]);
+        if ((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) {
+            return false;
+        }
+        if (isRookMove || isBishopMove) {
+            // Path must be clear except for destination
+            if (!board.isPathClear(currentPosition, newPosition)) {
+                return false;
+            }
+            // Destination must be empty or contain opponent's piece
+            IPiece destPiece = board.getPieceAt(newPosition);
+            if (destPiece == null || !destPiece.getColor().equals(getColor())) {
+                return true;
+            }
+            return false;
+        }
         return false;
     }
 

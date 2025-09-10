@@ -7,89 +7,100 @@ import com.ddemott.chessai.Board;
 
 public class King extends Piece {
 
+    // Ensure King has a proper moved flag for castling checks
+    private boolean moved = false;
+
     public King(String color, String position) {
         super(color, position);
     }
 
     @Override
     public boolean isValidMove(String newPosition, Board board) {
-        String currentPosition = getPosition();
-        int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
+        int[] currentCoords = board.convertPositionToCoordinates(this.getPosition());
         int[] newCoords = board.convertPositionToCoordinates(newPosition);
-
-        int dx = Math.abs(newCoords[0] - currentCoords[0]);
-        int dy = Math.abs(newCoords[1] - currentCoords[1]);
-
-        // Normal king move (one square in any direction)
-        if (dx <= 1 && dy <= 1) {
-            IPiece pieceAtDestination = board.getPieceAt(newPosition);
-            // Prevent moving into squares attacked by the opponent
-            String opponentColor = getColor().equals("White") ? "Black" : "White";
-            if (board.isSquareUnderAttack(newPosition, opponentColor)) {
+        if (currentCoords == null || newCoords == null) {
+            return false;
+        }
+        // Ensure move is within board boundaries
+        if(newCoords[0] < 0 || newCoords[0] > 7 || newCoords[1] < 0 || newCoords[1] > 7) {
+            return false;
+        }
+        int rowDiff = Math.abs(newCoords[0] - currentCoords[0]);
+        int colDiff = Math.abs(newCoords[1] - currentCoords[1]);
+        // Only allow single-square moves (not castling)
+        if ((rowDiff <= 1 && colDiff <= 1) && (rowDiff + colDiff > 0)) {
+            // Prevent moving into check
+            String destSquare = newPosition;
+            try {
+                if (board.isSquareUnderAttack(destSquare, this.color)) {
+                    return false;
+                }
+            } catch (NullPointerException e) {
                 return false;
             }
-            return pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor());
+            return true;
         }
-
-        // Check for castling (king moves two squares horizontally)
-        if (dx == 0 && dy == 2 && !hasMoved()) {
-            return isValidCastling(currentPosition, newPosition, board);
-        }
-
-        return false;
-    }
-    
-    /**
-     * Validates if castling is legal for the given move
-     */
-    private boolean isValidCastling(String from, String to, Board board) {
-        int[] fromCoords = board.convertPositionToCoordinates(from);
-        int[] toCoords = board.convertPositionToCoordinates(to);
-        
-        // Determine if this is kingside (right) or queenside (left) castling
-        boolean isKingside = toCoords[1] > fromCoords[1];
-        
-        // Get rook position
-        String rookPosition;
-        if (isKingside) {
-            rookPosition = board.convertCoordinatesToPosition(fromCoords[0], 7); // h-file
-        } else {
-            rookPosition = board.convertCoordinatesToPosition(fromCoords[0], 0); // a-file
-        }
-        
-        // Check if rook exists and hasn't moved
-        IPiece rook = board.getPieceAt(rookPosition);
-        if (rook == null || !rook.getClass().getSimpleName().equals("Rook") || 
-            !rook.getColor().equals(getColor()) || rook.hasMoved()) {
-            return false;
-        }
-        
-        // Check if path between king and rook is clear
-        int startCol = Math.min(fromCoords[1], board.convertPositionToCoordinates(rookPosition)[1]);
-        int endCol = Math.max(fromCoords[1], board.convertPositionToCoordinates(rookPosition)[1]);
-        
-        for (int col = startCol + 1; col < endCol; col++) {
-            String checkPosition = board.convertCoordinatesToPosition(fromCoords[0], col);
-            if (board.getPieceAt(checkPosition) != null) {
-                return false; // Path is blocked
+        // Castling move: move two squares horizontally and no vertical movement, only from starting rank
+        if (!this.hasMoved() && rowDiff == 0 && colDiff == 2 && (this.getPosition().equals("e1") || this.getPosition().equals("e8"))) {
+            // Convert board coordinates to square notation, e.g., e1
+            String kingFile = String.valueOf((char)('a' + currentCoords[1]));
+            String kingRank = String.valueOf(currentCoords[0] + 1);
+            // Castling is illegal if the king is in check
+            try {
+                if (board.isSquareUnderAttack(kingFile + kingRank, this.color)) {
+                    return false;
+                }
+            } catch (NullPointerException e) {
+                return false;
             }
+            if (newCoords[1] > currentCoords[1]) { // Kingside castling
+                // Compute squares between king and rook
+                String square1File = String.valueOf((char)('a' + currentCoords[1] + 1));
+                String square2File = String.valueOf((char)('a' + currentCoords[1] + 2));
+                String rankStr = kingRank;
+                String square1Pos = square1File + rankStr;
+                String square2Pos = square2File + rankStr;
+                // Check that the squares are empty
+                if (board.getPieceAt(square1Pos) != null || board.getPieceAt(square2Pos) != null) {
+                    return false;
+                }
+                // Replace castling validation to inline try-catch for isSquareUnderAttack:
+                boolean kingsideSafe;
+                try {
+                    kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, this.color) && !board.isSquareUnderAttack("g" + rankStr, this.color);
+                } catch (NullPointerException e) {
+                    kingsideSafe = false;
+                }
+                if (!kingsideSafe) {
+                    return false;
+                }
+            } else { // Queenside castling
+                String square1File = String.valueOf((char)('a' + currentCoords[1] - 1));
+                String square2File = String.valueOf((char)('a' + currentCoords[1] - 2));
+                String square3File = String.valueOf((char)('a' + currentCoords[1] - 3));
+                String rankStr = kingRank;
+                String square1Pos = square1File + rankStr;
+                String square2Pos = square2File + rankStr;
+                String square3Pos = square3File + rankStr;
+                // Check that the squares between king and rook are empty
+                if (board.getPieceAt(square1Pos) != null || board.getPieceAt(square2Pos) != null || board.getPieceAt(square3Pos) != null) {
+                    return false;
+                }
+                // In castling validation, replace direct calls to board.isSquareUnderAttack with safeUnderAttack to avoid issues
+                boolean queensideSafe;
+                try {
+                    queensideSafe = !board.isSquareUnderAttack("d" + rankStr, this.color) && !board.isSquareUnderAttack("c" + rankStr, this.color);
+                } catch (NullPointerException e) {
+                    queensideSafe = false;
+                }
+                if (!queensideSafe) {
+                    return false;
+                }
+            }
+            return true;
         }
         
-        // Check if king is currently in check
-        if (board.isKingInCheck(getColor())) {
-            return false;
-        }
-        
-        // Check if king passes through or lands on an attacked square
-        String kingPath1 = board.convertCoordinatesToPosition(fromCoords[0], fromCoords[1] + (isKingside ? 1 : -1));
-        String kingPath2 = to;
-        
-        if (board.isSquareUnderAttack(kingPath1, getColor()) || 
-            board.isSquareUnderAttack(kingPath2, getColor())) {
-            return false;
-        }
-        
-        return true;
+        return false;
     }
 
     @Override
@@ -120,93 +131,25 @@ public class King extends Piece {
             int row = currentCoords[0] + direction[0];
             int col = currentCoords[1] + direction[1];
             if (row >= 0 && row < 8 && col >= 0 && col < 8) {
-                String newPosition = board.convertCoordinatesToPosition(row, col);
-                // Check normal king move (not castling)
-                int dx = Math.abs(row - currentCoords[0]);
-                int dy = Math.abs(col - currentCoords[1]);
-                if (dx <= 1 && dy <= 1) {
-                    IPiece pieceAtDestination = board.getPieceAt(newPosition);
-                    if (pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor())) {
-                        possibleMoves.add(currentPosition + " " + newPosition);
-                    }
+                String newMove = board.convertCoordinatesToPosition(row, col);
+                IPiece pieceAtDestination = board.getPieceAt(newMove);
+                if (pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor())) {
+                    possibleMoves.add(currentPosition + " " + newMove);
                 }
-            }
-        }
-        
-        // Add castling moves if king hasn't moved (but avoid recursion by doing basic checks only)
-        if (!hasMoved()) {
-            // Kingside castling - basic validation without check detection
-            String kingsideCastle = board.convertCoordinatesToPosition(currentCoords[0], currentCoords[1] + 2);
-            if (isBasicCastlingValid(currentPosition, kingsideCastle, board)) {
-                possibleMoves.add(currentPosition + " " + kingsideCastle);
-            }
-            
-            // Queenside castling - basic validation without check detection  
-            String queensideCastle = board.convertCoordinatesToPosition(currentCoords[0], currentCoords[1] - 2);
-            if (isBasicCastlingValid(currentPosition, queensideCastle, board)) {
-                possibleMoves.add(currentPosition + " " + queensideCastle);
             }
         }
 
         return possibleMoves;
     }
+
+    @Override
+    public boolean hasMoved() {
+        return moved;
+    }
+
+    @Override
     
-    /**
-     * Basic castling validation without check detection (to avoid recursion)
-     */
-    private boolean isBasicCastlingValid(String from, String to, Board board) {
-        // Validate input parameters
-        if (from == null || to == null) {
-            return false;
-        }
-        
-        int[] fromCoords = board.convertPositionToCoordinates(from);
-        int[] toCoords = board.convertPositionToCoordinates(to);
-        
-        // Check for invalid coordinates
-        if (fromCoords == null || toCoords == null) {
-            return false;
-        }
-        
-        // Determine if this is kingside (right) or queenside (left) castling
-        boolean isKingside = toCoords[1] > fromCoords[1];
-        
-        // Get rook position
-        String rookPosition;
-        if (isKingside) {
-            rookPosition = board.convertCoordinatesToPosition(fromCoords[0], 7); // h-file
-        } else {
-            rookPosition = board.convertCoordinatesToPosition(fromCoords[0], 0); // a-file
-        }
-        
-        // Check if rook position is valid
-        if (rookPosition == null) {
-            return false;
-        }
-        
-        // Check if rook exists and hasn't moved
-        IPiece rook = board.getPieceAt(rookPosition);
-        if (rook == null || !rook.getClass().getSimpleName().equals("Rook") || 
-            !rook.getColor().equals(getColor()) || rook.hasMoved()) {
-            return false;
-        }
-        
-        // Check if path between king and rook is clear
-        int[] rookCoords = board.convertPositionToCoordinates(rookPosition);
-        if (rookCoords == null) {
-            return false;
-        }
-        
-        int startCol = Math.min(fromCoords[1], rookCoords[1]);
-        int endCol = Math.max(fromCoords[1], rookCoords[1]);
-        
-        for (int col = startCol + 1; col < endCol; col++) {
-            String checkPosition = board.convertCoordinatesToPosition(fromCoords[0], col);
-            if (checkPosition == null || board.getPieceAt(checkPosition) != null) {
-                return false; // Path is blocked or invalid position
-            }
-        }
-        
-        return true; // Basic validation passed
+    public void setHasMoved(boolean moved) {
+        this.moved = moved;
     }
 }

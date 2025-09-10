@@ -12,26 +12,28 @@ public class Bishop extends Piece {
     }
 
     @Override
-    public boolean isValidMove(String newPosition, Board board) {
+    public boolean isValidMove(String destination, Board board) {
         String currentPosition = getPosition();
-        int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
-        int[] newCoords = board.convertPositionToCoordinates(newPosition);
-
-        int dx = Math.abs(newCoords[0] - currentCoords[0]);
-        int dy = Math.abs(newCoords[1] - currentCoords[1]);
-        if (dx != dy) {
+        if (destination == null || destination.length() != 2) {
             return false;
         }
-
-        if (!isPathClear(currentCoords, newCoords, board)) {
-            return false;
+        int startFile = currentPosition.charAt(0) - 'a';
+        int startRank = Character.getNumericValue(currentPosition.charAt(1));
+        int endFile = destination.charAt(0) - 'a';
+        int endRank = Character.getNumericValue(destination.charAt(1));
+        // Check for valid diagonal move: absolute difference between file and rank should be equal
+        if (Math.abs(endFile - startFile) == Math.abs(endRank - startRank)) {
+            // Check if path is clear
+            int[] startCoords = board.convertPositionToCoordinates(currentPosition);
+            int[] endCoords = board.convertPositionToCoordinates(destination);
+            if (isPathClear(startCoords, endCoords, board)) {
+                // Destination must be empty or contain opponent's piece
+                IPiece destPiece = board.getPieceAt(destination);
+                if (destPiece == null || !destPiece.getColor().equals(getColor())) {
+                    return true;
+                }
+            }
         }
-
-        IPiece pieceAtDestination = board.getPieceAt(newPosition);
-        if (pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor())) {
-            return true;
-        }
-
         return false;
     }
 
