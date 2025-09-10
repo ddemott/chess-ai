@@ -9,6 +9,11 @@ import java.util.List;
  * Implements the Minimax algorithm with alpha-beta pruning for the chess AI.
  */
 public class MinMaxStrategy implements AIStrategy {
+    // Expose both move and score for display
+    public MoveResult calculateBestMoveWithScore(State state, String color) {
+        MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, color, true);
+        return result;
+    }
 
     private int maxDepth;
     private Evaluation evaluation;
@@ -25,6 +30,12 @@ public class MinMaxStrategy implements AIStrategy {
     }
 
     private MoveResult minMax(State state, int depth, int alpha, int beta, String color, boolean maximizingPlayer) {
+        // Penalize threefold repetition as a draw
+        if (state.isThreefoldRepetition()) {
+            // Major negative score for repetition (draw)
+            int repetitionPenalty = maximizingPlayer ? -10000 : 10000;
+            return new MoveResult(repetitionPenalty, null);
+        }
         if (depth == 0) {
             int evaluationScore = evaluation.evaluateBoard(state.getBoard(), color);
             return new MoveResult(evaluationScore, null);

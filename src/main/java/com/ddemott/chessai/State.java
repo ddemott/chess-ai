@@ -7,6 +7,9 @@ import com.ddemott.chessai.ai.AIStrategy;
 import com.ddemott.chessai.pieces.IPiece;
 
 public class State {
+    public AIStrategy getAIStrategy() {
+        return aiStrategy;
+    }
     private Board board;
     private String currentTurn;
     private AIStrategy aiStrategy;
@@ -169,7 +172,35 @@ public class State {
         newState.board = this.board.clone();
         newState.currentTurn = this.currentTurn;
         newState.setAIStrategy(this.aiStrategy); // Keep the same strategy
-        // Note: Don't clone move history for AI simulation states
+        // Deep copy move history (including position history)
+        MoveHistory oldHistory = this.moveHistory;
+        MoveHistory newHistory = new MoveHistory();
+        // Copy moves
+        for (Move move : oldHistory.getMoves()) {
+            // Moves are immutable, so shallow copy is fine
+            newHistory.getMoves().add(move);
+        }
+        // Copy position history
+        for (String pos : oldHistory.getPositionHistory()) {
+            newHistory.getPositionHistory().add(pos);
+        }
+        // Copy halfmove clock
+        try {
+            java.lang.reflect.Field halfmoveClockField = MoveHistory.class.getDeclaredField("halfmoveClock");
+            halfmoveClockField.setAccessible(true);
+            halfmoveClockField.setInt(newHistory, oldHistory.getHalfmoveClock());
+        } catch (Exception e) {
+            // Ignore if reflection fails
+        }
+        // Copy current move index
+        try {
+            java.lang.reflect.Field currentMoveIndexField = MoveHistory.class.getDeclaredField("currentMoveIndex");
+            currentMoveIndexField.setAccessible(true);
+            currentMoveIndexField.setInt(newHistory, oldHistory.getMoves().size() - 1);
+        } catch (Exception e) {
+            // Ignore if reflection fails
+        }
+        newState.moveHistory = newHistory;
         return newState;
     }
 

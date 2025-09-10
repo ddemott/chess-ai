@@ -6,6 +6,7 @@ import com.ddemott.chessai.pieces.IPiece;
  * Represents a chess move with all necessary information for history tracking and notation.
  */
 public class Move {
+    private int score = 0;
     private final String from;
     private final String to;
     private final IPiece movingPiece;
@@ -35,6 +36,15 @@ public class Move {
         this.isCastle = isCastle;
         this.isEnPassant = isEnPassant;
         this.promotionPiece = promotionPiece;
+        this.score = 0;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
+    }
+
+    public int getScore() {
+        return score;
     }
 
     // Getters

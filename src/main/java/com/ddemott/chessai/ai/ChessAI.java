@@ -76,6 +76,16 @@ public class ChessAI {
                 }
             }
         }
+
+    // ...existing code...
+
+        // Add bonus for material advantage (captured pieces)
+        String opponentColor = aiColor.equals("White") ? "Black" : "White";
+        List<IPiece> capturedOpponentPieces = board.getCapturedPieces(opponentColor);
+        for (IPiece captured : capturedOpponentPieces) {
+            score += getPieceValue(captured) * 0.5; // Bonus for each captured piece
+        }
+
         return score;
     }
 

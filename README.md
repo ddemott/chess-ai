@@ -496,7 +496,7 @@ The ChessAI project has a **solid foundation** with many core chess features ful
 ## 🚧 Incomplete Features / TODO List
 
 
-All major chess rules and game end conditions are now implemented and tested:
+All major chess rules and game end conditions are now implemented and tested. Note: The threefold repetition penalty in AI evaluation is currently removed and will be redesigned in future updates.
 
 ### � Complete Features
 - [x] Stalemate detection

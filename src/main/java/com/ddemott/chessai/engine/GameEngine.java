@@ -56,6 +56,18 @@ public class GameEngine {
         return state.getBestMove();
     }
 
+    // Returns both the best move and its score for display
+    public com.ddemott.chessai.ai.MoveResult getBestMoveWithScore() {
+        AIStrategy strategy = state.getAIStrategy();
+        if (strategy instanceof com.ddemott.chessai.ai.MinMaxStrategy) {
+            com.ddemott.chessai.ai.MinMaxStrategy minmax = (com.ddemott.chessai.ai.MinMaxStrategy) strategy;
+            return minmax.calculateBestMoveWithScore(state, state.getCurrentTurn());
+        }
+        // Fallback: just return move with dummy score
+        String move = getBestMove();
+        return new com.ddemott.chessai.ai.MoveResult(0, move);
+    }
+
     public void makeAIMove() {
         String aiMove = getBestMove();
         if (aiMove != null) {
