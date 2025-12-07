@@ -3,9 +3,16 @@ package com.ddemott.chessai.pieces;
 import java.util.ArrayList;
 import java.util.List;
 import com.ddemott.chessai.Board;
+import com.ddemott.chessai.GameConstants;
+import com.ddemott.chessai.Side;
 
 public class Rook extends Piece {
 
+    public Rook(Side side, String position) {
+        super(side, position);
+    }
+    
+    // Legacy constructor
     public Rook(String color, String position) {
         super(color, position);
     }
@@ -52,17 +59,17 @@ public class Rook extends Piece {
 
     private boolean isDestinationValid(int[] newCoords, Board board) {
         IPiece pieceAtDestination = board.getPieceAt(board.convertCoordinatesToPosition(newCoords[0], newCoords[1]));
-        return pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor());
+        return pieceAtDestination == null || pieceAtDestination.getSide() != side;
     }
 
     @Override
     public int getValue() {
-        return 5; // Standard chess value for a rook
+        return GameConstants.ROOK_VALUE;
     }
 
     @Override
     public IPiece clonePiece() {
-        Rook cloned = new Rook(getColor(), getPosition());
+        Rook cloned = new Rook(side, position);
         cloned.setHasMoved(this.hasMoved());
         return cloned;
     }

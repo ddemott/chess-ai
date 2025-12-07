@@ -7,8 +7,14 @@ import java.util.Set;
 import com.ddemott.chessai.Board;
 import com.ddemott.chessai.State;
 import com.ddemott.chessai.Move;
+import com.ddemott.chessai.Side;
 import com.ddemott.chessai.pieces.IPiece;
 import com.ddemott.chessai.pieces.King;
+import com.ddemott.chessai.pieces.Pawn;
+import com.ddemott.chessai.pieces.Knight;
+import com.ddemott.chessai.pieces.Bishop;
+import com.ddemott.chessai.pieces.Rook;
+import com.ddemott.chessai.pieces.Queen;
 
 /**
  * Enhanced console display with better visualization and status information
@@ -83,7 +89,7 @@ public class EnhancedConsoleDisplay {
                 }
                 
                 // Check if king is in check
-                if (piece instanceof King && isKingInCheck(piece.getColor())) {
+                if (piece instanceof King && isKingInCheck(piece.getSide())) {
                     pieceDisplay = applyHighlight(pieceDisplay, ANSI_BG_RED);
                 }
                 
@@ -140,21 +146,22 @@ public class EnhancedConsoleDisplay {
      */
     private void displayGameStatus() {
         String currentPlayer = gameState.getCurrentTurn();
+        Side currentSide = gameState.getCurrentTurnSide();
         
         // Current turn
         String turnText = "Current turn: " + currentPlayer;
         System.out.println(colorText(turnText, ANSI_BOLD));
         
         // Check status
-        if (isKingInCheck(currentPlayer)) {
-            if (isCheckmate(currentPlayer)) {
+        if (isKingInCheck(currentSide)) {
+            if (isCheckmate(currentSide)) {
                 System.out.println(colorText("CHECKMATE! " + getOpponentColor(currentPlayer) + " wins!", 
                                             ANSI_RED + ANSI_BOLD));
             } else {
                 System.out.println(colorText("CHECK! " + currentPlayer + " king is under attack!", 
                                             ANSI_RED + ANSI_BOLD));
             }
-        } else if (isStalemate(currentPlayer)) {
+        } else if (isStalemate(currentSide)) {
             System.out.println(colorText("STALEMATE! The game is a draw.", ANSI_YELLOW + ANSI_BOLD));
         }
         
@@ -171,7 +178,7 @@ public class EnhancedConsoleDisplay {
      * Add a captured piece to the display
      */
     public void addCapturedPiece(IPiece piece) {
-        if (piece.getColor().equals("White")) {
+        if (piece.getSide() == Side.WHITE) {
             capturedWhitePieces.add(piece);
         } else {
             capturedBlackPieces.add(piece);
@@ -188,7 +195,7 @@ public class EnhancedConsoleDisplay {
         
         String symbol = String.valueOf(getPieceSymbol(piece));
         
-        if (piece.getColor().equals("White")) {
+        if (piece.getSide() == Side.WHITE) {
             return colorText(" " + symbol + " ", ANSI_WHITE + ANSI_BOLD);
         } else {
             return colorText(" " + symbol + " ", ANSI_BLUE + ANSI_BOLD);
@@ -200,17 +207,15 @@ public class EnhancedConsoleDisplay {
      */
     private char getPieceSymbol(IPiece piece) {
         char symbol;
-        switch (piece.getClass().getSimpleName()) {
-            case "King": symbol = 'K'; break;
-            case "Queen": symbol = 'Q'; break;
-            case "Rook": symbol = 'R'; break;
-            case "Bishop": symbol = 'B'; break;
-            case "Knight": symbol = 'N'; break;
-            case "Pawn": symbol = 'P'; break;
-            default: symbol = '?'; break;
-        }
+        if (piece instanceof King) symbol = 'K';
+        else if (piece instanceof Queen) symbol = 'Q';
+        else if (piece instanceof Rook) symbol = 'R';
+        else if (piece instanceof Bishop) symbol = 'B';
+        else if (piece instanceof Knight) symbol = 'N';
+        else if (piece instanceof Pawn) symbol = 'P';
+        else symbol = '?';
         
-        return piece.getColor().equals("White") ? symbol : Character.toLowerCase(symbol);
+        return piece.getSide() == Side.WHITE ? symbol : Character.toLowerCase(symbol);
     }
 
     /**
@@ -236,22 +241,22 @@ public class EnhancedConsoleDisplay {
     /**
      * Check if a king is in check
      */
-    private boolean isKingInCheck(String playerColor) {
-        return gameState.getBoard().isKingInCheck(playerColor);
+    private boolean isKingInCheck(Side playerSide) {
+        return gameState.getBoard().isKingInCheck(playerSide);
     }
 
     /**
      * Check if the current player is in checkmate
      */
-    private boolean isCheckmate(String playerColor) {
-        return gameState.getBoard().isCheckmate(playerColor);
+    private boolean isCheckmate(Side playerSide) {
+        return gameState.getBoard().isCheckmate(playerSide);
     }
 
     /**
      * Check if the current player is in stalemate
      */
-    private boolean isStalemate(String playerColor) {
-        return gameState.getBoard().isStalemate(playerColor);
+    private boolean isStalemate(Side playerSide) {
+        return gameState.getBoard().isStalemate(playerSide);
     }
 
     /**
@@ -312,12 +317,12 @@ public class EnhancedConsoleDisplay {
             return "No piece found at " + from;
         }
         
-        if (!piece.getColor().equals(gameState.getCurrentTurn())) {
+        if (piece.getSide() != gameState.getCurrentTurnSide()) {
             return "Cannot move opponent's piece";
         }
         
         IPiece targetPiece = board.getPieceAt(to);
-        if (targetPiece != null && targetPiece.getColor().equals(piece.getColor())) {
+        if (targetPiece != null && targetPiece.getSide() == piece.getSide()) {
             return "Cannot capture your own piece";
         }
         

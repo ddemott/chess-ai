@@ -13,7 +13,7 @@ public class Move {
     private final IPiece capturedPiece;
     private final String algebraicNotation;
     private final int moveNumber;
-    private final String playerColor;
+    private final Side side;
     private final boolean isCheck;
     private final boolean isCheckmate;
     private final boolean isCastle;
@@ -24,13 +24,22 @@ public class Move {
                 String algebraicNotation, int moveNumber, String playerColor, 
                 boolean isCheck, boolean isCheckmate, boolean isCastle, 
                 boolean isEnPassant, String promotionPiece) {
+        this(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber, 
+             playerColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK, 
+             isCheck, isCheckmate, isCastle, isEnPassant, promotionPiece);
+    }
+
+    public Move(String from, String to, IPiece movingPiece, IPiece capturedPiece, 
+                String algebraicNotation, int moveNumber, Side side, 
+                boolean isCheck, boolean isCheckmate, boolean isCastle, 
+                boolean isEnPassant, String promotionPiece) {
         this.from = from;
         this.to = to;
         this.movingPiece = movingPiece;
         this.capturedPiece = capturedPiece;
         this.algebraicNotation = algebraicNotation;
         this.moveNumber = moveNumber;
-        this.playerColor = playerColor;
+        this.side = side;
         this.isCheck = isCheck;
         this.isCheckmate = isCheckmate;
         this.isCastle = isCastle;
@@ -54,7 +63,10 @@ public class Move {
     public IPiece getCapturedPiece() { return capturedPiece; }
     public String getAlgebraicNotation() { return algebraicNotation; }
     public int getMoveNumber() { return moveNumber; }
-    public String getPlayerColor() { return playerColor; }
+    
+    public String getPlayerColor() { return side.toString(); }
+    public Side getSide() { return side; }
+    
     public boolean isCheck() { return isCheck; }
     public boolean isCheckmate() { return isCheckmate; }
     public boolean isCastle() { return isCastle; }

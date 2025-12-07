@@ -4,9 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ddemott.chessai.Board;
+import com.ddemott.chessai.GameConstants;
+import com.ddemott.chessai.Side;
 
 public class Bishop extends Piece {
 
+    public Bishop(Side side, String position) {
+        super(side, position);
+    }
+    
+    // Legacy constructor
     public Bishop(String color, String position) {
         super(color, position);
     }
@@ -29,7 +36,7 @@ public class Bishop extends Piece {
             if (isPathClear(startCoords, endCoords, board)) {
                 // Destination must be empty or contain opponent's piece
                 IPiece destPiece = board.getPieceAt(destination);
-                if (destPiece == null || !destPiece.getColor().equals(getColor())) {
+                if (destPiece == null || destPiece.getSide() != side) {
                     return true;
                 }
             }
@@ -56,12 +63,12 @@ public class Bishop extends Piece {
 
     @Override
     public int getValue() {
-        return 3; // Standard value of a Bishop in chess
+        return GameConstants.BISHOP_VALUE;
     }
 
     @Override
     public IPiece clonePiece() {
-        Bishop cloned = new Bishop(getColor(), getPosition());
+        Bishop cloned = new Bishop(side, position);
         cloned.setHasMoved(this.hasMoved());
         return cloned;
     }

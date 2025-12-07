@@ -4,12 +4,16 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.ddemott.chessai.Board;
+import com.ddemott.chessai.GameConstants;
+import com.ddemott.chessai.Side;
 
 public class King extends Piece {
 
-    // Ensure King has a proper moved flag for castling checks
-    private boolean moved = false;
-
+    public King(Side side, String position) {
+        super(side, position);
+    }
+    
+    // Legacy constructor
     public King(String color, String position) {
         super(color, position);
     }
@@ -27,12 +31,13 @@ public class King extends Piece {
         }
         int rowDiff = Math.abs(newCoords[0] - currentCoords[0]);
         int colDiff = Math.abs(newCoords[1] - currentCoords[1]);
+        
         // Only allow single-square moves (not castling)
         if ((rowDiff <= 1 && colDiff <= 1) && (rowDiff + colDiff > 0)) {
             // Prevent moving into check
             String destSquare = newPosition;
             try {
-                if (board.isSquareUnderAttack(destSquare, this.color)) {
+                if (board.isSquareUnderAttack(destSquare, side.toString())) { // Convert enum to string for now until Board is updated
                     return false;
                 }
             } catch (NullPointerException e) {
@@ -40,6 +45,7 @@ public class King extends Piece {
             }
             return true;
         }
+        
         // Castling move: move two squares horizontally and no vertical movement, only from starting rank
         if (!this.hasMoved() && rowDiff == 0 && colDiff == 2 && (this.getPosition().equals("e1") || this.getPosition().equals("e8"))) {
             // Convert board coordinates to square notation, e.g., e1
@@ -47,7 +53,7 @@ public class King extends Piece {
             String kingRank = String.valueOf(currentCoords[0] + 1);
             // Castling is illegal if the king is in check
             try {
-                if (board.isSquareUnderAttack(kingFile + kingRank, this.color)) {
+                if (board.isSquareUnderAttack(kingFile + kingRank, side.toString())) {
                     return false;
                 }
             } catch (NullPointerException e) {
@@ -67,7 +73,7 @@ public class King extends Piece {
                 // Replace castling validation to inline try-catch for isSquareUnderAttack:
                 boolean kingsideSafe;
                 try {
-                    kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, this.color) && !board.isSquareUnderAttack("g" + rankStr, this.color);
+                    kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, side.toString()) && !board.isSquareUnderAttack("g" + rankStr, side.toString());
                 } catch (NullPointerException e) {
                     kingsideSafe = false;
                 }
@@ -89,7 +95,7 @@ public class King extends Piece {
                 // In castling validation, replace direct calls to board.isSquareUnderAttack with safeUnderAttack to avoid issues
                 boolean queensideSafe;
                 try {
-                    queensideSafe = !board.isSquareUnderAttack("d" + rankStr, this.color) && !board.isSquareUnderAttack("c" + rankStr, this.color);
+                    queensideSafe = !board.isSquareUnderAttack("d" + rankStr, side.toString()) && !board.isSquareUnderAttack("c" + rankStr, side.toString());
                 } catch (NullPointerException e) {
                     queensideSafe = false;
                 }
@@ -105,12 +111,12 @@ public class King extends Piece {
 
     @Override
     public int getValue() {
-        return 0; // The King is invaluable
+        return GameConstants.KING_VALUE; 
     }
 
     @Override
     public IPiece clonePiece() {
-        King cloned = new King(getColor(), getPosition());
+        King cloned = new King(side, position);
         cloned.setHasMoved(this.hasMoved());
         return cloned;
     }
@@ -133,23 +139,12 @@ public class King extends Piece {
             if (row >= 0 && row < 8 && col >= 0 && col < 8) {
                 String newMove = board.convertCoordinatesToPosition(row, col);
                 IPiece pieceAtDestination = board.getPieceAt(newMove);
-                if (pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor())) {
+                if (pieceAtDestination == null || pieceAtDestination.getSide() != side) {
                     possibleMoves.add(currentPosition + " " + newMove);
                 }
             }
         }
 
         return possibleMoves;
-    }
-
-    @Override
-    public boolean hasMoved() {
-        return moved;
-    }
-
-    @Override
-    
-    public void setHasMoved(boolean moved) {
-        this.moved = moved;
     }
 }

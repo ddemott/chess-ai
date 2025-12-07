@@ -1,12 +1,19 @@
 package com.ddemott.chessai.pieces;
 
 import com.ddemott.chessai.Board;
+import com.ddemott.chessai.GameConstants;
+import com.ddemott.chessai.Side;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Queen extends Piece {
 
+    public Queen(Side side, String position) {
+        super(side, position);
+    }
+    
+    // Legacy constructor
     public Queen(String color, String position) {
         super(color, position);
     }
@@ -23,7 +30,7 @@ public class Queen extends Piece {
         boolean isRookMove = currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
         // Valid bishop move (diagonal)
         boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math.abs(newCoords[1] - currentCoords[1]);
-        // Invalid L-shape (knight move)
+        // Invalid L-shape (knight move) - not strictly necessary as the rook/bishop check handles it, but safe to keep
         int rowDiff = Math.abs(newCoords[0] - currentCoords[0]);
         int colDiff = Math.abs(newCoords[1] - currentCoords[1]);
         if ((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) {
@@ -36,7 +43,7 @@ public class Queen extends Piece {
             }
             // Destination must be empty or contain opponent's piece
             IPiece destPiece = board.getPieceAt(newPosition);
-            if (destPiece == null || !destPiece.getColor().equals(getColor())) {
+            if (destPiece == null || destPiece.getSide() != side) {
                 return true;
             }
             return false;
@@ -48,7 +55,7 @@ public class Queen extends Piece {
 
     private boolean isDestinationValid(int[] newCoords, Board board) {
         IPiece pieceAtDestination = board.getPieceAt(board.convertCoordinatesToPosition(newCoords[0], newCoords[1]));
-        return pieceAtDestination == null || !pieceAtDestination.getColor().equals(getColor());
+        return pieceAtDestination == null || pieceAtDestination.getSide() != side;
     }
 
     @Override
@@ -86,12 +93,12 @@ public class Queen extends Piece {
 
     @Override
     public int getValue() {
-        return 9;
+        return GameConstants.QUEEN_VALUE;
     }
 
     @Override
     public IPiece clonePiece() {
-        Queen cloned = new Queen(color, position);
+        Queen cloned = new Queen(side, position);
         cloned.setHasMoved(this.hasMoved());
         return cloned;
     }

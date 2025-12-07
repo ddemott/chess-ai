@@ -2,18 +2,23 @@ package com.ddemott.chessai;
 
 public class Player {
     private String name;
-    private String color; // "White" or "Black"
+    private Side side; 
 
-    public Player(String name, String color) {
+    public Player(String name, Side side) {
         this.name = name;
-        this.color = color;
+        this.side = side;
     }
 
     public String getName() {
         return name;
     }
 
+    public Side getSide() {
+        return side;
+    }
+    
+    // Helper for legacy code support
     public String getColor() {
-        return color;
+        return side.toString();
     }
 }

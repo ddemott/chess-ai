@@ -11,13 +11,13 @@ public class State {
         return aiStrategy;
     }
     private Board board;
-    private String currentTurn;
+    private Side currentTurn;
     private AIStrategy aiStrategy;
     private MoveHistory moveHistory;
 
     public State() {
         this.board = new Board();
-        this.currentTurn = "White"; // Starting with white's turn
+        this.currentTurn = Side.WHITE; // Starting with white's turn
         this.moveHistory = new MoveHistory();
     }
 
@@ -26,11 +26,19 @@ public class State {
     }
 
     public String getCurrentTurn() {
+        return currentTurn.toString();
+    }
+    
+    public Side getCurrentTurnSide() {
         return currentTurn;
     }
 
     public void setCurrentTurn(String currentTurn) {
-        this.currentTurn = currentTurn;
+        this.currentTurn = currentTurn.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK;
+    }
+    
+    public void setCurrentTurn(Side side) {
+        this.currentTurn = side;
     }
 
     public void setAIStrategy(AIStrategy aiStrategy) {
@@ -45,7 +53,7 @@ public class State {
         }
         
         // Check if the piece belongs to the current player
-        if (!piece.getColor().equals(currentTurn)) {
+        if (piece.getSide() != currentTurn) {
             return false;
         }
         
@@ -64,12 +72,12 @@ public class State {
             moveHistory.addPosition(positionFEN);
             
             // Update half-move clock
-            boolean isPawnMove = piece.getClass().getSimpleName().equals("Pawn");
+            boolean isPawnMove = piece instanceof Pawn;
             boolean isCapture = capturedPiece != null;
             moveHistory.updateHalfmoveClock(isPawnMove, isCapture);
             
             // Record the move in history
-            moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn);
+            moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString());
             toggleTurn();
         }
         return moveSuccessful;
@@ -92,7 +100,7 @@ public class State {
         }
         
         // Skip king moves - kings can't be pinned
-        if (piece.getClass().getSimpleName().equals("King")) {
+        if (piece instanceof King) {
             return false;
         }
         
@@ -100,7 +108,7 @@ public class State {
         Board clonedBoard = this.board.clone();
         
         // Execute the move on the cloned board, handling promotion if needed
-        if (promotionPiece != null && piece.getClass().getSimpleName().equals("Pawn")) {
+        if (promotionPiece != null && piece instanceof Pawn) {
             // For promotion moves, simulate it with the move
             if (!clonedBoard.movePiece(from, to, promotionPiece)) {
                 // If promotion move fails, simulate regular move
@@ -112,7 +120,7 @@ public class State {
         clonedBoard.setPieceAt(from, null);
         
         // Check if the king is in check after this move
-        boolean kingInCheck = clonedBoard.isKingInCheck(piece.getColor());
+        boolean kingInCheck = clonedBoard.isKingInCheck(piece.getSide());
         
         // If the king is in check, the piece is pinned
         return kingInCheck;
@@ -121,7 +129,7 @@ public class State {
     public boolean movePiece(String from, String to, String promotionPiece) {
         // Basic validation
         IPiece piece = board.getPieceAt(from);
-        if (piece == null || !piece.getColor().equals(currentTurn)) {
+        if (piece == null || piece.getSide() != currentTurn) {
             return false;
         }
         
@@ -143,9 +151,9 @@ public class State {
             
             // Record move in history with promotion info if applicable
             if (promotionPiece != null) {
-                moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn, promotionPiece);
+                moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString(), promotionPiece);
             } else {
-                moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn);
+                moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString());
             }
             
             toggleTurn();
@@ -155,15 +163,19 @@ public class State {
     }
 
     public String getBestMove() {
-        return aiStrategy.calculateBestMove(this, currentTurn);
+        return aiStrategy.calculateBestMove(this, currentTurn.toString());
     }
 
     private void toggleTurn() {
-        currentTurn = currentTurn.equals("White") ? "Black" : "White";
+        currentTurn = currentTurn.flip();
     }
 
     public List<String> getAllPossibleMoves(String color) {
         return board.getAllPossibleMoves(color);
+    }
+    
+    public List<String> getAllPossibleMoves(Side side) {
+        return board.getAllPossibleMoves(side);
     }
 
     @Override
@@ -259,16 +271,12 @@ public class State {
      * A stalemate occurs when the player to move is not in check but has no legal moves
      */
     public boolean isStalemate(String color) {
-        // Special case for test
-        if (currentTurn.equals("Black") && board.findKingPosition("Black") != null &&
-            board.findKingPosition("Black").equals("h8") && 
-            board.findKingPosition("White") != null && board.findKingPosition("White").equals("f7") &&
-            board.getPieceAt("g6") != null && board.getPieceAt("g6").getClass().getSimpleName().equals("Queen")) {
-            return true;
-        }
-        
+        return isStalemate(color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
+    }
+    
+    public boolean isStalemate(Side side) {
         // Delegate to Board's isStalemate method which has the corrected logic
-        return board.isStalemate(color);
+        return board.isStalemate(side);
     }
 
     /**

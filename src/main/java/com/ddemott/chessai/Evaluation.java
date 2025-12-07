@@ -20,6 +20,10 @@ public class Evaluation {
      * @return The evaluation score.
      */
     public int evaluateBoard(Board board, String color) {
+        return evaluateBoard(board, color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
+    }
+    
+    public int evaluateBoard(Board board, Side side) {
         int totalValue = 0;
         IPiece[][] pieces = board.getBoardArray();
 
@@ -28,36 +32,41 @@ public class Evaluation {
                 IPiece piece = pieces[row][col];
                 if (piece != null) {
                     int value = piece.getValue();
-                    if (!piece.getColor().equals(color)) {
+                    if (piece.getSide() != side) {
                         value = -value;
                     }
                     totalValue += value;
 
-                    // Add bonus for piece safety
+                    // Add bonus for piece safety (This is expensive to check perfectly, maybe simplify?)
+                    // isPieceGuarded generates moves, which is slow. For now, we'll leave it 
+                    // but we should optimize it later.
                     if (isPieceGuarded(piece, board)) {
-                        totalValue += piece.getColor().equals(color) ? 0.2 * value : -0.2 * value;
+                        totalValue += piece.getSide() == side ? 0.2 * value : -0.2 * value;
                     } else {
-                        totalValue -= piece.getColor().equals(color) ? 0.2 * value : -0.2 * value;
+                        totalValue -= piece.getSide() == side ? 0.2 * value : -0.2 * value;
                     }
                 }
             }
         }
 
         // Additional evaluation for King safety
-        totalValue += evaluateKingSafety(board, color);
+        totalValue += evaluateKingSafety(board, side);
+        
+        Side opponentSide = side.flip();
 
         // Check and checkmate evaluation
-        if (isInCheck(board, toggleColor(color))) {
+        // Use optimized Board methods instead of local slow implementations
+        if (board.isKingInCheck(opponentSide)) {
             totalValue += 200; // Opponent's King is in check, add a moderate positive score
         }
-        if (isCheckmate(board, toggleColor(color))) {
-            totalValue += 10000; // Opponent's King is in checkmate, add a very large positive score
+        if (board.isCheckmate(opponentSide)) {
+            totalValue += GameConstants.CHECKMATE_SCORE; // Opponent's King is in checkmate
         }
-        if (isInCheck(board, color)) {
+        if (board.isKingInCheck(side)) {
             totalValue -= 200; // Own King is in check, add a moderate negative score
         }
-        if (isCheckmate(board, color)) {
-            totalValue -= 10000; // Own King is in checkmate, add a very large negative score
+        if (board.isCheckmate(side)) {
+            totalValue -= GameConstants.CHECKMATE_SCORE; // Own King is in checkmate
         }
 
         return totalValue;
@@ -65,58 +74,18 @@ public class Evaluation {
 
     /**
      * Checks if the King of the given color is in check.
-     * 
-     * @param board The board to evaluate.
-     * @param color The color of the King to check.
-     * @return True if the King is in check, false otherwise.
+     * Deprecated: Use Board.isKingInCheck instead
      */
     public boolean isInCheck(Board board, String color) {
-        IPiece king = findKing(board, color);
-        if (king != null) {
-            String kingPosition = king.getPosition();
-            // Check all opponent's moves to see if any can attack the king's position
-            List<String> opponentMoves = board.getAllPossibleMoves(toggleColor(color));
-            for (String move : opponentMoves) {
-                String[] positions = move.split(" ");
-                if (positions.length == 2 && positions[1].equals(kingPosition)) {
-                    return true;
-                }
-            }
-        }
-        return false;
+        return board.isKingInCheck(color);
     }
 
     /**
      * Checks if the King of the given color is in checkmate.
-     * 
-     * @param board The board to evaluate.
-     * @param color The color of the King to check.
-     * @return True if the King is in checkmate, false otherwise.
+     * Deprecated: Use Board.isCheckmate instead
      */
     public boolean isCheckmate(Board board, String color) {
-        if (isInCheck(board, color)) {
-            List<String> possibleMoves = board.getAllPossibleMoves(color);
-            for (String move : possibleMoves) {
-                Board newState = board.clone();
-                String[] positions = move.split(" ");
-                newState.movePiece(positions[0], positions[1]);
-                if (!isInCheck(newState, color)) {
-                    return false; // If there's at least one move that escapes check, it's not checkmate
-                }
-            }
-            return true; // No moves can escape check, so it's checkmate
-        }
-        return false;
-    }
-
-    /**
-     * Toggles the color between "White" and "Black".
-     * 
-     * @param color The current color.
-     * @return The toggled color.
-     */
-    public String toggleColor(String color) {
-        return color.equals("White") ? "Black" : "White";
+        return board.isCheckmate(color);
     }
 
     /**
@@ -127,11 +96,15 @@ public class Evaluation {
      * @return The King piece if found, null otherwise.
      */
     public IPiece findKing(Board board, String color) {
+        return findKing(board, color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
+    }
+    
+    public IPiece findKing(Board board, Side side) {
         IPiece[][] pieces = board.getBoardArray();
         for (int row = 0; row < 8; row++) {
             for (int col = 0; col < 8; col++) {
                 IPiece piece = pieces[row][col];
-                if (piece instanceof King && piece.getColor().equals(color)) {
+                if (piece instanceof King && piece.getSide() == side) {
                     return piece;
                 }
             }
@@ -147,15 +120,14 @@ public class Evaluation {
      * @return True if the piece is guarded, false otherwise.
      */
     public boolean isPieceGuarded(IPiece piece, Board board) {
-        List<String> possibleGuardians = piece.getAllPossibleMoves(board);
+        // This is still slow because it calls getAllPossibleMoves
+        List<String> possibleGuardians = board.getAllPossibleMoves(piece.getSide());
 
+        String piecePos = piece.getPosition();
         for (String move : possibleGuardians) {
             String[] positions = move.split(" ");
-            if (positions.length == 2) {
-                IPiece guardian = board.getPieceAt(positions[1]);
-                if (guardian != null && guardian.getColor().equals(piece.getColor())) {
-                    return true;
-                }
+            if (positions.length == 2 && positions[1].equals(piecePos)) {
+                return true;
             }
         }
         return false;
@@ -165,12 +137,12 @@ public class Evaluation {
      * Evaluates the safety of the King, including factors like castling status and pawn shield.
      * 
      * @param board The board to evaluate.
-     * @param color The color of the King to evaluate.
+     * @param side The color of the King to evaluate.
      * @return The King safety score.
      */
-    public int evaluateKingSafety(Board board, String color) {
+    public int evaluateKingSafety(Board board, Side side) {
         int kingSafetyScore = 0;
-        IPiece king = findKing(board, color);
+        IPiece king = findKing(board, side);
         if (king != null) {
             String kingPosition = king.getPosition();
             int[] coords = board.convertPositionToCoordinates(kingPosition);
@@ -214,17 +186,17 @@ public class Evaluation {
         int pawnShieldScore = 0;
         String kingPosition = king.getPosition();
         int[] coords = board.convertPositionToCoordinates(kingPosition);
-        String color = king.getColor();
+        Side side = king.getSide();
 
         // Check the three squares in front of the castled King for pawns
         if (coords[1] == 6 || coords[1] == 2) {
-            int row = color.equals("White") ? 1 : 6;
+            int row = side == Side.WHITE ? 1 : 6;
             int colStart = coords[1] - 1;
             int colEnd = coords[1] + 1;
 
             for (int col = colStart; col <= colEnd; col++) {
                 IPiece piece = board.getPieceAt(board.convertCoordinatesToPosition(row, col));
-                if (piece instanceof Pawn && piece.getColor().equals(color)) {
+                if (piece instanceof Pawn && piece.getSide() == side) {
                     pawnShieldScore += 10; // Arbitrary bonus value
                 }
             }

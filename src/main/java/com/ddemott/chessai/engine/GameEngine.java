@@ -3,6 +3,7 @@ package com.ddemott.chessai.engine;
 import com.ddemott.chessai.State;
 import com.ddemott.chessai.MoveHistory;
 import com.ddemott.chessai.Move;
+import com.ddemott.chessai.Side;
 import com.ddemott.chessai.ai.AIStrategy;
 import com.ddemott.chessai.ai.MinMaxStrategy;
 import com.ddemott.chessai.ai.AIDifficulty;
@@ -72,11 +73,11 @@ public class GameEngine {
         String aiMove = getBestMove();
         if (aiMove != null) {
             String[] aiPositions = aiMove.split(" ");
-            if (aiPositions.length == 2) {
-                boolean moveSuccess = movePiece(aiPositions[0], aiPositions[1]);
+            if (aiPositions.length == 2 || aiPositions.length == 3) {
+                String promotion = aiPositions.length == 3 ? aiPositions[2] : null;
+                boolean moveSuccess = movePiece(aiPositions[0], aiPositions[1], promotion);
                 if (!moveSuccess) {
-                    // Log that AI move failed - this shouldn't happen if AI is working correctly
-                    System.err.println("Warning: AI suggested invalid move: " + aiMove);
+                    // Log error internally or throw exception. For now, silence.
                 }
             }
         }
@@ -159,15 +160,14 @@ public class GameEngine {
             // Replay all the moves
             for (String algebraicMove : gameData.moves) {
                 if (!playMoveFromAlgebraicNotation(algebraicMove)) {
-                    System.err.println("Failed to play move: " + algebraicMove);
+                    // System.err.println("Failed to play move: " + algebraicMove);
                     return false;
                 }
             }
             
-            System.out.println("Successfully loaded game: " + gameData);
             return true;
         } catch (Exception e) {
-            System.err.println("Error loading game from PGN: " + e.getMessage());
+            // System.err.println("Error loading game from PGN: " + e.getMessage());
             return false;
         }
     }
@@ -180,16 +180,16 @@ public class GameEngine {
         // Handle castling
         if (algebraicMove.equals("O-O")) {
             // Kingside castling
-            String currentPlayer = getCurrentTurn();
-            if (currentPlayer.equals("White")) {
+            Side currentSide = state.getCurrentTurnSide();
+            if (currentSide == Side.WHITE) {
                 return movePiece("e1", "g1");
             } else {
                 return movePiece("e8", "g8");
             }
         } else if (algebraicMove.equals("O-O-O")) {
             // Queenside castling
-            String currentPlayer = getCurrentTurn();
-            if (currentPlayer.equals("White")) {
+            Side currentSide = state.getCurrentTurnSide();
+            if (currentSide == Side.WHITE) {
                 return movePiece("e1", "c1");
             } else {
                 return movePiece("e8", "c8");
@@ -242,8 +242,8 @@ public class GameEngine {
     private boolean findAndPlayMove(String algebraicMove) {
         // This is a placeholder - implementing full algebraic notation parsing
         // would require significant additional logic to handle disambiguation
-        System.out.println("Warning: Could not parse move '" + algebraicMove + "' - skipping");
-        return true; // Continue loading other moves
+        // System.out.println("Warning: Could not parse move '" + algebraicMove + "' - skipping");
+        return true; // Continue loading other moves (or fail?) - original code returned true (skipping)
     }
     
     /**

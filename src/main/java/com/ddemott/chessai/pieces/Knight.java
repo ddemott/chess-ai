@@ -1,12 +1,19 @@
 package com.ddemott.chessai.pieces;
 
 import com.ddemott.chessai.Board;
+import com.ddemott.chessai.GameConstants;
+import com.ddemott.chessai.Side;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Knight extends Piece {
 
+    public Knight(Side side, String position) {
+        super(side, position);
+    }
+    
+    // Legacy constructor
     public Knight(String color, String position) {
         super(color, position);
     }
@@ -22,7 +29,7 @@ public class Knight extends Piece {
 
         if ((rowDiff == 2 && colDiff == 1) || (rowDiff == 1 && colDiff == 2)) {
             IPiece destinationPiece = board.getPieceAt(newPosition);
-            return destinationPiece == null || !destinationPiece.getColor().equals(getColor());
+            return destinationPiece == null || destinationPiece.getSide() != side;
         }
 
         return false;
@@ -55,12 +62,12 @@ public class Knight extends Piece {
 
     @Override
     public int getValue() {
-        return 3;
+        return GameConstants.KNIGHT_VALUE;
     }
 
     @Override
     public IPiece clonePiece() {
-        Knight cloned = new Knight(color, position);
+        Knight cloned = new Knight(side, position);
         cloned.setHasMoved(this.hasMoved());
         return cloned;
     }
