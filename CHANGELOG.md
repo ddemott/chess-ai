@@ -24,3 +24,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/).
 - **Input Validation**: Enhanced input validation across all layers.
 - **Feedback**: Improved error messages and user feedback.
 - **Documentation**: Standardized code documentation and comments.
+
+### Refactored
+- **Type Safety**: Introduced `Side` enum to replace legacy String-based color handling ("White"/"Black"), improving type safety across the engine.
+- **Constants**: Centralized magic numbers (piece values, board coordinates) into a new `GameConstants` class.
+- **Project Structure**: Moved and expanded documentation into a dedicated `docs/` directory (`ARCHITECTURE.md`, `PLAN.md`).
