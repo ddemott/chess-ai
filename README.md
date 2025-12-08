@@ -204,6 +204,12 @@ bash scripts/pre-push --force-fast   # emulate non-main push
 bash scripts/pre-push --force-full   # emulate push-to-main
 ```
 
+Build verification note:
+ - Running `mvn verify` will trigger a repository-wide check to ensure there are no stray debug prints such as `System.out.println`, `System.err.println`, or `.printStackTrace(` in `src/main/java` (excluding the console package). To skip the check during local runs, use:
+```bash
+mvn -Dskip.debug.prints=true verify
+```
+
 ### Regenerating Code Analysis Baselines
 
 This repo uses baselines for static analysis to avoid failing CI on historical issues while preventing new violations.
