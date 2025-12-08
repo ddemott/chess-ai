@@ -91,7 +91,7 @@ bash scripts/install-hooks
 After this, the pre-commit checks will run automatically for new commits in this repo worktree.
 
 ### Hook behaviors
-- `pre-commit` (lightweight): runs the debug-print scan (staged files only) and a quick smoke test if test files were changed. This provides fast local feedback without running the full test suite.
+- `pre-commit` (lightweight): runs the debug-print scan (staged files only) and a quick smoke test if test files were changed. The scan looks for `System.out.println`, `System.err.println`, and `.printStackTrace(` in `src/main/java` (excluding console UI files). This provides fast local feedback without running the full test suite.
 - `pre-push` (conditional): runs smoke tests for non-main branch pushes and a full test suite for pushes to `main`.
 - `CI` (GitHub Actions): always runs full tests and additional static analysis checks (Checkstyle, SpotBugs) on PRs and merges to `main`.
 
@@ -101,7 +101,7 @@ If you prefer a stricter developer workflow, you can update the hook scripts in 
 
 This repository ships a `pre-push` hook which runs a heavier set of checks to prevent bad pushes into `main` from developer worktrees.
 
-- The hook runs the **full unit test suite** (`mvn -q -B test`), and also runs the debug print scanner to ensure there are no stray `System.out.println` statements in non-console code.
+- The hook runs the **full unit test suite** (`mvn -q -B test`), and also runs the debug print scanner to ensure there are no stray `System.out.println`, `System.err.println`, or `.printStackTrace(` statements in non-console code.
 - To enable the hook, run `bash scripts/install-hooks` after cloning the repository.
 - To test the hook locally, run:
 
