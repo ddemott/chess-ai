@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Installing git hooks for this repository by setting git core.hooksPath to '.githooks'"
+git config core.hooksPath .githooks
+echo "Done. To enable hooks globally for this repo, ensure your worktree is set up correctly."

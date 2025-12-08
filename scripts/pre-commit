@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Convenience wrapper to call the repository's pre-commit hook (if core.hooksPath is set to .githooks)
+HOOK_DIR=".githooks"
+HOOK="$HOOK_DIR/pre-commit"
+if [[ ! -f "$HOOK" ]]; then
+  echo "Local hook not found at $HOOK. Please run 'scripts/install-hooks' to configure hooks, or run this script with 'bash scripts/pre-commit' to test checks." >&2
+  exit 1
+fi
+
+bash "$HOOK"

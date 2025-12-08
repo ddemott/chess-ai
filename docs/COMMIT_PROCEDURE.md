@@ -1,0 +1,86 @@
+# Commit Procedure & PR Checklist
+
+This document outlines the recommended process for committing code and opening a pull request in the ChessAI repository. It follows best practices to ensure consistency, test coverage, and a smooth review + CI pipeline.
+
+## Branching
+- Always create a new feature/fix branch for your changes.
+	- Naming: `feature/<ticket>-<short-desc>` or `fix/<ticket>-<short-desc>`.
+
+## Local Development
+- Keep `main` clean — work in branches.
+- Rebase/merge with `main` often to keep conflicts manageable.
+
+## Running tests
+- Run the full automated test suite at least once before committing.
+
+Example:
+```bash
+# run the full suite
+mvn -q test
+
+# run a single test class for faster iterations
+mvn -Dtest=com.ddemott.chessai.SpecialMovesTest test
+
+# run a single test method
+mvn -Dtest=com.ddemott.chessai.SpecialMovesTest#testPawnPromotion test
+```
+
+## Commit message format
+Use a small set of conventional prefixes. Example:
+- `feat:` – new features
+- `fix:` – bug fixes
+- `refactor:` – internal changes unrelated to features or fixes
+- `docs:` – changes to documentation
+- `test:` – changes to tests
+
+Clear message examples:
+```bash
+git commit -m "fix(Board): set piece.position in setPieceAt() to keep consistent positions"
+git commit -m "feat: add opening book integration with MinMaxStrategy"
+```
+
+## Pre-commit checklist
+- [ ] All tests pass (`mvn -q test`)
+- [ ] No debug prints in core files (`System.out.println` used only intentionally in console UI modules)
+- [ ] CI-friendly: prefer non-interactive checks and correct exit codes
+- [ ] `README.md`, `ARCHITECTURE.md`, or `CHANGELOG.md` updates included if the feature/bug fix requires it
+
+## Push and PR
+1. Push the branch to remote:
+```bash
+git push -u origin feature/<branch-name>
+```
+2. Open a PR against `main`. Include:
+- Summary of changes
+- Related ticket(s) / issue numbers
+- Testing and verification notes
+- If tests were added/changed, list coverage and scenarios
+
+## CI & Review
+- Wait for CI to complete; address any test failures.
+- Address review comments, keeping commits small and readable.
+- Rebase on `main` if needed and re-run tests locally.
+
+## Merge & Post-merge
+- Prefer squash merging or merge commits as per the team's conventions.
+- Clean up: delete the feature branch on remote once merged.
+- Update `CHANGELOG.md` or docs as appropriate.
+
+## Special cases & Tips
+- For hotfixes that need to land to `main` quickly, make sure to preserve the quick turnaround with tests and a concise PR.
+- For large refactor or performance changes (e.g., migrating to bitboards), create a design PR first for architecture review.
+
+---
+
+If you like, I can add a `pre-commit` hook to automate running tests and scanning for a few patterns (like stray debug prints), and create a PR template and `CONTRIBUTING.md` that references this procedure.
+
+## Install repository git hooks (recommended)
+
+To enable the repository hooks that run checks like the `mvn -q test` and `System.out.println` scans, run the install helper once after cloning:
+
+```bash
+# configure the repository to use hooks under .githooks
+bash scripts/install-hooks
+```
+
+After this, the pre-commit checks will run automatically for new commits in this repo worktree.
