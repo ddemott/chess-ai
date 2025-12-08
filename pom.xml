@@ -86,6 +86,29 @@
                         </execution>
                     </executions>
                 </plugin>
+                <!-- Run debug-print checks during verify to prevent System.out/err usage in src/main -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-antrun-plugin</artifactId>
+                    <version>3.0.0</version>
+                    <executions>
+                        <execution>
+                            <id>check-debug-prints</id>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <target unless="skip.debug.prints">
+                                    <echo message="Running debug-print check via scripts/check-debug-prints.sh" />
+                                    <exec executable="bash">
+                                        <arg value="scripts/check-debug-prints.sh" />
+                                    </exec>
+                                </target>
+                            </configuration>
+                        </execution>
+                    </executions>
+                </plugin>
         </plugins>
     </build>
 </project>
