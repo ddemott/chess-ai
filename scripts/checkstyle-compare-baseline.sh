@@ -23,8 +23,10 @@ echo "Comparing Checkstyle report to baseline..."
 # Extract errors in a normalized form for comparison: file:line:source:message
 TMP_CURR=$(mktemp)
 TMP_BASE=$(mktemp)
-xmlstarlet sel -t -m "//error" -v "concat(../../@name, ':', @line, ':', @source, ':', @message)" -n "$REPORT_FILE" | sort -u > $TMP_CURR || true
-xmlstarlet sel -t -m "//error" -v "concat(../../@name, ':', @line, ':', @source, ':', @message)" -n "$BASELINE_FILE" | sort -u > $TMP_BASE || true
+# Normalize file paths to be relative to repository root to avoid absolute path differences in CI vs local
+REPO_ROOT_ESCAPED=$(echo "$ROOT" | sed 's/\//\\\//g')
+xmlstarlet sel -t -m "//error" -v "concat(../../@name, ':', @line, ':', @source, ':', @message)" -n "$REPORT_FILE" | sed "s/$REPO_ROOT_ESCAPED\///" | sort -u > $TMP_CURR || true
+xmlstarlet sel -t -m "//error" -v "concat(../../@name, ':', @line, ':', @source, ':', @message)" -n "$BASELINE_FILE" | sed "s/$REPO_ROOT_ESCAPED\///" | sort -u > $TMP_BASE || true
 
 NEW=$(comm -23 $TMP_CURR $TMP_BASE | wc -l)
 if [[ $NEW -gt 0 ]]; then

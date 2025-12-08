@@ -31,8 +31,9 @@ echo "Comparing SpotBugs report to baseline..."
 
 TMP_CURR=$(mktemp)
 TMP_BASE=$(mktemp)
-xmlstarlet sel -t -m "//BugInstance" -v "concat(@type, ':', @priority, ':', @category, ':', parent::Class/@classname, ':', BugInstance/SourceLine/@start)" -n "$REPORT_FILE" | sort -u > $TMP_CURR || true
-xmlstarlet sel -t -m "//BugInstance" -v "concat(@type, ':', @priority, ':', @category, ':', parent::Class/@classname, ':', BugInstance/SourceLine/@start)" -n "$BASELINE_FILE" | sort -u > $TMP_BASE || true
+REPO_ROOT_ESCAPED=$(echo "$ROOT" | sed 's/\//\\\//g')
+xmlstarlet sel -t -m "//BugInstance" -v "concat(@type, ':', @priority, ':', @category, ':', parent::Class/@classname, ':', BugInstance/SourceLine/@start, ':', BugInstance/SourceLine/@sourcefile)" -n "$REPORT_FILE" | sed "s/$REPO_ROOT_ESCAPED\///" | sort -u > $TMP_CURR || true
+xmlstarlet sel -t -m "//BugInstance" -v "concat(@type, ':', @priority, ':', @category, ':', parent::Class/@classname, ':', BugInstance/SourceLine/@start, ':', BugInstance/SourceLine/@sourcefile)" -n "$BASELINE_FILE" | sed "s/$REPO_ROOT_ESCAPED\///" | sort -u > $TMP_BASE || true
 
 NEW=$(comm -23 $TMP_CURR $TMP_BASE | wc -l)
 if [[ $NEW -gt 0 ]]; then
