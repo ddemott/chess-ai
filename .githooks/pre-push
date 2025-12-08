@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+echo "Running pre-push checks..."
+
+# Run the full test suite. This is intentionally heavyweight so that pushes to remote only happen with passing tests.
+echo "Running full test suite (this may take a while)..."
+if ! mvn -q -B test; then
+  echo "\nUnit tests failed. Aborting push. Fix tests before pushing."
+  exit 1
+fi
+
+echo "Tests passed. Running debug-print scan..."
+if ! bash scripts/check-debug-prints.sh; then
+  echo "\nDebug print scan failed. Aborting push. Remove stray System.out.println or update the console package exception." 
+  exit 1
+fi
+
+echo "Pre-push checks passed. Proceeding with push."
+exit 0

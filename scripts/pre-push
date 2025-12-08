@@ -1,0 +1,12 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOOK_DIR='.githooks'
+HOOK="$HOOK_DIR/pre-push"
+if [[ ! -f "$HOOK" ]]; then
+  echo "Local pre-push hook not found at $HOOK. Please run 'bash scripts/install-hooks' to install hooks or run this wrapper with 'bash scripts/pre-push'." >&2
+  exit 1
+fi
+
+echo "Executing repo pre-push hook: $HOOK"
+bash "$HOOK"
