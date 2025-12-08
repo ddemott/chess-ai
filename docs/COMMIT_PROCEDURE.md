@@ -93,6 +93,8 @@ After this, the pre-commit checks will run automatically for new commits in this
 ### Hook behaviors
 - `pre-commit` (lightweight): runs the debug-print scan (staged files only) and a quick smoke test if test files were changed. The scan looks for `System.out.println`, `System.err.println`, and `.printStackTrace(` in `src/main/java` (excluding console UI files). This provides fast local feedback without running the full test suite.
 - `pre-push` (conditional): runs smoke tests for non-main branch pushes and a full test suite for pushes to `main`.
+ - `pre-push` (conditional): runs smoke tests for non-main branch pushes and a full test suite for pushes to `main`.
+ - Build verification: `mvn verify` includes a debug-print check in the `verify` phase that fails the build if `System.out.println`, `System.err.println`, or `.printStackTrace(` are detected in `src/main/java` (excluding the console package). To skip this check locally, run `mvn -Dskip.debug.prints=true verify`.
 - `CI` (GitHub Actions): always runs full tests and additional static analysis checks (Checkstyle, SpotBugs) on PRs and merges to `main`.
 
 If you prefer a stricter developer workflow, you can update the hook scripts in `.githooks/` to enforce a heavier pre-commit step (e.g., run a full test suite), however this will increase local commit latency.
