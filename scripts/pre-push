@@ -1,6 +1,15 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# Manual wrapper to invoke repo pre-push hook; allows optional flags.
+# Usage: bash scripts/pre-push [--force-full|--force-fast]
+
+MODE="auto"
+if [[ ${1-} == "--force-full" ]]; then
+  MODE="force-full"
+elif [[ ${1-} == "--force-fast" ]]; then
+  MODE="force-fast"
+fi
 HOOK_DIR='.githooks'
 HOOK="$HOOK_DIR/pre-push"
 if [[ ! -f "$HOOK" ]]; then
@@ -8,5 +17,21 @@ if [[ ! -f "$HOOK" ]]; then
   exit 1
 fi
 
-echo "Executing repo pre-push hook: $HOOK"
-bash "$HOOK"
+echo "Preparing to execute repo pre-push hook: $HOOK"
+
+# If forced mode, emulate expected stdin so the pre-push hook can detect target branch
+if [[ "$MODE" == "force-full" ]]; then
+  echo "Emulating push to main (forced full tests)."
+  # emulate pushing local HEAD to refs/heads/main
+  LOCAL_REF=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD")
+  LOCAL_SHA=$(git rev-parse --verify HEAD)
+  echo "$LOCAL_REF $LOCAL_SHA refs/heads/main 0000000000000000000000000000000000000000" | bash "$HOOK"
+elif [[ "$MODE" == "force-fast" ]]; then
+  echo "Emulating push to feature branch (forced fast tests)."
+  LOCAL_REF=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "HEAD")
+  LOCAL_SHA=$(git rev-parse --verify HEAD)
+  echo "$LOCAL_REF $LOCAL_SHA refs/heads/feature/xxx 0000000000000000000000000000000000000000" | bash "$HOOK"
+else
+  # normal invocation: call the hook without stdin (the hook uses local branch detection)
+  bash "$HOOK"
+fi

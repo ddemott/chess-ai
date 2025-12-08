@@ -3,11 +3,40 @@ set -euo pipefail
 
 echo "Running pre-push checks..."
 
-# Run the full test suite. This is intentionally heavyweight so that pushes to remote only happen with passing tests.
-echo "Running full test suite (this may take a while)..."
-if ! mvn -q -B test; then
-  echo "\nUnit tests failed. Aborting push. Fix tests before pushing."
-  exit 1
+# Determine if the push includes a ref update to main (remote ref: refs/heads/main)
+PUSHES_TO_MAIN=false
+STDIN_CONTENT=""
+if [ -t 0 ]; then
+  # No stdin; script likely invoked manually. Use the current local branch for emulation.
+  CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD 2>/dev/null || echo "")
+  if [[ "$CURRENT_BRANCH" == "main" ]]; then
+    PUSHES_TO_MAIN=true
+  fi
+else
+  # Read push refs provided by git pre-push on stdin
+  while read -r local_ref local_sha remote_ref remote_sha; do
+    STDIN_CONTENT+="$local_ref $local_sha $remote_ref $remote_sha\n"
+    if [[ "$remote_ref" == "refs/heads/main" ]]; then
+      PUSHES_TO_MAIN=true
+      break
+    fi
+  done
+fi
+
+if [[ "$PUSHES_TO_MAIN" == true ]]; then
+  echo "Push to main detected. Running full test suite (this may take a while)..."
+  if ! mvn -q -B test; then
+    echo "\nUnit tests failed. Aborting push to main. Fix tests before pushing."
+    exit 1
+  fi
+else
+  echo "Detected non-main push. Running faster smoke tests..."
+  # Fast smoke test suite: small set of representative tests
+  SMOKE_TESTS="com.ddemott.chessai.BoardCoreRulesTest,com.ddemott.chessai.BoardFENTest,com.ddemott.chessai.PawnMovementTest,com.ddemott.chessai.KingMovementTest,com.ddemott.chessai.CheckmatePatternTest"
+  if ! mvn -q -B -Dtest="$SMOKE_TESTS" test; then
+    echo "\nSmoke tests failed. Aborting push. Run the full test suite and fix the failures, or run with --skip-pre-push to bypass for emergencies." 
+    exit 1
+  fi
 fi
 
 echo "Tests passed. Running debug-print scan..."
