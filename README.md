@@ -219,6 +219,15 @@ git push
 
 Note: SpotBugs may not run in local environments due to plugin availability; CI will generate/update baselines on the runner if needed.
 
+## 🧭 Developer Demos & Debug Files
+
+For convenience, example/demo and debug utilities (used during development and debugging sessions) are collected in the `dev/demos/` directory. These files are not part of the core product and are intended for local use by contributors.
+
+- Location: `dev/demos/` (moved from root to keep the repository root tidy)
+- These files may contain `System.out.println` prints and ad-hoc test harnesses; they are not run by CI by default.
+
+If you want to contribute a demo, please add it under `dev/demos/` and update this README or add a new document describing how to run it without interfering with the main test-suite or CI.
+
 
 ## 🏗️ Project Structure
 

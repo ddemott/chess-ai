@@ -45,6 +45,10 @@ git commit -m "feat: add opening book integration with MinMaxStrategy"
 - [ ] CI-friendly: prefer non-interactive checks and correct exit codes
 - [ ] `README.md`, `ARCHITECTURE.md`, or `CHANGELOG.md` updates included if the feature/bug fix requires it
 
+### Note about demo/debug files
+- Demo/Debug Java files that are used for local debugging are stored under `dev/demos/`.
+- These demo files can contain `System.out.println` prints and are intended for local debugging; they are not part of the main product and CI does not run them by default.
+
 ## Push and PR
 1. Push the branch to remote:
 ```bash
