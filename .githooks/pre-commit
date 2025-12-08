@@ -1,43 +1,41 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Running pre-commit checks..."
+echo "Running pre-commit checks (lightweight)..."
 
-# Run unit tests first (fast-fail)
-if ! mvn -q test; then
-  echo "\nUnit tests failed. Fix tests before committing."
-  exit 1
-fi
-
-echo "Unit tests passed. Checking for debug prints and other issues..."
-
-# Collect staged Java files (added/modified/copied)
+# Run debug-print scan for staged files
 STAGED_JAVA_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.java$' || true)
-if [[ -z "$STAGED_JAVA_FILES" ]]; then
-  # Nothing staged to check
-  echo "No staged Java files to scan; pre-commit checks passed."
-  exit 0
+if [[ -n "$STAGED_JAVA_FILES" ]]; then
+  # For speed, only scan the staged files
+  BAD_PRINTS=()
+  for f in $STAGED_JAVA_FILES; do
+    if [[ "$f" == src/main/java/com/ddemott/chessai/console/* ]]; then
+      continue
+    fi
+    if grep -nH "System\.out\.println" "$f" >/dev/null 2>&1; then
+      BAD_PRINTS+=("$f")
+    fi
+  done
+  if [[ ${#BAD_PRINTS[@]} -ne 0 ]]; then
+    echo "System.out.println debug prints found in staged files (excluding console package):"
+    for file in "${BAD_PRINTS[@]}"; do
+      echo "  - $file"
+      grep -nH "System\.out\.println" "$file" || true
+    done
+    echo "\nPlease remove debug prints or wrap in logger statements before committing."
+    exit 1
+  fi
 fi
 
-# Find System.out.println usages outside the console package
-BAD_PRINTS=()
-for f in $STAGED_JAVA_FILES; do
-  # skip console package files which intentionally output to System.out
-  if [[ "$f" == src/main/java/com/ddemott/chessai/console/* ]]; then
-    continue
+# Optional quick smoke tests for staged Java files - run a subset of tests if tests were changed
+# If test files are staged, try running a small set to catch quick failures; otherwise skip for speed.
+if echo "$STAGED_JAVA_FILES" | grep -E 'src/test/java' >/dev/null 2>&1; then
+  echo "Detected staged test files. Running a quick smoke test set..."
+  SMOKE_TESTS="com.ddemott.chessai.BoardCoreRulesTest,com.ddemott.chessai.BoardFENTest,com.ddemott.chessai.PawnMovementTest"
+  if ! mvn -q -Dtest="$SMOKE_TESTS" test; then
+    echo "Quick smoke tests failed. Please run full tests and fix failures before committing."
+    exit 1
   fi
-  if grep -nH "System.out.println" "$f" >/dev/null 2>&1; then
-    BAD_PRINTS+=("$f")
-  fi
-done
-
-if [[ ${#BAD_PRINTS[@]} -ne 0 ]]; then
-  echo "System.out.println debug prints found in staged files (excluding console package):"
-  for file in "${BAD_PRINTS[@]}"; do
-    echo "  - $file"
-  done
-  echo "\nPlease remove debug prints or wrap in logger statements before committing."
-  exit 1
 fi
 
 echo "Pre-commit checks passed."

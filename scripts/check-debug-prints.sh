@@ -24,9 +24,28 @@ for f in $FILES; do
   if [[ "$basename" == Debug* || "$basename" == debug_* ]]; then
     continue
   fi
-  if grep -nH "System\.out\.println" "$f" >/dev/null 2>&1; then
+  # Use a Perl-compatible regex to avoid matching commented lines that start with //
+  # For each grep match, ensure the println isn't commented out (by // or by earlier block comment marker)
+  while IFS= read -r match_line; do
+    if [[ -z "$match_line" ]]; then
+      continue
+    fi
+    # match_line format: file:line:content
+    file_path="$(echo "$match_line" | cut -d: -f1)"
+    line_num="$(echo "$match_line" | cut -d: -f2)"
+    content="$(echo "$match_line" | cut -d: -f3-)"
+    prefix="${content%%System.out.println*}"
+    # If the prefix contains '//' then the println occurs after an inline comment marker and can be ignored
+    if [[ "$prefix" =~ // ]]; then
+      continue
+    fi
+    # If prefix contains '/*' or '*' assume it's likely in a block comment - skip
+    if [[ "$prefix" =~ /\* ]] || [[ "$prefix" =~ \* ]]; then
+      continue
+    fi
     FOUND+=("$f")
-  fi
+    echo "$file_path:$line_num:$content"
+  done < <(grep -nH "System\.out\.println" "$f" 2>/dev/null || true)
 done
 
 if [[ ${#FOUND[@]} -gt 0 ]]; then

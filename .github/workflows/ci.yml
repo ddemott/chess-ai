@@ -33,3 +33,9 @@ jobs:
 
       - name: Check for debug prints in code
         run: bash scripts/check-debug-prints.sh
+
+      - name: Run Checkstyle
+        run: mvn -q -B org.apache.maven.plugins:maven-checkstyle-plugin:3.3.1:check || true
+
+      - name: Run SpotBugs
+        run: mvn -q -B com.github.spotbugs:spotbugs-maven-plugin:4.7.3:check || true

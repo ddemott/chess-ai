@@ -85,6 +85,13 @@ bash scripts/install-hooks
 
 After this, the pre-commit checks will run automatically for new commits in this repo worktree.
 
+### Hook behaviors
+- `pre-commit` (lightweight): runs the debug-print scan (staged files only) and a quick smoke test if test files were changed. This provides fast local feedback without running the full test suite.
+- `pre-push` (conditional): runs smoke tests for non-main branch pushes and a full test suite for pushes to `main`.
+- `CI` (GitHub Actions): always runs full tests and additional static analysis checks (Checkstyle, SpotBugs) on PRs and merges to `main`.
+
+If you prefer a stricter developer workflow, you can update the hook scripts in `.githooks/` to enforce a heavier pre-commit step (e.g., run a full test suite), however this will increase local commit latency.
+
 ## Pre-push hook
 
 This repository ships a `pre-push` hook which runs a heavier set of checks to prevent bad pushes into `main` from developer worktrees.
