@@ -8,6 +8,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.logging.Logger;
 
 import com.ddemott.chessai.pieces.IPiece;
 import com.ddemott.chessai.pieces.Pawn;
@@ -18,6 +19,8 @@ import com.ddemott.chessai.pieces.King;
  * generation and PGN export functionality.
  */
 public class MoveHistory {
+
+	private static final Logger LOGGER = Logger.getLogger(MoveHistory.class.getName());
 
 	/**
 	 * Returns a copy of the moves list (for compatibility with legacy code)
@@ -263,7 +266,7 @@ public class MoveHistory {
 			Files.write(path, pgnContent.getBytes());
 			return true;
 		} catch (IOException e) {
-			System.err.println("Error saving PGN file: " + e.getMessage());
+			LOGGER.severe("Error saving PGN file: " + e.getMessage());
 			return false;
 		}
 	}
@@ -279,14 +282,14 @@ public class MoveHistory {
 		try {
 			Path path = Paths.get(filename);
 			if (!Files.exists(path)) {
-				System.err.println("PGN file not found: " + filename);
+				LOGGER.warning("PGN file not found: " + filename);
 				return null;
 			}
 
 			String content = Files.readString(path);
 			return parsePGN(content);
 		} catch (IOException e) {
-			System.err.println("Error reading PGN file: " + e.getMessage());
+			LOGGER.severe("Error reading PGN file: " + e.getMessage());
 			return null;
 		}
 	}
