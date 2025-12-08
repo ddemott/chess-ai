@@ -183,6 +183,27 @@ Current turn: White
 Enter your move or command: 
 ```
 
+## 🧑‍💻 Developer Setup & Git Hooks
+
+To streamline local development and help ensure consistent code quality, the repository includes local Git hooks and CI checks.
+
+1. Install the repository hooks (run once after cloning):
+```bash
+bash scripts/install-hooks
+```
+
+2. Local hooks:
+- `pre-commit` (lightweight): Scans staged Java files for stray `System.out.println` occurrences and triggers a quick smoke test when test files are changed.
+- `pre-push` (conditional): Runs faster smoke tests for feature branches and a full test suite for pushes to `main`.
+
+3. CI checks will run the full test suite and static analysis (Checkstyle & SpotBugs) on PRs and merges to `main`.
+
+To test the pre-push hook locally, use the wrapper script:
+```bash
+bash scripts/pre-push --force-fast   # emulate non-main push
+bash scripts/pre-push --force-full   # emulate push-to-main
+```
+
 ## 🏗️ Project Structure
 
 ```
@@ -342,6 +363,9 @@ All core functionality tests currently **PASS**:
 ## 🤝 Contributing
 
 Contributions are welcome! Please feel free to submit issues and pull requests.
+
+### Commit Procedure
+There is a standard commit & PR workflow for contributors in `docs/COMMIT_PROCEDURE.md`. Please follow that for consistent commits and PRs.
 
 ### Development Guidelines
 - Follow existing code style and patterns
