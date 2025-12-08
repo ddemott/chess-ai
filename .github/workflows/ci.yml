@@ -7,8 +7,17 @@ on:
     branches: [main]
 
 jobs:
+  check-prints:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+      - name: Run debug-print check
+        run: bash scripts/check-debug-prints.sh
+
   build:
     runs-on: ubuntu-latest
+    needs: check-prints
 
     steps:
       - name: Checkout repository
