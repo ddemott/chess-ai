@@ -1,5 +1,7 @@
 package com.ddemott.chessai.engine;
 
+import com.ddemott.chessai.util.Log;
+
 import com.ddemott.chessai.State;
 import com.ddemott.chessai.MoveHistory;
 import com.ddemott.chessai.Move;
@@ -159,15 +161,15 @@ public class GameEngine {
 
 			// Replay all the moves
 			for (String algebraicMove : gameData.moves) {
-				if (!playMoveFromAlgebraicNotation(algebraicMove)) {
-					// System.err.println("Failed to play move: " + algebraicMove);
+						if (!playMoveFromAlgebraicNotation(algebraicMove)) {
+							Log.error("Failed to play move: " + algebraicMove);
 					return false;
 				}
 			}
 
 			return true;
 		} catch (Exception e) {
-			// System.err.println("Error loading game from PGN: " + e.getMessage());
+			Log.error("Error loading game from PGN: " + e.getMessage(), e);
 			return false;
 		}
 	}
