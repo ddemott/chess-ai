@@ -16,15 +16,15 @@ if [[ -n "$STAGED_JAVA_FILES" ]]; then
     if [[ "$f" == src/main/java/com/ddemott/chessai/console/* ]]; then
       continue
     fi
-    if grep -nH "System\.out\.println" "$f" >/dev/null 2>&1; then
+    if grep -nH "System\.out\.println\|System\.err\.println\|printStackTrace(" "$f" >/dev/null 2>&1; then
       BAD_PRINTS+=("$f")
     fi
   done
   if [[ ${#BAD_PRINTS[@]} -ne 0 ]]; then
-    echo "System.out.println debug prints found in staged files (excluding console package):"
+    echo "Debug prints or stack traces found in staged files (excluding console package):"
     for file in "${BAD_PRINTS[@]}"; do
       echo "  - $file"
-      grep -nH "System\.out\.println" "$file" || true
+      grep -nH "System\.out\.println\|System\.err\.println\|printStackTrace(" "$file" || true
     done
     echo "\nPlease remove debug prints or wrap in logger statements before committing."
     exit 1
