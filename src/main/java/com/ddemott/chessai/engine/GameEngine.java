@@ -161,8 +161,8 @@ public class GameEngine {
 
 			// Replay all the moves
 			for (String algebraicMove : gameData.moves) {
-						if (!playMoveFromAlgebraicNotation(algebraicMove)) {
-							Log.error("Failed to play move: " + algebraicMove);
+				if (!playMoveFromAlgebraicNotation(algebraicMove)) {
+					Log.error("Failed to play move: " + algebraicMove);
 					return false;
 				}
 			}
