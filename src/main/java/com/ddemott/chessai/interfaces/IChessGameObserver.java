@@ -1,9 +1,9 @@
 package com.ddemott.chessai.interfaces;
 
 public interface IChessGameObserver {
-    void onBoardUpdate(String boardRepresentation);
+	void onBoardUpdate(String boardRepresentation);
 
-    void onMoveUpdate(String move);
+	void onMoveUpdate(String move);
 
-    void onGameEnd(String result);
+	void onGameEnd(String result);
 }

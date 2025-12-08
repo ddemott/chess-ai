@@ -13,34 +13,37 @@
 // import static org.junit.jupiter.api.Assertions.*;
 
 // class EnhancedConsoleDisplayTest {
-//     private State mockState;
-//     private EnhancedConsoleDisplay display;
+// private State mockState;
+// private EnhancedConsoleDisplay display;
 
-//     // Temporarily commented out to allow GetPieceDisplayTest to compile and run
-//     // class EnhancedConsoleDisplayTest {
-//     //     ...existing code...
-//     // }
-//         mockState.setCurrentTurn("White");
-//         assertTrue(display.validateMoveWithFeedback("a2", "a3").contains("own piece"));
-//         // Invalid move
-//         assertTrue(display.validateMoveWithFeedback("a2", "a4").contains("invalid move") ||
-//                    display.validateMoveWithFeedback("a2", "a4").toLowerCase().contains("invalid"));
-//     }
+// // Temporarily commented out to allow GetPieceDisplayTest to compile and run
+// // class EnhancedConsoleDisplayTest {
+// // ...existing code...
+// // }
+// mockState.setCurrentTurn("White");
+// assertTrue(display.validateMoveWithFeedback("a2", "a3").contains("own
+// piece"));
+// // Invalid move
+// assertTrue(display.validateMoveWithFeedback("a2", "a4").contains("invalid
+// move") ||
+// display.validateMoveWithFeedback("a2",
+// "a4").toLowerCase().contains("invalid"));
+// }
 
-//     @Test
-//     void testGenerateMoveSuggestions() {
-//         mockState.getBoard().setPieceAt("e2", new Pawn("White", "e2"));
-//         List<String> suggestions = display.generateMoveSuggestions("White");
-//         assertNotNull(suggestions);
-//         assertTrue(suggestions.size() <= 3);
-//     }
+// @Test
+// void testGenerateMoveSuggestions() {
+// mockState.getBoard().setPieceAt("e2", new Pawn("White", "e2"));
+// List<String> suggestions = display.generateMoveSuggestions("White");
+// assertNotNull(suggestions);
+// assertTrue(suggestions.size() <= 3);
+// }
 
-//     @Test
-//     void testApplyHighlightAndColorText() {
-//         display.enableColors();
-//         String highlighted = display.applyHighlight("text", "code");
-//         assertTrue(highlighted.contains("code"));
-//         String colored = display.colorText("text", "code");
-//         assertTrue(colored.contains("code"));
-//     }
+// @Test
+// void testApplyHighlightAndColorText() {
+// display.enableColors();
+// String highlighted = display.applyHighlight("text", "code");
+// assertTrue(highlighted.contains("code"));
+// String colored = display.colorText("text", "code");
+// assertTrue(colored.contains("code"));
+// }
 // }
