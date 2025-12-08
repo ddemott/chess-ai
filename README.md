@@ -228,6 +228,8 @@ For convenience, example/demo and debug utilities (used during development and d
 
 If you want to contribute a demo, please add it under `dev/demos/` and update this README or add a new document describing how to run it without interfering with the main test-suite or CI.
 
+See `dev/demos/README.md` for more details on running demo files locally.
+
 
 ## 🏗️ Project Structure
 

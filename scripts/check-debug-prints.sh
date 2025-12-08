@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-echo "Scanning repository for System.out.println debug prints (excluding console UI package)..."
+echo "Scanning repository for debug prints (System.out / System.err / printStackTrace) (excluding console UI package)..."
 
 ROOT=$(git rev-parse --show-toplevel 2>/dev/null || echo "$(pwd)")
 cd "$ROOT"
@@ -34,7 +34,15 @@ for f in $FILES; do
     file_path="$(echo "$match_line" | cut -d: -f1)"
     line_num="$(echo "$match_line" | cut -d: -f2)"
     content="$(echo "$match_line" | cut -d: -f3-)"
-    prefix="${content%%System.out.println*}"
+    # Determine which pattern matched and calculate prefix accordingly
+    if [[ "$content" =~ System\.out\.println ]]; then
+      pattern="System.out.println"
+    elif [[ "$content" =~ System\.err\.println ]]; then
+      pattern="System.err.println"
+    else
+      pattern=".printStackTrace("
+    fi
+    prefix="${content%%$pattern*}"
     # If the prefix contains '//' then the println occurs after an inline comment marker and can be ignored
     if [[ "$prefix" =~ // ]]; then
       continue
@@ -45,15 +53,15 @@ for f in $FILES; do
     fi
     FOUND+=("$f")
     echo "$file_path:$line_num:$content"
-  done < <(grep -nH "System\.out\.println" "$f" 2>/dev/null || true)
+  done < <(grep -nH -E "System\.out\.println|System\.err\.println|\.printStackTrace\(" "$f" 2>/dev/null || true)
 done
 
 if [[ ${#FOUND[@]} -gt 0 ]]; then
-  echo "Found System.out.println debug prints in the following files (outside console package):"
+  echo "Found debug prints or stack traces in the following files (outside console package):"
   for file in "${FOUND[@]}"; do
-    grep -nH "System\.out\.println" "$file" || true
+    grep -nH -E "System\.out\.println|System\.err\.println|\.printStackTrace\(" "$file" || true
   done
-  echo "\nPlease remove debug prints or use a logger wrapper in production code."
+  echo "\nPlease remove debug prints or use a logger wrapper in production code (or move to console/demo files)."
   exit 1
 fi
 
