@@ -105,3 +105,16 @@ bash scripts/pre-push
 ```
 
 If the full test suite fails, the push will be aborted and CI should show further details on the failing test(s).
+
+## Static analysis baselines
+
+To avoid failing CI on historical style/analysis issues while still preventing new violations, we use *baselines* for Checkstyle and SpotBugs.
+
+- If you need to regenerate baseline files (for example after a major refactor), run:
+	```bash
+	bash scripts/generate-baselines.sh
+	git add config/checkstyle config/spotbugs
+	git commit -m "chore: update static analysis baselines"
+	git push
+	```
+- CI runs a comparison between the baseline and the current report; if *new* violations are found, the CI job will fail.

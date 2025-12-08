@@ -204,6 +204,22 @@ bash scripts/pre-push --force-fast   # emulate non-main push
 bash scripts/pre-push --force-full   # emulate push-to-main
 ```
 
+### Regenerating Code Analysis Baselines
+
+This repo uses baselines for static analysis to avoid failing CI on historical issues while preventing new violations.
+To regenerate baselines locally (e.g., after a major refactor), run:
+
+```bash
+# regenerate checkstyle and spotbugs baselines
+bash scripts/generate-baselines.sh
+git add config/checkstyle config/spotbugs
+git commit -m "chore: update static analysis baselines"
+git push
+```
+
+Note: SpotBugs may not run in local environments due to plugin availability; CI will generate/update baselines on the runner if needed.
+
+
 ## 🏗️ Project Structure
 
 ```
