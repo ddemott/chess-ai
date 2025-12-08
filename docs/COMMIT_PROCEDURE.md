@@ -42,6 +42,7 @@ git commit -m "feat: add opening book integration with MinMaxStrategy"
 ## Pre-commit checklist
 - [ ] All tests pass (`mvn -q test`)
 - [ ] No debug prints in core files (`System.out.println` used only intentionally in console UI modules)
+ - [ ] No debug prints / stack traces in `src/main` files (`System.out.println`, `System.err.println`, `printStackTrace` not allowed outside console or demo code)
 - [ ] CI-friendly: prefer non-interactive checks and correct exit codes
 - [ ] `README.md`, `ARCHITECTURE.md`, or `CHANGELOG.md` updates included if the feature/bug fix requires it
 
