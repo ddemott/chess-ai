@@ -84,3 +84,17 @@ bash scripts/install-hooks
 ```
 
 After this, the pre-commit checks will run automatically for new commits in this repo worktree.
+
+## Pre-push hook
+
+This repository ships a `pre-push` hook which runs a heavier set of checks to prevent bad pushes into `main` from developer worktrees.
+
+- The hook runs the **full unit test suite** (`mvn -q -B test`), and also runs the debug print scanner to ensure there are no stray `System.out.println` statements in non-console code.
+- To enable the hook, run `bash scripts/install-hooks` after cloning the repository.
+- To test the hook locally, run:
+
+```bash
+bash scripts/pre-push
+```
+
+If the full test suite fails, the push will be aborted and CI should show further details on the failing test(s).
