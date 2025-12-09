@@ -14,7 +14,7 @@ mvn -q -DskipTests package
 2. Run a demo by invoking the class from the Java command line using the `target/classes` directory on the classpath. Example:
 ```bash
 # Run the Debug Promotion demo
-java -cp target/classes:dev/demos com.ddemott.chessai.dev.demos.DebugPromotion
+java -cp target/classes:examples com.ddemott.chessai.dev.demos.DebugPromotion
 ```
 
 Notes:
