@@ -33,7 +33,7 @@ public class Bishop extends Piece {
 		// should be equal
 		if (Math.abs(endCoords[1] - startCoords[1]) == Math.abs(endCoords[0] - startCoords[0])) {
 			// Check if path is clear
-			if (isPathClear(startCoords, endCoords, board)) {
+			if (board.isPathClear(currentPosition, destination)) {
 				// Destination must be empty or contain opponent's piece
 				IPiece destPiece = board.getPieceAt(destination);
 				if (destPiece == null || destPiece.getSide() != side) {
@@ -42,23 +42,6 @@ public class Bishop extends Piece {
 			}
 		}
 		return false;
-	}
-
-	private boolean isPathClear(int[] currentCoords, int[] newCoords, Board board) {
-		int dx = Integer.signum(newCoords[0] - currentCoords[0]);
-		int dy = Integer.signum(newCoords[1] - currentCoords[1]);
-		int x = currentCoords[0] + dx;
-		int y = currentCoords[1] + dy;
-
-		while (x != newCoords[0] || y != newCoords[1]) {
-			if (board.getPieceAt(board.convertCoordinatesToPosition(x, y)) != null) {
-				return false; // Path is blocked
-			}
-			x += dx;
-			y += dy;
-		}
-
-		return true; // Path is clear
 	}
 
 	@Override

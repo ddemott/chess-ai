@@ -102,6 +102,25 @@ java -cp target/classes com.ddemott.chessai.console.ConsoleChessGame
 java -jar target/chessai-0.0.1-SNAPSHOT-jar-with-dependencies.jar
 ```
 
+## 🧪 Running Tests
+
+```bash
+mvn -q test                    # Run the full test suite (quiet output)
+mvn verify                     # Tests + formatting check + debug-print check
+```
+
+Run a single test class or method:
+```bash
+mvn -Dtest=com.ddemott.chessai.CastlingTest test              # One class
+mvn -Dtest=com.ddemott.chessai.CastlingTest#testMethod test   # One method
+```
+
+Other useful options:
+```bash
+mvn spotless:apply                    # Auto-format code before committing
+mvn -Dskip.debug.prints=true verify   # Skip the debug-print check
+```
+
 ## 🎮 How to Play
 
 1. **Game Start**: The game begins with White (human player) to move

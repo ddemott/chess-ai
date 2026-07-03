@@ -20,18 +20,27 @@ public class Move {
 	private final boolean isCastle;
 	private final boolean isEnPassant;
 	private final String promotionPiece;
+	private final String enPassantTargetBefore;
+	private final boolean wasFirstMove;
 
 	public Move(String from, String to, IPiece movingPiece, IPiece capturedPiece, String algebraicNotation,
 			int moveNumber, String playerColor, boolean isCheck, boolean isCheckmate, boolean isCastle,
 			boolean isEnPassant, String promotionPiece) {
 		this(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber,
 				playerColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK, isCheck, isCheckmate, isCastle,
-				isEnPassant, promotionPiece);
+				isEnPassant, promotionPiece, null, false);
 	}
 
 	public Move(String from, String to, IPiece movingPiece, IPiece capturedPiece, String algebraicNotation,
 			int moveNumber, Side side, boolean isCheck, boolean isCheckmate, boolean isCastle, boolean isEnPassant,
 			String promotionPiece) {
+		this(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber, side, isCheck, isCheckmate, isCastle,
+				isEnPassant, promotionPiece, null, false);
+	}
+
+	public Move(String from, String to, IPiece movingPiece, IPiece capturedPiece, String algebraicNotation,
+			int moveNumber, Side side, boolean isCheck, boolean isCheckmate, boolean isCastle, boolean isEnPassant,
+			String promotionPiece, String enPassantTargetBefore, boolean wasFirstMove) {
 		this.from = from;
 		this.to = to;
 		this.movingPiece = movingPiece;
@@ -44,6 +53,8 @@ public class Move {
 		this.isCastle = isCastle;
 		this.isEnPassant = isEnPassant;
 		this.promotionPiece = promotionPiece;
+		this.enPassantTargetBefore = enPassantTargetBefore;
+		this.wasFirstMove = wasFirstMove;
 		this.score = 0;
 	}
 
@@ -96,6 +107,13 @@ public class Move {
 	}
 	public String getPromotionPiece() {
 		return promotionPiece;
+	}
+
+	public String getEnPassantTargetBefore() {
+		return enPassantTargetBefore;
+	}
+	public boolean wasFirstMove() {
+		return wasFirstMove;
 	}
 
 	public boolean isCapture() {

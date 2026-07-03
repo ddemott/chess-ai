@@ -101,7 +101,7 @@ public class ConsoleChessGame {
 		scanner.close();
 	}
 
-	private static void printGameInstructions() {
+	public static void printGameInstructions() {
 		System.out.println("\n=== ChessAI Game Instructions ===");
 		System.out.println("• Enter moves: 'e2 e4' (from square to square)");
 		System.out.println("• Commands:");

@@ -23,7 +23,7 @@ public class Board {
 
 	// Private constructor for cloning
 	private Board(boolean initialize) {
-		board = new IPiece[8][8]; // 8x8 chess board
+		board = new IPiece[GameConstants.BOARD_SIZE][GameConstants.BOARD_SIZE]; // 8x8 chess board
 		enPassantTarget = null; // No en passant target initially
 		if (initialize) {
 			initializeBoard();
@@ -64,12 +64,69 @@ public class Board {
 		board[7][4] = new King(Side.BLACK, "e8");
 	}
 
+	/**
+	 * Compares this board to another board and returns a detailed string
+	 * description of the differences. Returns "Boards are identical" if no
+	 * differences are found.
+	 */
+	public String compareTo(Board other) {
+		StringBuilder diff = new StringBuilder();
+		boolean identical = true;
+
+		// 1. Compare Pieces on the Board
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
+				IPiece myPiece = this.board[row][col];
+				IPiece otherPiece = other.board[row][col];
+				String pos = convertCoordinatesToPosition(row, col);
+
+				if (myPiece == null && otherPiece == null) {
+					continue;
+				}
+
+				if (myPiece == null || otherPiece == null) {
+					identical = false;
+					diff.append(String.format("Mismatch at %s: This=[%s], Other=[%s]\n", pos,
+							(myPiece == null ? "Empty" : myPiece.getSide() + " " + myPiece.getClass().getSimpleName()),
+							(otherPiece == null
+									? "Empty"
+									: otherPiece.getSide() + " " + otherPiece.getClass().getSimpleName())));
+				} else {
+					// Both present, check equality
+					if (myPiece.getSide() != otherPiece.getSide()
+							|| !myPiece.getClass().equals(otherPiece.getClass())) {
+						identical = false;
+						diff.append(String.format("Mismatch at %s: This=[%s %s], Other=[%s %s]\n", pos,
+								myPiece.getSide(), myPiece.getClass().getSimpleName(), otherPiece.getSide(),
+								otherPiece.getClass().getSimpleName()));
+					}
+				}
+			}
+		}
+
+		// 2. Compare En Passant Target
+		String myEnPassant = this.enPassantTarget;
+		String otherEnPassant = other.enPassantTarget;
+		if (myEnPassant == null) {
+			if (otherEnPassant != null) {
+				identical = false;
+				diff.append(String.format("En Passant Target: This=[null], Other=[%s]\n", otherEnPassant));
+			}
+		} else if (!myEnPassant.equals(otherEnPassant)) {
+			identical = false;
+			diff.append(String.format("En Passant Target: This=[%s], Other=[%s]\n", myEnPassant, otherEnPassant));
+		}
+
+		return identical ? "Boards are identical" : diff.toString();
+	}
+
 	public IPiece getPieceAt(String position) {
 		int[] coords = convertPositionToCoordinates(position);
 		if (coords == null) {
 			return null; // Out of bounds or invalid
 		}
-		if (coords[0] < 0 || coords[0] >= 8 || coords[1] < 0 || coords[1] >= 8) {
+		if (coords[0] < 0 || coords[0] >= GameConstants.BOARD_SIZE || coords[1] < 0
+				|| coords[1] >= GameConstants.BOARD_SIZE) {
 			return null; // Out of bounds
 		}
 		return board[coords[0]][coords[1]];
@@ -80,7 +137,8 @@ public class Board {
 		if (coords == null) {
 			return; // Out of bounds or invalid
 		}
-		if (coords[0] < 0 || coords[0] >= 8 || coords[1] < 0 || coords[1] >= 8) {
+		if (coords[0] < 0 || coords[0] >= GameConstants.BOARD_SIZE || coords[1] < 0
+				|| coords[1] >= GameConstants.BOARD_SIZE) {
 			return; // Out of bounds
 		}
 		board[coords[0]][coords[1]] = piece;
@@ -91,30 +149,19 @@ public class Board {
 	}
 
 	public int[] convertPositionToCoordinates(String position) {
-		if (position == null) {
-			return null; // Return null for invalid positions
-		}
-		position = position.toLowerCase(); // Ensure position is in lowercase
-		if (position.length() != 2) {
-			return null; // Invalid position format
-		}
-		char column = position.charAt(0);
-		int row = position.charAt(1) - '1';
-		int col = column - 'a';
-		// Check bounds
-		if (row < 0 || row >= 8 || col < 0 || col >= 8) {
+		Coordinate coord = Coordinate.fromString(position);
+		if (coord == null) {
 			return null;
 		}
-		return new int[]{row, col};
+		return new int[]{coord.row(), coord.col()};
 	}
 
 	public String convertCoordinatesToPosition(int row, int col) {
-		if (row < 0 || row >= 8 || col < 0 || col >= 8) {
-			return null; // Out of bounds
+		try {
+			return new Coordinate(row, col).toString();
+		} catch (IllegalArgumentException e) {
+			return null;
 		}
-		char column = (char) ('a' + col);
-		char rowChar = (char) ('1' + row);
-		return String.valueOf(column) + rowChar;
 	}
 
 	/**
@@ -127,6 +174,12 @@ public class Board {
 	public boolean movePiece(String from, String to) {
 		IPiece piece = getPieceAt(from);
 		if (piece == null) {
+			return false;
+		}
+
+		int[] fromCoords = convertPositionToCoordinates(from);
+		int[] toCoords = convertPositionToCoordinates(to);
+		if (fromCoords == null || toCoords == null) {
 			return false;
 		}
 
@@ -145,8 +198,7 @@ public class Board {
 		}
 		// Handle special cases first
 		// Castling
-		if (piece instanceof King
-				&& Math.abs(convertPositionToCoordinates(to)[1] - convertPositionToCoordinates(from)[1]) == 2) {
+		if (piece instanceof King && Math.abs(toCoords[1] - fromCoords[1]) == 2) {
 			boolean castlingSuccess = executeCastling(from, to);
 			if (castlingSuccess) {
 				enPassantTarget = null;
@@ -159,16 +211,20 @@ public class Board {
 		}
 		// If this is a pawn moving to the last rank, it must specify a promotion piece
 		if (piece instanceof Pawn) {
-			int[] toCoords = convertPositionToCoordinates(to);
 			boolean isPromotionRank = (piece.getSide() == Side.WHITE && toCoords[0] == GameConstants.RANK_8)
 					|| (piece.getSide() == Side.BLACK && toCoords[0] == GameConstants.RANK_1);
 			if (isPromotionRank) {
 				return false; // Must use movePiece(from, to, promotionPiece) for promotions
 			}
 		}
+
 		// Regular move
 		IPiece captured = getPieceAt(to);
 		if (captured != null) {
+			if (captured.getSide() == piece.getSide()) {
+				// Prevent capturing own pieces (Safety Net)
+				return false;
+			}
 			if (captured.getSide() == Side.WHITE) {
 				capturedWhitePieces.add(captured);
 			} else {
@@ -181,8 +237,6 @@ public class Board {
 		piece.setHasMoved(true);
 		// Track pawn two-square moves for en passant
 		if (piece instanceof Pawn && isPawnTwoSquareMove(from, to)) {
-			int[] fromCoords = convertPositionToCoordinates(from);
-			int[] toCoords = convertPositionToCoordinates(to);
 			int targetRow = (fromCoords[0] + toCoords[0]) / 2;
 			int targetCol = fromCoords[1];
 			enPassantTarget = convertCoordinatesToPosition(targetRow, targetCol);
@@ -297,8 +351,8 @@ public class Board {
 		boolean sameDirection = (dRow == 0 || Integer.signum(moveVecRow) == dRow)
 				&& (dCol == 0 || Integer.signum(moveVecCol) == dCol);
 		// Must not go past the attacker
-		boolean notPastAttacker = isBetweenInclusive(targetCoords[0], kingCoords[0], attRow - dRow)
-				&& isBetweenInclusive(targetCoords[1], kingCoords[1], attCol - dCol);
+		boolean notPastAttacker = isBetweenInclusive(targetCoords[0], kingCoords[0], attRow)
+				&& isBetweenInclusive(targetCoords[1], kingCoords[1], attCol);
 		if (!(collinear && sameDirection && notPastAttacker)) {
 			return true; // Illegal move for pinned piece
 		}
@@ -331,6 +385,10 @@ public class Board {
 		}
 
 		IPiece rook = getPieceAt(rookFrom);
+		if (rook == null) {
+			// This should theoretically not happen if validation passed, but safety check
+			return false;
+		}
 
 		// Move king
 		setPieceAt(kingTo, king);
@@ -383,6 +441,16 @@ public class Board {
 		int capturedPawnRow = pawn.getSide() == Side.WHITE ? toCoords[0] - 1 : toCoords[0] + 1;
 		String capturedPawnPosition = convertCoordinatesToPosition(capturedPawnRow, toCoords[1]);
 
+		// Track the captured pawn
+		IPiece capturedPawn = getPieceAt(capturedPawnPosition);
+		if (capturedPawn != null) {
+			if (capturedPawn.getSide() == Side.WHITE) {
+				capturedWhitePieces.add(capturedPawn);
+			} else {
+				capturedBlackPieces.add(capturedPawn);
+			}
+		}
+
 		// Move the capturing pawn
 		setPieceAt(to, pawn);
 		setPieceAt(from, null);
@@ -405,13 +473,32 @@ public class Board {
 
 	public List<String> getAllPossibleMoves(Side side) {
 		List<String> possibleMoves = new ArrayList<>();
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 				if (piece != null && piece.getSide() == side) {
 					List<String> moves = piece.getAllPossibleMoves(this);
 					if (moves != null && !moves.isEmpty()) {
-						possibleMoves.addAll(moves);
+						for (String move : moves) {
+							String[] parts = move.split(" ");
+							if (parts.length >= 2) {
+								String from = parts[0];
+								String to = parts[1];
+
+								// Filter out moves that would expose the king to check (e.g., pinned pieces)
+								if (wouldExposeKingToCheck(from, to)) {
+									continue;
+								}
+
+								// Filter out moves that capture own pieces (Self-Capture Safety Net)
+								IPiece captured = getPieceAt(to);
+								if (captured != null && captured.getSide() == side) {
+									continue;
+								}
+
+								possibleMoves.add(move);
+							}
+						}
 					}
 				}
 			}
@@ -426,8 +513,8 @@ public class Board {
 	@Override
 	public Board clone() {
 		Board newBoard = new Board(false); // Don't initialize - we'll copy pieces manually
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				if (this.board[row][col] != null) {
 					newBoard.board[row][col] = this.board[row][col].clonePiece();
 				}
@@ -435,6 +522,9 @@ public class Board {
 		}
 		// Copy en passant target state
 		newBoard.enPassantTarget = this.enPassantTarget;
+		// Copy captured pieces lists
+		newBoard.capturedWhitePieces.addAll(this.capturedWhitePieces);
+		newBoard.capturedBlackPieces.addAll(this.capturedBlackPieces);
 		return newBoard;
 	}
 
@@ -463,7 +553,7 @@ public class Board {
 		sb.append("  a b c d e f g h\n");
 		for (int row = 7; row >= 0; row--) {
 			sb.append((row + 1)).append(" ");
-			for (int col = 0; col < 8; col++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 				if (piece == null) {
 					sb.append(". ");
@@ -497,8 +587,8 @@ public class Board {
 		Side opponentSide = kingSide.flip();
 
 		// Directly check each opponent piece to see if it can attack the king
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 				if (piece != null && piece.getSide() == opponentSide) {
 					String piecePosition = convertCoordinatesToPosition(row, col);
@@ -572,8 +662,8 @@ public class Board {
 	}
 
 	public String findKingPosition(Side kingSide) {
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 				if (piece instanceof King && piece.getSide() == kingSide) {
 					return convertCoordinatesToPosition(row, col);
@@ -594,8 +684,8 @@ public class Board {
 	public boolean isSquareUnderAttack(String position, Side defendingSide) {
 		Side attackingSide = defendingSide.flip();
 		// Check each opposing piece to see if it can attack the position
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 				if (piece != null && piece.getSide() == attackingSide) {
 					String piecePosition = convertCoordinatesToPosition(row, col);
@@ -605,7 +695,17 @@ public class Board {
 
 					// For non-king pieces, use normal validation
 					if (!(piece instanceof King)) {
-						if (piece.isValidMove(position, this)) {
+						if (piece instanceof Pawn) {
+							// Pawns attack diagonally regardless of whether the square is occupied
+							int[] targetCoords = convertPositionToCoordinates(position);
+							int direction = piece.getSide() == Side.WHITE ? 1 : -1;
+							int rowDiff = targetCoords[0] - row;
+							int colDiff = targetCoords[1] - col;
+							if (rowDiff == direction && Math.abs(colDiff) == 1) {
+								piece.setPosition(oldPosition); // Restore
+								return true;
+							}
+						} else if (piece.isValidMove(position, this)) {
 							piece.setPosition(oldPosition); // Restore
 							return true;
 						}
@@ -642,8 +742,8 @@ public class Board {
 		}
 
 		// Try all possible moves to see if any gets out of check
-		for (int fromRow = 0; fromRow < 8; fromRow++) {
-			for (int fromCol = 0; fromCol < 8; fromCol++) {
+		for (int fromRow = 0; fromRow < GameConstants.BOARD_SIZE; fromRow++) {
+			for (int fromCol = 0; fromCol < GameConstants.BOARD_SIZE; fromCol++) {
 				IPiece piece = board[fromRow][fromCol];
 				if (piece != null && piece.getSide() == playerSide) {
 					String from = convertCoordinatesToPosition(fromRow, fromCol);
@@ -653,8 +753,8 @@ public class Board {
 					piece.setPosition(from);
 
 					// Get all possible moves for this piece
-					for (int toRow = 0; toRow < 8; toRow++) {
-						for (int toCol = 0; toCol < 8; toCol++) {
+					for (int toRow = 0; toRow < GameConstants.BOARD_SIZE; toRow++) {
+						for (int toCol = 0; toCol < GameConstants.BOARD_SIZE; toCol++) {
 							String to = convertCoordinatesToPosition(toRow, toCol);
 
 							// Skip if it's not a valid move
@@ -702,8 +802,8 @@ public class Board {
 		}
 
 		// Check for any legal moves
-		for (int fromRow = 0; fromRow < 8; fromRow++) {
-			for (int fromCol = 0; fromCol < 8; fromCol++) {
+		for (int fromRow = 0; fromRow < GameConstants.BOARD_SIZE; fromRow++) {
+			for (int fromCol = 0; fromCol < GameConstants.BOARD_SIZE; fromCol++) {
 				IPiece piece = board[fromRow][fromCol];
 				if (piece != null && piece.getSide() == playerSide) {
 					String from = convertCoordinatesToPosition(fromRow, fromCol);
@@ -713,8 +813,8 @@ public class Board {
 					piece.setPosition(from);
 
 					// For each destination square
-					for (int toRow = 0; toRow < 8; toRow++) {
-						for (int toCol = 0; toCol < 8; toCol++) {
+					for (int toRow = 0; toRow < GameConstants.BOARD_SIZE; toRow++) {
+						for (int toCol = 0; toCol < GameConstants.BOARD_SIZE; toCol++) {
 							String to = convertCoordinatesToPosition(toRow, toCol);
 
 							// Skip if the move isn't valid according to piece rules
@@ -920,6 +1020,16 @@ public class Board {
 					return false;
 				}
 
+				// Track captured piece if any
+				IPiece captured = getPieceAt(to);
+				if (captured != null) {
+					if (captured.getSide() == Side.WHITE) {
+						capturedWhitePieces.add(captured);
+					} else {
+						capturedBlackPieces.add(captured);
+					}
+				}
+
 				// Execute promotion move on actual board
 				setPieceAt(from, null);
 				setPieceAt(to, promotedPiece);
@@ -1025,8 +1135,8 @@ public class Board {
 	 * Add clearBoard method for testing
 	 */
 	public void clearBoard() {
-		for (int row = 0; row < 8; row++) {
-			for (int col = 0; col < 8; col++) {
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				board[row][col] = null;
 			}
 		}
@@ -1048,7 +1158,7 @@ public class Board {
 			int emptySquares = 0;
 
 			// Process each square in the rank from a-file to h-file
-			for (int col = 0; col < 8; col++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
 
 				if (piece == null) {

@@ -41,7 +41,8 @@ public class MoveHistory {
 	 */
 	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
 			String playerColor) {
-		addMove(from, to, movingPiece, capturedPiece, board, playerColor, null);
+		addMove(from, to, movingPiece, capturedPiece, board, playerColor, null, false, false, false, false, null,
+				false);
 	}
 
 	/**
@@ -49,6 +50,17 @@ public class MoveHistory {
 	 */
 	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
 			String playerColor, String promotionPiece) {
+		addMove(from, to, movingPiece, capturedPiece, board, playerColor, promotionPiece, false, false, false, false,
+				null, false);
+	}
+
+	/**
+	 * Adds a move to the history with full state for check/checkmate, special move
+	 * flags, and undo support
+	 */
+	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
+			String playerColor, String promotionPiece, boolean isCheck, boolean isCheckmate, boolean isCastle,
+			boolean isEnPassant, String enPassantTargetBefore, boolean wasFirstMove) {
 		// Remove any moves after current position (for undo/redo support)
 		while (moves.size() > currentMoveIndex + 1) {
 			moves.remove(moves.size() - 1);
@@ -56,10 +68,11 @@ public class MoveHistory {
 
 		int moveNumber = (moves.size() / 2) + 1;
 		String algebraicNotation = generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board,
-				promotionPiece);
+				promotionPiece, isCheck, isCheckmate, isCastle);
 
-		Move move = new Move(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber, playerColor, false,
-				false, false, false, promotionPiece);
+		Side side = playerColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK;
+		Move move = new Move(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber, side, isCheck,
+				isCheckmate, isCastle, isEnPassant, promotionPiece, enPassantTargetBefore, wasFirstMove);
 
 		moves.add(move);
 		currentMoveIndex++;
@@ -69,16 +82,22 @@ public class MoveHistory {
 	 * Generates Standard Algebraic Notation (SAN) for a move with promotion support
 	 */
 	private String generateAlgebraicNotation(String from, String to, IPiece movingPiece, IPiece capturedPiece,
-			Board board, String promotionPiece) {
+			Board board, String promotionPiece, boolean isCheck, boolean isCheckmate, boolean isCastle) {
 		StringBuilder notation = new StringBuilder();
 
 		// Handle castling
-		if (movingPiece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2) {
+		if (isCastle || (movingPiece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2)) {
 			if (to.charAt(0) > from.charAt(0)) {
-				return "O-O"; // Kingside castling
+				notation.append("O-O");
 			} else {
-				return "O-O-O"; // Queenside castling
+				notation.append("O-O-O");
 			}
+			if (isCheckmate) {
+				notation.append("#");
+			} else if (isCheck) {
+				notation.append("+");
+			}
+			return notation.toString();
 		}
 
 		// Add piece symbol (nothing for pawns)
@@ -90,8 +109,18 @@ public class MoveHistory {
 		String disambiguation = getDisambiguation(from, to, movingPiece, board);
 		notation.append(disambiguation);
 
-		// Add capture symbol
-		if (capturedPiece != null) {
+		// Add capture symbol (including en passant captures where capturedPiece may be
+		// null in the 'to' square)
+		boolean isCapture = capturedPiece != null;
+		// For en passant, the captured piece position differs from 'to', so
+		// capturedPiece
+		// from the caller may be null. We detect en passant pawn captures by checking
+		// if
+		// a pawn moved diagonally to an empty square.
+		if (!isCapture && movingPiece instanceof Pawn && from.charAt(0) != to.charAt(0)) {
+			isCapture = true; // en passant capture
+		}
+		if (isCapture) {
 			if (movingPiece instanceof Pawn) {
 				notation.append(from.charAt(0)); // Add file for pawn captures
 			}
@@ -106,21 +135,72 @@ public class MoveHistory {
 			notation.append("=").append(promotionPiece);
 		}
 
-		// Add check/checkmate indicators (to be properly implemented)
-		// This is a placeholder - proper check detection would be needed
-		// if (isCheck) { notation.append("+"); }
-		// if (isCheckmate) { notation.append("#"); }
+		// Add check/checkmate indicators
+		if (isCheckmate) {
+			notation.append("#");
+		} else if (isCheck) {
+			notation.append("+");
+		}
 
 		return notation.toString();
 	}
 
 	/**
-	 * Determines if disambiguation is needed for algebraic notation
+	 * Determines if disambiguation is needed for algebraic notation. Checks all
+	 * pieces of the same type and side that can also move to the same square.
 	 */
 	private String getDisambiguation(String from, String to, IPiece movingPiece, Board board) {
-		// This is a simplified version - full disambiguation would require
-		// checking all pieces of the same type that could move to the same square
-		return "";
+		if (movingPiece instanceof Pawn || movingPiece instanceof King) {
+			return ""; // Pawns use file on captures (handled elsewhere), kings are unique
+		}
+
+		char pieceSymbol = movingPiece.getSymbol();
+		Side side = movingPiece.getSide();
+		java.util.List<String> ambiguousFromSquares = new java.util.ArrayList<>();
+
+		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
+			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
+				IPiece other = board.getBoardArray()[row][col];
+				if (other == null || other.getSide() != side || other.getSymbol() != pieceSymbol) {
+					continue;
+				}
+				String otherPos = board.convertCoordinatesToPosition(row, col);
+				if (otherPos.equals(from)) {
+					continue; // Skip self
+				}
+				// Check if this other piece can also move to 'to'
+				String oldPos = other.getPosition();
+				other.setPosition(otherPos);
+				boolean canMove = other.isValidMove(to, board);
+				other.setPosition(oldPos);
+				if (canMove && !board.wouldExposeKingToCheck(otherPos, to)) {
+					ambiguousFromSquares.add(otherPos);
+				}
+			}
+		}
+
+		if (ambiguousFromSquares.isEmpty()) {
+			return "";
+		}
+
+		boolean sameFile = false;
+		boolean sameRank = false;
+		for (String otherFrom : ambiguousFromSquares) {
+			if (otherFrom.charAt(0) == from.charAt(0)) {
+				sameFile = true;
+			}
+			if (otherFrom.charAt(1) == from.charAt(1)) {
+				sameRank = true;
+			}
+		}
+
+		if (!sameFile) {
+			return String.valueOf(from.charAt(0)); // file disambiguates
+		} else if (!sameRank) {
+			return String.valueOf(from.charAt(1)); // rank disambiguates
+		} else {
+			return from; // both file and rank needed
+		}
 	}
 
 	/**
@@ -455,6 +535,18 @@ public class MoveHistory {
 	}
 
 	/**
+	 * Creates a deep copy of this MoveHistory
+	 */
+	public MoveHistory copy() {
+		MoveHistory copy = new MoveHistory();
+		copy.moves.addAll(this.moves);
+		copy.currentMoveIndex = this.currentMoveIndex;
+		copy.positionHistory.addAll(this.positionHistory);
+		copy.halfmoveClock = this.halfmoveClock;
+		return copy;
+	}
+
+	/**
 	 * Clears the move history
 	 */
 	public void clear() {
@@ -476,17 +568,18 @@ public class MoveHistory {
 	}
 
 	/**
-	 * Adds a position to the history and returns true if it's a threefold
-	 * repetition
+	 * Adds a position to the history. Truncates any positions after the current
+	 * move index first (for undo/redo support).
 	 */
 	public void addPosition(String position) {
-		positionHistory.add(position);
-
-		// Remove any positions after the current index (for undo/redo support)
-		while (positionHistory.size() > currentMoveIndex + 2) { // +2 because we add position before the move is
-																// recorded
+		// Remove any positions after current move index before adding the new one.
+		// After undo, currentMoveIndex points to the last active move, so we want
+		// exactly (currentMoveIndex + 1) positions before adding the new one.
+		// At the start (currentMoveIndex == -1), we want 0 positions before adding.
+		while (positionHistory.size() > currentMoveIndex + 1) {
 			positionHistory.remove(positionHistory.size() - 1);
 		}
+		positionHistory.add(position);
 	}
 
 	/**

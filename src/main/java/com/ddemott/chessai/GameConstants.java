@@ -25,4 +25,18 @@ public final class GameConstants {
 	public static final int RANK_2 = 1;
 	public static final int RANK_7 = 6;
 	public static final int RANK_8 = 7;
+
+	// Evaluation Weights
+	public static final double PIECE_SAFETY_MULTIPLIER = 0.2;
+	public static final int CHECK_BONUS = 200; // Bonus/Penalty for check
+	public static final int KING_EXPOSED_PENALTY = 50;
+	public static final int KING_CASTLED_BONUS = 30;
+	public static final int PAWN_SHIELD_BONUS = 10;
+
+	// Positional Weights
+	public static final int ISOLATED_PAWN_PENALTY = 20;
+	public static final int DOUBLED_PAWN_PENALTY = 20;
+	public static final int PASSED_PAWN_BONUS = 30;
+	public static final int MOBILITY_BONUS = 5; // Per valid move
+	public static final int CENTER_CONTROL_BONUS = 15; // Controlling e4, d4, e5, d5
 }

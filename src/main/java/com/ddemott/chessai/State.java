@@ -46,88 +46,7 @@ public class State {
 	}
 
 	public boolean movePiece(String from, String to) {
-		// Check if there's a piece at the 'from' position
-		IPiece piece = board.getPieceAt(from);
-		if (piece == null) {
-			return false;
-		}
-
-		// Check if the piece belongs to the current player
-		if (piece.getSide() != currentTurn) {
-			return false;
-		}
-
-		// Check if the piece is pinned (can't move because it would expose the king to
-		// check)
-		if (isPiecePinned(from, to)) {
-			return false;
-		}
-
-		// Get the piece that might be captured
-		IPiece capturedPiece = board.getPieceAt(to);
-
-		boolean moveSuccessful = board.movePiece(from, to);
-		if (moveSuccessful) {
-			// Record the position before updating the half-move clock
-			String positionFEN = board.toFEN().split(" ")[0]; // Only use board position part of FEN
-			moveHistory.addPosition(positionFEN);
-
-			// Update half-move clock
-			boolean isPawnMove = piece instanceof Pawn;
-			boolean isCapture = capturedPiece != null;
-			moveHistory.updateHalfmoveClock(isPawnMove, isCapture);
-
-			// Record the move in history
-			moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString());
-			toggleTurn();
-		}
-		return moveSuccessful;
-	}
-
-	/**
-	 * Checks if moving a piece would expose the king to check (pin)
-	 * 
-	 * @param from
-	 *            Starting position
-	 * @param to
-	 *            Ending position
-	 * @return true if the move would expose the king to check, false otherwise
-	 */
-	private boolean isPiecePinned(String from, String to) {
-		return isPiecePinned(from, to, null);
-	}
-
-	private boolean isPiecePinned(String from, String to, String promotionPiece) {
-		IPiece piece = board.getPieceAt(from);
-		if (piece == null) {
-			return false;
-		}
-
-		// Skip king moves - kings can't be pinned
-		if (piece instanceof King) {
-			return false;
-		}
-
-		// Simulate the move
-		Board clonedBoard = this.board.clone();
-
-		// Execute the move on the cloned board, handling promotion if needed
-		if (promotionPiece != null && piece instanceof Pawn) {
-			// For promotion moves, simulate it with the move
-			if (!clonedBoard.movePiece(from, to, promotionPiece)) {
-				// If promotion move fails, simulate regular move
-				clonedBoard.setPieceAt(to, piece.clonePiece());
-			}
-		} else {
-			clonedBoard.setPieceAt(to, piece.clonePiece());
-		}
-		clonedBoard.setPieceAt(from, null);
-
-		// Check if the king is in check after this move
-		boolean kingInCheck = clonedBoard.isKingInCheck(piece.getSide());
-
-		// If the king is in check, the piece is pinned
-		return kingInCheck;
+		return movePiece(from, to, null);
 	}
 
 	public boolean movePiece(String from, String to, String promotionPiece) {
@@ -137,11 +56,31 @@ public class State {
 			return false;
 		}
 
+		// Capture state before move for undo support
+		String enPassantTargetBefore = board.getEnPassantTarget();
+		boolean wasFirstMove = !piece.hasMoved();
+
+		// Detect special move types before executing
+		boolean isCastle = piece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2;
+		boolean isEnPassant = piece instanceof Pawn && to.equals(board.getEnPassantTarget());
+
 		// Check for captured piece before move
 		IPiece capturedPiece = board.getPieceAt(to);
+		// For en passant, the captured pawn is on a different square
+		if (isEnPassant) {
+			int[] toCoords = board.convertPositionToCoordinates(to);
+			int capturedRow = piece.getSide() == Side.WHITE ? toCoords[0] - 1 : toCoords[0] + 1;
+			String capturedPos = board.convertCoordinatesToPosition(capturedRow, toCoords[1]);
+			capturedPiece = board.getPieceAt(capturedPos);
+		}
 
 		// Execute move using Board class (which handles validation and pin checking)
-		boolean moveSuccessful = board.movePiece(from, to, promotionPiece);
+		boolean moveSuccessful;
+		if (promotionPiece != null) {
+			moveSuccessful = board.movePiece(from, to, promotionPiece);
+		} else {
+			moveSuccessful = board.movePiece(from, to);
+		}
 
 		// Update game state if move was successful
 		if (moveSuccessful) {
@@ -153,12 +92,14 @@ public class State {
 			boolean isPawnMove = piece instanceof Pawn;
 			moveHistory.updateHalfmoveClock(isPawnMove, capturedPiece != null);
 
-			// Record move in history with promotion info if applicable
-			if (promotionPiece != null) {
-				moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString(), promotionPiece);
-			} else {
-				moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString());
-			}
+			// Detect check/checkmate after the move
+			Side opponentSide = currentTurn.flip();
+			boolean isCheck = board.isKingInCheck(opponentSide);
+			boolean isCheckmate = isCheck && board.isCheckmate(opponentSide);
+
+			// Record move in history with full state
+			moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString(), promotionPiece, isCheck,
+					isCheckmate, isCastle, isEnPassant, enPassantTargetBefore, wasFirstMove);
 
 			toggleTurn();
 		}
@@ -187,36 +128,8 @@ public class State {
 		State newState = new State();
 		newState.board = this.board.clone();
 		newState.currentTurn = this.currentTurn;
-		newState.setAIStrategy(this.aiStrategy); // Keep the same strategy
-		// Deep copy move history (including position history)
-		MoveHistory oldHistory = this.moveHistory;
-		MoveHistory newHistory = new MoveHistory();
-		// Copy moves
-		for (Move move : oldHistory.getMoves()) {
-			// Moves are immutable, so shallow copy is fine
-			newHistory.getMoves().add(move);
-		}
-		// Copy position history
-		for (String pos : oldHistory.getPositionHistory()) {
-			newHistory.getPositionHistory().add(pos);
-		}
-		// Copy halfmove clock
-		try {
-			java.lang.reflect.Field halfmoveClockField = MoveHistory.class.getDeclaredField("halfmoveClock");
-			halfmoveClockField.setAccessible(true);
-			halfmoveClockField.setInt(newHistory, oldHistory.getHalfmoveClock());
-		} catch (Exception e) {
-			// Ignore if reflection fails
-		}
-		// Copy current move index
-		try {
-			java.lang.reflect.Field currentMoveIndexField = MoveHistory.class.getDeclaredField("currentMoveIndex");
-			currentMoveIndexField.setAccessible(true);
-			currentMoveIndexField.setInt(newHistory, oldHistory.getMoves().size() - 1);
-		} catch (Exception e) {
-			// Ignore if reflection fails
-		}
-		newState.moveHistory = newHistory;
+		newState.setAIStrategy(this.aiStrategy);
+		newState.moveHistory = this.moveHistory.copy();
 		return newState;
 	}
 
@@ -236,17 +149,71 @@ public class State {
 			return false;
 		}
 
-		// Restore the board state by reversing the move
-		IPiece piece = board.getPieceAt(lastMove.getTo());
-		board.setPieceAt(lastMove.getFrom(), piece);
-		piece.setPosition(lastMove.getFrom());
-
-		// Restore captured piece if any
-		if (lastMove.getCapturedPiece() != null) {
-			board.setPieceAt(lastMove.getTo(), lastMove.getCapturedPiece());
-		} else {
+		// Handle promotion: replace the promoted piece with the original pawn
+		if (lastMove.getPromotionPiece() != null) {
+			IPiece pawn = lastMove.getMovingPiece().clonePiece();
+			pawn.setPosition(lastMove.getFrom());
+			if (lastMove.wasFirstMove()) {
+				pawn.setHasMoved(false);
+			}
+			board.setPieceAt(lastMove.getFrom(), pawn);
 			board.setPieceAt(lastMove.getTo(), null);
+		} else {
+			// Move piece back to original position
+			IPiece piece = board.getPieceAt(lastMove.getTo());
+			if (piece != null) {
+				board.setPieceAt(lastMove.getFrom(), piece);
+				piece.setPosition(lastMove.getFrom());
+				board.setPieceAt(lastMove.getTo(), null);
+				// Restore hasMoved flag
+				if (lastMove.wasFirstMove()) {
+					piece.setHasMoved(false);
+				}
+			}
 		}
+
+		// Handle castling: also move rook back
+		if (lastMove.isCastle()) {
+			int[] kingToCoords = board.convertPositionToCoordinates(lastMove.getTo());
+			int[] kingFromCoords = board.convertPositionToCoordinates(lastMove.getFrom());
+			boolean isKingside = kingToCoords[1] > kingFromCoords[1];
+			String rookFrom, rookTo;
+			if (isKingside) {
+				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 7); // h-file (original)
+				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 5); // f-file (castled)
+			} else {
+				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 0); // a-file (original)
+				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 3); // d-file (castled)
+			}
+			IPiece rook = board.getPieceAt(rookFrom);
+			if (rook != null) {
+				board.setPieceAt(rookTo, rook);
+				rook.setPosition(rookTo);
+				board.setPieceAt(rookFrom, null);
+				rook.setHasMoved(false);
+			}
+		}
+
+		// Handle en passant: restore the captured pawn at its original position
+		if (lastMove.isEnPassant()) {
+			if (lastMove.getCapturedPiece() != null) {
+				int[] toCoords = board.convertPositionToCoordinates(lastMove.getTo());
+				Side movingSide = lastMove.getSide();
+				int capturedRow = movingSide == Side.WHITE ? toCoords[0] - 1 : toCoords[0] + 1;
+				String capturedPos = board.convertCoordinatesToPosition(capturedRow, toCoords[1]);
+				board.setPieceAt(capturedPos, lastMove.getCapturedPiece());
+				lastMove.getCapturedPiece().setPosition(capturedPos);
+			}
+		} else {
+			// Restore captured piece for non-en-passant moves
+			if (lastMove.getCapturedPiece() != null) {
+				board.setPieceAt(lastMove.getTo(), lastMove.getCapturedPiece());
+				lastMove.getCapturedPiece().setPosition(lastMove.getTo());
+			}
+		}
+
+		// Restore en passant target
+		board.setEnPassantTarget(lastMove.getEnPassantTargetBefore());
 
 		// Switch back to the previous player
 		toggleTurn();
@@ -264,8 +231,12 @@ public class State {
 			return false;
 		}
 
-		// Re-execute the move
-		board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo());
+		// Re-execute the move using Board (handles castling, en passant, etc.)
+		if (moveToRedo.getPromotionPiece() != null) {
+			board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo(), moveToRedo.getPromotionPiece());
+		} else {
+			board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo());
+		}
 		toggleTurn();
 		return true;
 	}

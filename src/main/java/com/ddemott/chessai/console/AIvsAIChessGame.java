@@ -28,40 +28,148 @@ public class AIvsAIChessGame {
 	}
 
 	public static void main(String[] args) {
-		System.out.println("=== AI vs AI Chess Game ===\n");
+		System.out.println("=== AI vs AI Chess Game (Automated Depth 4) ===\n");
 
-		AIDifficulty white = selectDifficulty("White");
-		AIDifficulty black = selectDifficulty("Black");
+		try (Scanner scanner = new Scanner(System.in)) {
+			// Automate selection: Both ADVANCED (Depth 4)
+			AIDifficulty white = AIDifficulty.ADVANCED;
+			AIDifficulty black = AIDifficulty.ADVANCED;
 
-		AIvsAIChessGame game = new AIvsAIChessGame(white, black);
-		game.playGame();
+			AIvsAIChessGame game = new AIvsAIChessGame(white, black);
+
+			// Set speed manually to avoid prompt
+			game.moveDelay = 1000; // 1 second
+
+			// We need to override playGame to not ask for speed, or just subclass/modify
+			// it.
+			// Since we can't easily override the private method call inside playGame
+			// without changing playGame,
+			// let's create a specific method or just modify playGame to check if speed is
+			// already set?
+			// Actually, let's just modify the playGame method to take an optional
+			// 'automated' flag or similar.
+			// Or better, just copy the logic here since we are changing the file.
+
+			game.playAutomatedGame(scanner);
+		}
 	}
 
-	private static AIDifficulty selectDifficulty(String playerColor) {
-		try (Scanner scanner = new Scanner(System.in)) {
-			System.out.println("Select difficulty for " + playerColor + " AI:");
-			System.out.println(AIDifficulty.getAllDifficulties());
-			while (true) {
-				System.out.print("Enter choice (1-" + AIDifficulty.values().length + "): ");
-				try {
-					int choice = scanner.nextInt();
-					if (choice >= 1 && choice <= AIDifficulty.values().length) {
-						AIDifficulty selected = AIDifficulty.values()[choice - 1];
-						System.out.println("Selected " + selected.getDisplayName() + " for " + playerColor + "\n");
-						return selected;
-					}
-					System.out.println("Invalid choice. Please try again.");
-				} catch (Exception e) {
-					System.out.println("Invalid input. Please enter a number.");
-					scanner.nextLine(); // Clear invalid input
+	public void playAutomatedGame(Scanner scanner) {
+		System.out.println("=== Game Setup ===");
+		System.out.println("White: " + whiteDifficulty);
+		System.out.println("Black: " + blackDifficulty);
+		System.out.println("Speed: Normal (1000ms)");
+		System.out.println("\n=== Game Starting ===\n");
+
+		// Initial board display
+		display.displayBoard();
+
+		int moveCount = 0;
+		final int MAX_MOVES = 200; // Prevent infinite games
+
+		while (moveCount < MAX_MOVES) {
+			String currentPlayer = gameEngine.getCurrentTurn();
+
+			// Set appropriate AI difficulty for current player
+			if (currentPlayer.equals("White")) {
+				gameEngine.setAIDifficulty(whiteDifficulty);
+			} else {
+				gameEngine.setAIDifficulty(blackDifficulty);
+			}
+
+			System.out.println(
+					"🤖 " + currentPlayer + " (" + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
+
+			// Make AI move
+			int initialHistorySize = gameEngine.getMoveHistory().getAllMoves().size();
+			gameEngine.makeAIMove();
+			int newHistorySize = gameEngine.getMoveHistory().getAllMoves().size();
+
+			if (newHistorySize > initialHistorySize) {
+				Move aiMove = gameEngine.getLastMove();
+				// Add captured piece to display
+				if (aiMove.getCapturedPiece() != null) {
+					display.addCapturedPiece(aiMove.getCapturedPiece());
 				}
+
+				System.out.println("🤖 " + currentPlayer + " played: " + aiMove.getAlgebraicNotation() + " ("
+						+ aiMove.getFrom() + " → " + aiMove.getTo() + ")");
+
+				moveCount++;
+
+				// Check for game end conditions
+				String nextPlayer = gameEngine.getCurrentTurn();
+				if (gameEngine.getGameState().getBoard().isKingInCheck(nextPlayer)) {
+					if (gameEngine.getGameState().getBoard().isCheckmate(nextPlayer)) {
+						display.displayBoard();
+						System.out.println("🏆 CHECKMATE! " + currentPlayer + " ("
+								+ (currentPlayer.equals("White")
+										? whiteDifficulty.getDisplayName()
+										: blackDifficulty.getDisplayName())
+								+ ") wins!");
+						break;
+					} else {
+						System.out.println("⚠️  CHECK! " + nextPlayer + " king is under attack!");
+					}
+				} else if (gameEngine.getGameState().getBoard().isStalemate(nextPlayer)) {
+					display.displayBoard();
+					System.out.println("🤝 STALEMATE! The game is a draw.");
+					break;
+				}
+
+				// Display updated board
+				display.displayBoard();
+
+			} else {
+				// AI could not make a move - check why
+				if (gameEngine.getGameState().getBoard().isCheckmate(currentPlayer)) {
+					display.displayBoard();
+					System.out
+							.println("🏆 CHECKMATE! " + (currentPlayer.equals("White") ? "Black" : "White") + " wins!");
+				} else if (gameEngine.getGameState().getBoard().isStalemate(currentPlayer)) {
+					display.displayBoard();
+					System.out.println("🤝 STALEMATE! The game is a draw.");
+				} else if (gameEngine.getGameState().isThreefoldRepetition()) {
+					display.displayBoard();
+					System.out.println("🤝 DRAW by Threefold Repetition!");
+				} else if (gameEngine.getGameState().isFiftyMoveRule()) {
+					display.displayBoard();
+					System.out.println("🤝 DRAW by Fifty-Move Rule!");
+				} else {
+					System.out.println("❌ " + currentPlayer + " could not make a move (Resignation or Error)!");
+				}
+				break;
+			}
+		}
+		if (moveCount >= MAX_MOVES) {
+			System.out.println("🕐 Game ended due to move limit (" + MAX_MOVES + " moves)");
+		}
+
+		// Display final game statistics
+		displayGameSummary();
+	}
+
+	private static AIDifficulty selectDifficulty(Scanner scanner, String playerColor) {
+		System.out.println("Select difficulty for " + playerColor + " AI:");
+		System.out.println(AIDifficulty.getAllDifficulties());
+		while (true) {
+			System.out.print("Enter choice (1-" + AIDifficulty.values().length + "): ");
+			try {
+				int choice = scanner.nextInt();
+				if (choice >= 1 && choice <= AIDifficulty.values().length) {
+					AIDifficulty selected = AIDifficulty.values()[choice - 1];
+					System.out.println("Selected " + selected.getDisplayName() + " for " + playerColor + "\n");
+					return selected;
+				}
+				System.out.println("Invalid choice. Please try again.");
+			} catch (Exception e) {
+				System.out.println("Invalid input. Please enter a number.");
+				scanner.nextLine(); // Clear invalid input
 			}
 		}
 	}
 
-	public void playGame() {
-		Scanner scanner = new Scanner(System.in);
-
+	public void playGame(Scanner scanner) {
 		System.out.println("=== Game Setup ===");
 		System.out.println("White: " + whiteDifficulty);
 		System.out.println("Black: " + blackDifficulty);
@@ -127,10 +235,12 @@ public class AIvsAIChessGame {
 			// ...existing code...
 
 			// Make AI move
+			int initialHistorySize = gameEngine.getMoveHistory().getAllMoves().size();
 			gameEngine.makeAIMove();
-			Move aiMove = gameEngine.getLastMove();
+			int newHistorySize = gameEngine.getMoveHistory().getAllMoves().size();
 
-			if (aiMove != null) {
+			if (newHistorySize > initialHistorySize) {
+				Move aiMove = gameEngine.getLastMove();
 				// Add captured piece to display
 				if (aiMove.getCapturedPiece() != null) {
 					display.addCapturedPiece(aiMove.getCapturedPiece());
@@ -164,8 +274,11 @@ public class AIvsAIChessGame {
 				// Display updated board
 				display.displayBoard();
 
+				// Verify Game State Integrity
+				gameEngine.verifyGameStateIntegrity();
+
 				// Handle timing
-				if (pauseAfterEachMove) {
+				if (moveDelay > 0) {
 					System.out.print("Press Enter to continue...");
 					scanner.nextLine();
 				} else if (moveDelay > 0) {
@@ -178,7 +291,7 @@ public class AIvsAIChessGame {
 				}
 
 			} else {
-				System.out.println("❌ " + currentPlayer + " could not make a move!");
+				System.out.println("❌ " + currentPlayer + " could not make a move (Stalemate or Resignation)!");
 				break;
 			}
 		}
@@ -192,7 +305,10 @@ public class AIvsAIChessGame {
 
 		// Offer to save the game
 		System.out.print("\\nSave game to PGN file? (y/n): ");
-		String saveChoice = scanner.nextLine().trim().toLowerCase();
+		String saveChoice = "";
+		if (scanner.hasNextLine()) {
+			saveChoice = scanner.nextLine().trim().toLowerCase();
+		}
 		if (saveChoice.equals("y") || saveChoice.equals("yes")) {
 			System.out.print("Enter filename: ");
 			String filename = scanner.nextLine().trim();
@@ -211,8 +327,6 @@ public class AIvsAIChessGame {
 				System.out.println("Failed to save game.");
 			}
 		}
-
-		scanner.close();
 	}
 
 	private void displayGameSummary() {
@@ -233,6 +347,8 @@ public class AIvsAIChessGame {
 
 		AIvsAIChessGame demo = new AIvsAIChessGame(AIDifficulty.BEGINNER, AIDifficulty.ADVANCED);
 		demo.moveDelay = 800;
-		demo.playGame();
+		try (Scanner scanner = new Scanner(System.in)) {
+			demo.playGame(scanner);
+		}
 	}
 }

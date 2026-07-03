@@ -30,7 +30,11 @@ public class Rook extends Piece {
 		if (!isStraightMove(currentCoords, newCoords)) {
 			return false; // Rooks move only in straight lines
 		}
-		return isPathClear(currentCoords, newCoords, board) && isDestinationValid(newCoords, board);
+
+		String currentPos = board.convertCoordinatesToPosition(currentCoords[0], currentCoords[1]);
+		String newPos = board.convertCoordinatesToPosition(newCoords[0], newCoords[1]);
+
+		return board.isPathClear(currentPos, newPos) && isDestinationValid(newCoords, board);
 	}
 
 	private boolean isStraightMove(int[] currentCoords, int[] newCoords) {
@@ -39,22 +43,6 @@ public class Rook extends Piece {
 			return false;
 		}
 		return currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
-	}
-
-	private boolean isPathClear(int[] currentCoords, int[] newCoords, Board board) {
-		int rowStep = Integer.signum(newCoords[0] - currentCoords[0]);
-		int colStep = Integer.signum(newCoords[1] - currentCoords[1]);
-
-		int currentRow = currentCoords[0] + rowStep;
-		int currentCol = currentCoords[1] + colStep;
-		while (currentRow != newCoords[0] || currentCol != newCoords[1]) {
-			if (board.getPieceAt(board.convertCoordinatesToPosition(currentRow, currentCol)) != null) {
-				return false; // Path is blocked
-			}
-			currentRow += rowStep;
-			currentCol += colStep;
-		}
-		return true; // Path is clear
 	}
 
 	private boolean isDestinationValid(int[] newCoords, Board board) {

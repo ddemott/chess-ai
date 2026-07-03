@@ -34,11 +34,9 @@ public class MinMaxStrategy implements AIStrategy {
 	}
 
 	private MoveResult minMax(State state, int depth, int alpha, int beta, Side side, boolean maximizingPlayer) {
-		// Penalize threefold repetition as a draw
-		if (state.isThreefoldRepetition()) {
-			// Major negative score for repetition (draw)
-			int repetitionPenalty = maximizingPlayer ? -GameConstants.CHECKMATE_SCORE : GameConstants.CHECKMATE_SCORE;
-			return new MoveResult(repetitionPenalty, null);
+		// Penalize threefold repetition and fifty-move rule as a draw
+		if (state.isThreefoldRepetition() || state.isFiftyMoveRule()) {
+			return new MoveResult(GameConstants.DRAW_SCORE, null);
 		}
 		if (depth == 0) {
 			int evaluationScore = evaluation.evaluateBoard(state.getBoard(), side);
@@ -47,9 +45,22 @@ public class MinMaxStrategy implements AIStrategy {
 
 		List<String> possibleMoves = state.getAllPossibleMoves(side);
 		if (possibleMoves.isEmpty()) {
-			int evaluationScore = evaluation.evaluateBoard(state.getBoard(), side);
-			return new MoveResult(evaluationScore, null);
+			if (state.getBoard().isKingInCheck(side)) {
+				// Checkmate
+				return new MoveResult(maximizingPlayer ? -GameConstants.CHECKMATE_SCORE : GameConstants.CHECKMATE_SCORE,
+						null);
+			} else {
+				// Stalemate
+				return new MoveResult(GameConstants.DRAW_SCORE, null);
+			}
 		}
+
+		// Move Ordering: Evaluate captures first for better Alpha-Beta pruning
+		possibleMoves.sort((m1, m2) -> {
+			boolean c1 = isCapture(state, m1);
+			boolean c2 = isCapture(state, m2);
+			return Boolean.compare(c2, c1); // true (capture) comes before false
+		});
 
 		MoveResult bestMove = new MoveResult(maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE, null);
 
@@ -65,7 +76,9 @@ public class MinMaxStrategy implements AIStrategy {
 				continue;
 			}
 
-			newState.movePiece(positions[0], positions[1], promotionPiece);
+			if (!newState.movePiece(positions[0], positions[1], promotionPiece)) {
+				continue;
+			}
 
 			// Ensure the move does not leave the King in check
 			// Note: State.movePiece checks for validity but maybe not full check validation
@@ -82,12 +95,12 @@ public class MinMaxStrategy implements AIStrategy {
 			MoveResult result = minMax(newState, depth - 1, alpha, beta, side.flip(), !maximizingPlayer);
 
 			if (maximizingPlayer) {
-				if (result.value() > bestMove.value()) {
+				if (result.value() > bestMove.value() || bestMove.move() == null) {
 					bestMove = new MoveResult(result.value(), move);
 				}
 				alpha = Math.max(alpha, result.value());
 			} else {
-				if (result.value() < bestMove.value()) {
+				if (result.value() < bestMove.value() || bestMove.move() == null) {
 					bestMove = new MoveResult(result.value(), move);
 				}
 				beta = Math.min(beta, result.value());
@@ -99,5 +112,21 @@ public class MinMaxStrategy implements AIStrategy {
 		}
 
 		return bestMove;
+	}
+
+	private boolean isCapture(State state, String move) {
+		String[] parts = move.split(" ");
+		if (parts.length >= 2) {
+			// Standard capture
+			if (state.getBoard().getPieceAt(parts[1]) != null) {
+				return true;
+			}
+			// En Passant capture check
+			// (If destination is empty but it's a diagonal pawn move, it's likely en
+			// passant,
+			// though verifying 'enPassantTarget' is more robust if accessible.
+			// For simple ordering, destination check catches most major captures.)
+		}
+		return false;
 	}
 }

@@ -43,24 +43,20 @@ public class King extends Piece {
 			// Prevent moving into check - simulate the move on a cloned board (to handle
 			// captures correctly)
 			String destSquare = newPosition;
-			try {
-				Board clonedBoard = board.clone();
-				IPiece clonedKing = clonedBoard.getPieceAt(currentPosition);
-				if (clonedKing != null) {
-					clonedKing.setPosition(destSquare);
-					clonedBoard.setPieceAt(destSquare, clonedKing);
-					clonedBoard.setPieceAt(currentPosition, null);
-					if (clonedBoard.isSquareUnderAttack(destSquare, side.toString())) {
-						return false;
-					}
-				} else {
-					// Fallback - if we can't simulate, be conservative and disallow
-					if (board.isSquareUnderAttack(destSquare, side.toString())) {
-						return false;
-					}
+			Board clonedBoard = board.clone();
+			IPiece clonedKing = clonedBoard.getPieceAt(currentPosition);
+			if (clonedKing != null) {
+				clonedKing.setPosition(destSquare);
+				clonedBoard.setPieceAt(destSquare, clonedKing);
+				clonedBoard.setPieceAt(currentPosition, null);
+				if (clonedBoard.isSquareUnderAttack(destSquare, side.toString())) {
+					return false;
 				}
-			} catch (NullPointerException e) {
-				return false;
+			} else {
+				// Fallback - if we can't simulate, be conservative and disallow
+				if (board.isSquareUnderAttack(destSquare, side.toString())) {
+					return false;
+				}
 			}
 			return true;
 		}
@@ -73,11 +69,7 @@ public class King extends Piece {
 			String kingFile = String.valueOf((char) ('a' + currentCoords[1]));
 			String kingRank = String.valueOf(currentCoords[0] + 1);
 			// Castling is illegal if the king is in check
-			try {
-				if (board.isSquareUnderAttack(kingFile + kingRank, side.toString())) {
-					return false;
-				}
-			} catch (NullPointerException e) {
+			if (board.isSquareUnderAttack(kingFile + kingRank, side.toString())) {
 				return false;
 			}
 			if (newCoords[1] > currentCoords[1]) { // Kingside castling
@@ -91,14 +83,9 @@ public class King extends Piece {
 				if (board.getPieceAt(square1Pos) != null || board.getPieceAt(square2Pos) != null) {
 					return false;
 				}
-				// Replace castling validation to inline try-catch for isSquareUnderAttack:
-				boolean kingsideSafe;
-				try {
-					kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, side.toString())
-							&& !board.isSquareUnderAttack("g" + rankStr, side.toString());
-				} catch (NullPointerException e) {
-					kingsideSafe = false;
-				}
+				// Check that the king doesn't pass through or land on an attacked square
+				boolean kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, side.toString())
+						&& !board.isSquareUnderAttack("g" + rankStr, side.toString());
 				if (!kingsideSafe) {
 					return false;
 				}
@@ -115,15 +102,9 @@ public class King extends Piece {
 						|| board.getPieceAt(square3Pos) != null) {
 					return false;
 				}
-				// In castling validation, replace direct calls to board.isSquareUnderAttack
-				// with safeUnderAttack to avoid issues
-				boolean queensideSafe;
-				try {
-					queensideSafe = !board.isSquareUnderAttack("d" + rankStr, side.toString())
-							&& !board.isSquareUnderAttack("c" + rankStr, side.toString());
-				} catch (NullPointerException e) {
-					queensideSafe = false;
-				}
+				// Check that the king doesn't pass through or land on an attacked square
+				boolean queensideSafe = !board.isSquareUnderAttack("d" + rankStr, side.toString())
+						&& !board.isSquareUnderAttack("c" + rankStr, side.toString());
 				if (!queensideSafe) {
 					return false;
 				}
