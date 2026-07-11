@@ -2,8 +2,6 @@ package com.ddemott.chessai.engine;
 
 import com.ddemott.chessai.util.Log;
 
-import com.ddemott.chessai.Board;
-import com.ddemott.chessai.GameConstants;
 import com.ddemott.chessai.State;
 import com.ddemott.chessai.MoveHistory;
 import com.ddemott.chessai.Move;

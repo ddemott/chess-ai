@@ -34,7 +34,6 @@ public class HumanPlayerController implements PlayerController {
 			}
 
 			// Handle commands
-			String lowerInput = input.toLowerCase();
 			String[] inputParts = input.split("\\s+", 2);
 			String command = inputParts[0].toLowerCase();
 

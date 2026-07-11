@@ -149,26 +149,6 @@ public class AIvsAIChessGame {
 		displayGameSummary();
 	}
 
-	private static AIDifficulty selectDifficulty(Scanner scanner, String playerColor) {
-		System.out.println("Select difficulty for " + playerColor + " AI:");
-		System.out.println(AIDifficulty.getAllDifficulties());
-		while (true) {
-			System.out.print("Enter choice (1-" + AIDifficulty.values().length + "): ");
-			try {
-				int choice = scanner.nextInt();
-				if (choice >= 1 && choice <= AIDifficulty.values().length) {
-					AIDifficulty selected = AIDifficulty.values()[choice - 1];
-					System.out.println("Selected " + selected.getDisplayName() + " for " + playerColor + "\n");
-					return selected;
-				}
-				System.out.println("Invalid choice. Please try again.");
-			} catch (Exception e) {
-				System.out.println("Invalid input. Please enter a number.");
-				scanner.nextLine(); // Clear invalid input
-			}
-		}
-	}
-
 	public void playGame(Scanner scanner) {
 		System.out.println("=== Game Setup ===");
 		System.out.println("White: " + whiteDifficulty);
@@ -278,7 +258,7 @@ public class AIvsAIChessGame {
 				gameEngine.verifyGameStateIntegrity();
 
 				// Handle timing
-				if (moveDelay > 0) {
+				if (pauseAfterEachMove) {
 					System.out.print("Press Enter to continue...");
 					scanner.nextLine();
 				} else if (moveDelay > 0) {
