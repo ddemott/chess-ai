@@ -10,7 +10,7 @@ public class StateAdvancedMethodsTest {
 		State state = new State();
 		Board board = state.getBoard();
 		board.setPieceAt("e2", new Pawn("White", "e2"));
-		State cloned = state.clone();
+		State cloned = state.deepCopy();
 		assertNotSame(state, cloned);
 		assertNotSame(state.getBoard(), cloned.getBoard());
 		assertTrue(cloned.getBoard().getPieceAt("e2") instanceof Pawn);

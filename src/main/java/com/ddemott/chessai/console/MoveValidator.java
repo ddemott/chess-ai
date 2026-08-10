@@ -74,7 +74,7 @@ public class MoveValidator {
 		}
 
 		// Check if move would leave king in check
-		Board clonedBoard = board.clone();
+		Board clonedBoard = board.deepCopy();
 		if (clonedBoard.movePiece(from, to)) {
 			if (clonedBoard.isKingInCheck(currentPlayer)) {
 				return new MoveValidationResult(false, MoveError.KING_WOULD_BE_IN_CHECK, null);

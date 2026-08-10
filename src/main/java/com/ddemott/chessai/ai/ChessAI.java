@@ -17,7 +17,7 @@ public class ChessAI {
 		String[] bestMove = null;
 		List<String> moves = board.getAllPossibleMoves(aiColor);
 		for (String move : moves) {
-			Board cloned = board.clone();
+			Board cloned = board.deepCopy();
 			String[] parts = move.split(" ");
 			cloned.movePiece(parts[0], parts[1]);
 			double value = minimax(cloned, maxDepth - 1, Double.NEGATIVE_INFINITY,
@@ -42,7 +42,7 @@ public class ChessAI {
 		if (maximizingPlayer) {
 			double maxEval = Double.NEGATIVE_INFINITY;
 			for (String move : moves) {
-				Board cloned = board.clone();
+				Board cloned = board.deepCopy();
 				String[] parts = move.split(" ");
 				cloned.movePiece(parts[0], parts[1]);
 				double eval = minimax(cloned, depth - 1, alpha, beta, false, aiColor);
@@ -55,7 +55,7 @@ public class ChessAI {
 		} else {
 			double minEval = Double.POSITIVE_INFINITY;
 			for (String move : moves) {
-				Board cloned = board.clone();
+				Board cloned = board.deepCopy();
 				String[] parts = move.split(" ");
 				cloned.movePiece(parts[0], parts[1]);
 				double eval = minimax(cloned, depth - 1, alpha, beta, true, aiColor);

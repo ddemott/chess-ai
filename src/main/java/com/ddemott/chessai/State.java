@@ -124,10 +124,9 @@ public class State {
 		return board.getAllPossibleMoves(side);
 	}
 
-	@Override
-	public State clone() {
+	public State deepCopy() {
 		State newState = new State();
-		newState.board = this.board.clone();
+		newState.board = this.board.deepCopy();
 		newState.currentTurn = this.currentTurn;
 		newState.setAIStrategy(this.aiStrategy);
 		newState.moveHistory = this.moveHistory.copy();

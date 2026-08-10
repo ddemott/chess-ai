@@ -22,7 +22,7 @@ public class PrintEscapesBackRank {
           boolean valid = p.isValidMove(to,b);
           p.setPosition(old);
           if(valid){
-            Board cloned = b.clone(); IPiece cp = cloned.getPieceAt(from); if(cp!=null){ cp.setPosition(to); cloned.setPieceAt(to,cp); cloned.setPieceAt(from,null); boolean kingInCheck=cloned.isKingInCheck(Side.BLACK); System.out.println("  Move: " + from + "->" + to + ", kingInCheckAfter=" + kingInCheck); }
+            Board cloned = b.deepCopy(); IPiece cp = cloned.getPieceAt(from); if(cp!=null){ cp.setPosition(to); cloned.setPieceAt(to,cp); cloned.setPieceAt(from,null); boolean kingInCheck=cloned.isKingInCheck(Side.BLACK); System.out.println("  Move: " + from + "->" + to + ", kingInCheckAfter=" + kingInCheck); }
           }
         }
       }

@@ -27,7 +27,7 @@ public class DebugStalemate {
               boolean val = p.isValidMove(to, b);
               p.setPosition(old);
               if(val){
-                Board clone = b.clone(); IPiece cp = clone.getPieceAt(from); if (cp!=null){ cp.setPosition(to); clone.setPieceAt(to,cp); clone.setPieceAt(from,null); boolean kingInCheck = clone.isKingInCheck(Side.BLACK); System.out.println("  Valid move " + from + "->"+to + ", kingInCheckAfter=" + kingInCheck); }
+                Board clone = b.deepCopy(); IPiece cp = clone.getPieceAt(from); if (cp!=null){ cp.setPosition(to); clone.setPieceAt(to,cp); clone.setPieceAt(from,null); boolean kingInCheck = clone.isKingInCheck(Side.BLACK); System.out.println("  Valid move " + from + "->"+to + ", kingInCheckAfter=" + kingInCheck); }
               }
             }
           }
