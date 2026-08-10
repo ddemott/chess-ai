@@ -86,7 +86,7 @@ public class Board {
 
 				if (myPiece == null || otherPiece == null) {
 					identical = false;
-					diff.append(String.format("Mismatch at %s: This=[%s], Other=[%s]\n", pos,
+					diff.append(String.format("Mismatch at %s: This=[%s], Other=[%s]%n", pos,
 					        (myPiece == null
 					                ? "Empty"
 					                : myPiece.getSide() + " " + myPiece.getClass().getSimpleName()),
@@ -99,7 +99,7 @@ public class Board {
 					if (myPiece.getSide() != otherPiece.getSide()
 					        || !myPiece.getClass().equals(otherPiece.getClass())) {
 						identical = false;
-						diff.append(String.format("Mismatch at %s: This=[%s %s], Other=[%s %s]\n",
+						diff.append(String.format("Mismatch at %s: This=[%s %s], Other=[%s %s]%n",
 						        pos, myPiece.getSide(), myPiece.getClass().getSimpleName(),
 						        otherPiece.getSide(), otherPiece.getClass().getSimpleName()));
 					}
@@ -113,12 +113,12 @@ public class Board {
 		if (myEnPassant == null) {
 			if (otherEnPassant != null) {
 				identical = false;
-				diff.append(String.format("En Passant Target: This=[null], Other=[%s]\n",
+				diff.append(String.format("En Passant Target: This=[null], Other=[%s]%n",
 				        otherEnPassant));
 			}
 		} else if (!myEnPassant.equals(otherEnPassant)) {
 			identical = false;
-			diff.append(String.format("En Passant Target: This=[%s], Other=[%s]\n", myEnPassant,
+			diff.append(String.format("En Passant Target: This=[%s], Other=[%s]%n", myEnPassant,
 			        otherEnPassant));
 		}
 
