@@ -41,7 +41,14 @@ fi
 
 echo "Tests passed. Running debug-print scan..."
 if ! bash scripts/check-debug-prints.sh; then
-  echo "\nDebug print scan failed. Aborting push. Remove stray System.out.println or update the console package exception." 
+  echo "\nDebug print scan failed. Aborting push. Remove stray System.out.println or update the console package exception."
+  exit 1
+fi
+
+echo "Checking formatting (Spotless)..."
+if ! mvn -q -B spotless:check; then
+  echo ""
+  echo "Formatting violations found. Aborting push. Run 'mvn spotless:apply', commit the result, and push again."
   exit 1
 fi
 

@@ -31,6 +31,18 @@ if [[ -n "$STAGED_JAVA_FILES" ]]; then
   fi
 fi
 
+# Formatting check - only when Java files are staged
+if [[ -n "$ALL_STAGED_JAVA_FILES" ]]; then
+  echo "Detected staged Java files. Checking formatting (Spotless)..."
+  if ! mvn -q -B spotless:check; then
+    echo ""
+    echo "Formatting violations found. Fix them with:"
+    echo "  mvn spotless:apply"
+    echo "then re-stage the affected files and commit again."
+    exit 1
+  fi
+fi
+
 # Optional quick smoke tests for staged Java test files - run a subset of tests if tests were changed
 if [[ -n "$STAGED_TEST_JAVA_FILES" ]]; then
   echo "Detected staged test files. Running a quick smoke test set..."
