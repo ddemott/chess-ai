@@ -83,9 +83,11 @@ public class AIDifficultyTest {
 			AIDifficulty[] difficulties = AIDifficulty.values();
 
 			return difficulties.length == 6 && difficulties[0] == AIDifficulty.BEGINNER
-					&& difficulties[1] == AIDifficulty.EASY && difficulties[2] == AIDifficulty.INTERMEDIATE
-					&& difficulties[3] == AIDifficulty.ADVANCED && difficulties[4] == AIDifficulty.EXPERT
-					&& difficulties[5] == AIDifficulty.MASTER;
+			        && difficulties[1] == AIDifficulty.EASY
+			        && difficulties[2] == AIDifficulty.INTERMEDIATE
+			        && difficulties[3] == AIDifficulty.ADVANCED
+			        && difficulties[4] == AIDifficulty.EXPERT
+			        && difficulties[5] == AIDifficulty.MASTER;
 		} catch (Exception e) {
 			System.out.println("Exception in enum values test: " + e.getMessage());
 			return false;
@@ -96,8 +98,9 @@ public class AIDifficultyTest {
 		try {
 			// Test depth mappings
 			return AIDifficulty.BEGINNER.getDepth() == 1 && AIDifficulty.EASY.getDepth() == 2
-					&& AIDifficulty.INTERMEDIATE.getDepth() == 3 && AIDifficulty.ADVANCED.getDepth() == 4
-					&& AIDifficulty.EXPERT.getDepth() == 5 && AIDifficulty.MASTER.getDepth() == 6;
+			        && AIDifficulty.INTERMEDIATE.getDepth() == 3
+			        && AIDifficulty.ADVANCED.getDepth() == 4 && AIDifficulty.EXPERT.getDepth() == 5
+			        && AIDifficulty.MASTER.getDepth() == 6;
 		} catch (Exception e) {
 			System.out.println("Exception in depth mapping test: " + e.getMessage());
 			return false;
@@ -169,7 +172,8 @@ public class AIDifficultyTest {
 				// Verify move format
 				String[] parts = aiMove.split(" ");
 				if (parts.length != 2) {
-					System.out.println("Invalid AI move format at difficulty: " + difficulty + " - " + aiMove);
+					System.out.println(
+					        "Invalid AI move format at difficulty: " + difficulty + " - " + aiMove);
 					return false;
 				}
 			}
@@ -188,8 +192,8 @@ public class AIDifficultyTest {
 			String allDifficulties = AIDifficulty.getAllDifficulties();
 
 			return beginnerString.contains("Beginner") && beginnerString.contains("Depth 1")
-					&& allDifficulties.contains("Available AI Difficulty Levels")
-					&& allDifficulties.contains("Beginner") && allDifficulties.contains("Master");
+			        && allDifficulties.contains("Available AI Difficulty Levels")
+			        && allDifficulties.contains("Beginner") && allDifficulties.contains("Master");
 		} catch (Exception e) {
 			System.out.println("Exception in string test: " + e.getMessage());
 			return false;
@@ -203,10 +207,12 @@ public class AIDifficultyTest {
 		System.out.println("\\n=== AI Performance Demo ===");
 		System.out.println("Comparing AI thinking time at different difficulty levels...");
 
-		AIDifficulty[] testDifficulties = {AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE, AIDifficulty.EXPERT};
+		AIDifficulty[] testDifficulties = { AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE,
+		        AIDifficulty.EXPERT };
 
 		for (AIDifficulty difficulty : testDifficulties) {
-			System.out.println("\\nTesting " + difficulty.getDisplayName() + " (Depth " + difficulty.getDepth() + "):");
+			System.out.println("\\nTesting " + difficulty.getDisplayName() + " (Depth "
+			        + difficulty.getDepth() + "):");
 
 			GameEngine engine = new GameEngine(difficulty);
 			engine.movePiece("e2", "e4"); // Setup position

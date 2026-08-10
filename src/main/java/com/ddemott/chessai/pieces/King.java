@@ -9,13 +9,12 @@ import com.ddemott.chessai.Side;
 
 public class King extends Piece {
 
-	public King(Side side, String position) {
-		super(side, position);
-	}
-
-	// Legacy constructor
 	public King(String color, String position) {
 		super(color, position);
+	}
+
+	public King(Side side, String position) {
+		super(side, position);
 	}
 
 	@Override
@@ -64,7 +63,7 @@ public class King extends Piece {
 		// Castling move: move two squares horizontally and no vertical movement, only
 		// from starting rank
 		if (!this.hasMoved() && rowDiff == 0 && colDiff == 2
-				&& (this.getPosition().equals("e1") || this.getPosition().equals("e8"))) {
+		        && (this.getPosition().equals("e1") || this.getPosition().equals("e8"))) {
 			// Convert board coordinates to square notation, e.g., e1
 			String kingFile = String.valueOf((char) ('a' + currentCoords[1]));
 			String kingRank = String.valueOf(currentCoords[0] + 1);
@@ -85,7 +84,7 @@ public class King extends Piece {
 				}
 				// Check that the king doesn't pass through or land on an attacked square
 				boolean kingsideSafe = !board.isSquareUnderAttack("f" + rankStr, side.toString())
-						&& !board.isSquareUnderAttack("g" + rankStr, side.toString());
+				        && !board.isSquareUnderAttack("g" + rankStr, side.toString());
 				if (!kingsideSafe) {
 					return false;
 				}
@@ -99,12 +98,12 @@ public class King extends Piece {
 				String square3Pos = square3File + rankStr;
 				// Check that the squares between king and rook are empty
 				if (board.getPieceAt(square1Pos) != null || board.getPieceAt(square2Pos) != null
-						|| board.getPieceAt(square3Pos) != null) {
+				        || board.getPieceAt(square3Pos) != null) {
 					return false;
 				}
 				// Check that the king doesn't pass through or land on an attacked square
 				boolean queensideSafe = !board.isSquareUnderAttack("d" + rankStr, side.toString())
-						&& !board.isSquareUnderAttack("c" + rankStr, side.toString());
+				        && !board.isSquareUnderAttack("c" + rankStr, side.toString());
 				if (!queensideSafe) {
 					return false;
 				}
@@ -112,11 +111,11 @@ public class King extends Piece {
 
 			// Additional validation: the rook involved must not have moved
 			String rookPos = newCoords[1] > currentCoords[1]
-					? ("h" + kingRank) // kingside rook
-					: ("a" + kingRank); // queenside rook
+			        ? ("h" + kingRank) // kingside rook
+			        : ("a" + kingRank); // queenside rook
 			com.ddemott.chessai.pieces.IPiece rook = board.getPieceAt(rookPos);
-			if (rook == null || !(rook instanceof com.ddemott.chessai.pieces.Rook) || rook.getSide() != side
-					|| rook.hasMoved()) {
+			if (rook == null || !(rook instanceof com.ddemott.chessai.pieces.Rook)
+			        || rook.getSide() != side || rook.hasMoved()) {
 				return false;
 			}
 			return true;
@@ -149,7 +148,8 @@ public class King extends Piece {
 		int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
 
 		// Standard moves
-		int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+		int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 },
+		        { -1, 1 }, { -1, -1 } };
 
 		for (int[] direction : directions) {
 			int row = currentCoords[0] + direction[0];

@@ -14,7 +14,8 @@ public class QueenMovementTest {
 		Queen queen = new Queen("White", "d4");
 		board.setPieceAt("d4", queen);
 		queen.setPosition("d4");
-		assertTrue(queen.isValidMove("g7", board), "Queen should be able to move diagonally from d4 to g7");
+		assertTrue(queen.isValidMove("g7", board),
+		        "Queen should be able to move diagonally from d4 to g7");
 	}
 
 	@Test
@@ -24,7 +25,8 @@ public class QueenMovementTest {
 		Queen queen = new Queen("White", "d4");
 		board.setPieceAt("d4", queen);
 		queen.setPosition("d4");
-		assertTrue(queen.isValidMove("h4", board), "Queen should be able to move horizontally from d4 to h4");
+		assertTrue(queen.isValidMove("h4", board),
+		        "Queen should be able to move horizontally from d4 to h4");
 	}
 
 	@Test
@@ -34,7 +36,8 @@ public class QueenMovementTest {
 		Queen queen = new Queen("White", "d4");
 		board.setPieceAt("d4", queen);
 		queen.setPosition("d4");
-		assertTrue(queen.isValidMove("d8", board), "Queen should be able to move vertically from d4 to d8");
+		assertTrue(queen.isValidMove("d8", board),
+		        "Queen should be able to move vertically from d4 to d8");
 	}
 
 	@Test
@@ -44,7 +47,8 @@ public class QueenMovementTest {
 		Queen queen = new Queen("White", "d4");
 		board.setPieceAt("d4", queen);
 		queen.setPosition("d4");
-		assertFalse(queen.isValidMove("e6", board), "Queen should NOT be able to move in an L-shape like a knight");
+		assertFalse(queen.isValidMove("e6", board),
+		        "Queen should NOT be able to move in an L-shape like a knight");
 	}
 
 	@Test
@@ -57,7 +61,8 @@ public class QueenMovementTest {
 		queen.setPosition("d4");
 		board.setPieceAt("f6", pawn);
 		pawn.setPosition("f6");
-		assertFalse(queen.isValidMove("g7", board), "Queen should NOT be able to move through own piece");
+		assertFalse(queen.isValidMove("g7", board),
+		        "Queen should NOT be able to move through own piece");
 	}
 
 	@Test
@@ -70,7 +75,9 @@ public class QueenMovementTest {
 		queen.setPosition("d4");
 		board.setPieceAt("f6", pawn);
 		pawn.setPosition("f6");
-		assertFalse(queen.isValidMove("g7", board), "Queen should NOT be able to move through opponent's piece");
-		assertTrue(queen.isValidMove("f6", board), "Queen should be able to capture opponent's piece at f6");
+		assertFalse(queen.isValidMove("g7", board),
+		        "Queen should NOT be able to move through opponent's piece");
+		assertTrue(queen.isValidMove("f6", board),
+		        "Queen should be able to capture opponent's piece at f6");
 	}
 }

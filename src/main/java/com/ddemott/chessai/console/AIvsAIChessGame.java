@@ -77,8 +77,8 @@ public class AIvsAIChessGame {
 				gameEngine.setAIDifficulty(blackDifficulty);
 			}
 
-			System.out.println(
-					"🤖 " + currentPlayer + " (" + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
+			System.out.println("🤖 " + currentPlayer + " ("
+			        + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
 
 			// Make AI move
 			int initialHistorySize = gameEngine.getMoveHistory().getAllMoves().size();
@@ -92,8 +92,9 @@ public class AIvsAIChessGame {
 					display.addCapturedPiece(aiMove.getCapturedPiece());
 				}
 
-				System.out.println("🤖 " + currentPlayer + " played: " + aiMove.getAlgebraicNotation() + " ("
-						+ aiMove.getFrom() + " → " + aiMove.getTo() + ")");
+				System.out
+				        .println("🤖 " + currentPlayer + " played: " + aiMove.getAlgebraicNotation()
+				                + " (" + aiMove.getFrom() + " → " + aiMove.getTo() + ")");
 
 				moveCount++;
 
@@ -103,10 +104,10 @@ public class AIvsAIChessGame {
 					if (gameEngine.getGameState().getBoard().isCheckmate(nextPlayer)) {
 						display.displayBoard();
 						System.out.println("🏆 CHECKMATE! " + currentPlayer + " ("
-								+ (currentPlayer.equals("White")
-										? whiteDifficulty.getDisplayName()
-										: blackDifficulty.getDisplayName())
-								+ ") wins!");
+						        + (currentPlayer.equals("White")
+						                ? whiteDifficulty.getDisplayName()
+						                : blackDifficulty.getDisplayName())
+						        + ") wins!");
 						break;
 					} else {
 						System.out.println("⚠️  CHECK! " + nextPlayer + " king is under attack!");
@@ -124,8 +125,8 @@ public class AIvsAIChessGame {
 				// AI could not make a move - check why
 				if (gameEngine.getGameState().getBoard().isCheckmate(currentPlayer)) {
 					display.displayBoard();
-					System.out
-							.println("🏆 CHECKMATE! " + (currentPlayer.equals("White") ? "Black" : "White") + " wins!");
+					System.out.println("🏆 CHECKMATE! "
+					        + (currentPlayer.equals("White") ? "Black" : "White") + " wins!");
 				} else if (gameEngine.getGameState().getBoard().isStalemate(currentPlayer)) {
 					display.displayBoard();
 					System.out.println("🤝 STALEMATE! The game is a draw.");
@@ -136,7 +137,8 @@ public class AIvsAIChessGame {
 					display.displayBoard();
 					System.out.println("🤝 DRAW by Fifty-Move Rule!");
 				} else {
-					System.out.println("❌ " + currentPlayer + " could not make a move (Resignation or Error)!");
+					System.out.println("❌ " + currentPlayer
+					        + " could not make a move (Resignation or Error)!");
 				}
 				break;
 			}
@@ -166,21 +168,21 @@ public class AIvsAIChessGame {
 		try {
 			int speedChoice = scanner.nextInt();
 			switch (speedChoice) {
-				case 1 :
+				case 1:
 					moveDelay = 500;
 					break;
-				case 2 :
+				case 2:
 					moveDelay = 1000;
 					break;
-				case 3 :
+				case 3:
 					moveDelay = 2000;
 					break;
-				case 4 :
+				case 4:
 					moveDelay = 0;
 					pauseAfterEachMove = true;
 					System.out.println("Press Enter after each move to continue...");
 					break;
-				default :
+				default:
 					moveDelay = 1000;
 					System.out.println("Invalid choice, using normal speed.");
 			}
@@ -209,8 +211,8 @@ public class AIvsAIChessGame {
 				gameEngine.setAIDifficulty(blackDifficulty);
 			}
 
-			System.out.println(
-					"🤖 " + currentPlayer + " (" + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
+			System.out.println("🤖 " + currentPlayer + " ("
+			        + gameEngine.getAIDifficulty().getDisplayName() + ") is thinking...");
 
 			// ...existing code...
 
@@ -226,8 +228,9 @@ public class AIvsAIChessGame {
 					display.addCapturedPiece(aiMove.getCapturedPiece());
 				}
 
-				System.out.println("🤖 " + currentPlayer + " played: " + aiMove.getAlgebraicNotation() + " ("
-						+ aiMove.getFrom() + " → " + aiMove.getTo() + ")");
+				System.out
+				        .println("🤖 " + currentPlayer + " played: " + aiMove.getAlgebraicNotation()
+				                + " (" + aiMove.getFrom() + " → " + aiMove.getTo() + ")");
 
 				moveCount++;
 
@@ -237,10 +240,10 @@ public class AIvsAIChessGame {
 					if (gameEngine.getGameState().getBoard().isCheckmate(nextPlayer)) {
 						display.displayBoard();
 						System.out.println("🏆 CHECKMATE! " + currentPlayer + " ("
-								+ (currentPlayer.equals("White")
-										? whiteDifficulty.getDisplayName()
-										: blackDifficulty.getDisplayName())
-								+ ") wins!");
+						        + (currentPlayer.equals("White")
+						                ? whiteDifficulty.getDisplayName()
+						                : blackDifficulty.getDisplayName())
+						        + ") wins!");
 						break;
 					} else {
 						System.out.println("⚠️  CHECK! " + nextPlayer + " king is under attack!");
@@ -271,7 +274,8 @@ public class AIvsAIChessGame {
 				}
 
 			} else {
-				System.out.println("❌ " + currentPlayer + " could not make a move (Stalemate or Resignation)!");
+				System.out.println("❌ " + currentPlayer
+				        + " could not make a move (Stalemate or Resignation)!");
 				break;
 			}
 		}
@@ -300,7 +304,8 @@ public class AIvsAIChessGame {
 			String blackPlayerName = "AI_" + blackDifficulty.getDisplayName();
 			String result = "*"; // Unknown result for now
 
-			boolean saved = gameEngine.saveGameToPGNFile(filename, whitePlayerName, blackPlayerName, result);
+			boolean saved = gameEngine.saveGameToPGNFile(filename, whitePlayerName, blackPlayerName,
+			        result);
 			if (saved) {
 				System.out.println("Game saved to " + filename);
 			} else {

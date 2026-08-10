@@ -271,11 +271,13 @@ public class ComprehensiveMoveHistoryTest {
 
 	private static void assertNotEqual(String testName, Object expected, Object actual) {
 		totalTests++;
-		if ((expected == null && actual != null) || (expected != null && !expected.equals(actual))) {
+		if ((expected == null && actual != null)
+		        || (expected != null && !expected.equals(actual))) {
 			testsPassed++;
 			System.out.println("  ✓ " + testName + ": Values are different");
 		} else {
-			System.out.println("  ✗ " + testName + ": Expected different values, but both were " + actual);
+			System.out.println(
+			        "  ✗ " + testName + ": Expected different values, but both were " + actual);
 		}
 	}
 

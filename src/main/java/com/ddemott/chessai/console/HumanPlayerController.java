@@ -79,7 +79,8 @@ public class HumanPlayerController implements PlayerController {
 			if (command.equals("load")) {
 				String filename = inputParts.length > 1 ? inputParts[1] : "game.pgn";
 				boolean loaded = gameEngine.loadGameFromPGNFile(filename);
-				System.out.println(loaded ? "Game loaded from " + filename : "Failed to load game.");
+				System.out
+				        .println(loaded ? "Game loaded from " + filename : "Failed to load game.");
 				continue;
 			}
 			if (command.equals("export")) {
@@ -94,7 +95,7 @@ public class HumanPlayerController implements PlayerController {
 					String diffInput = scanner.nextLine().trim().toUpperCase();
 					try {
 						com.ddemott.chessai.ai.AIDifficulty diff = com.ddemott.chessai.ai.AIDifficulty
-								.valueOf(diffInput);
+						        .valueOf(diffInput);
 						gameEngine.setAIDifficulty(diff);
 						System.out.println("Difficulty set to " + diff);
 					} catch (IllegalArgumentException e) {
@@ -106,15 +107,18 @@ public class HumanPlayerController implements PlayerController {
 			if (command.equals("suggest") || command.equals("hint")) {
 				com.ddemott.chessai.ai.MoveResult suggestion = gameEngine.getBestMoveWithScore();
 				if (suggestion != null && suggestion.move() != null) {
-					System.out.println("Suggested move: " + suggestion.move() + " (score: " + suggestion.value() + ")");
+					System.out.println("Suggested move: " + suggestion.move() + " (score: "
+					        + suggestion.value() + ")");
 				} else {
 					System.out.println("No suggestion available.");
 				}
 				continue;
 			}
 			if (command.equals("captured")) {
-				List<IPiece> capturedWhite = gameEngine.getGameState().getBoard().getCapturedPieces("White");
-				List<IPiece> capturedBlack = gameEngine.getGameState().getBoard().getCapturedPieces("Black");
+				List<IPiece> capturedWhite = gameEngine.getGameState().getBoard()
+				        .getCapturedPieces("White");
+				List<IPiece> capturedBlack = gameEngine.getGameState().getBoard()
+				        .getCapturedPieces("Black");
 				System.out.println("Captured white pieces: " + formatCapturedPieces(capturedWhite));
 				System.out.println("Captured black pieces: " + formatCapturedPieces(capturedBlack));
 				continue;
@@ -124,7 +128,7 @@ public class HumanPlayerController implements PlayerController {
 			String[] positions = input.split(" ");
 			if (positions.length != 2) {
 				System.out.println(
-						"Invalid input format. Please enter your move as 'e2 e4' or type 'help' for commands.");
+				        "Invalid input format. Please enter your move as 'e2 e4' or type 'help' for commands.");
 				continue;
 			}
 			String from = positions[0];
@@ -137,11 +141,11 @@ public class HumanPlayerController implements PlayerController {
 				}
 			}
 			var validation = MoveValidator.validateMove(from, to, gameEngine.getCurrentTurn(),
-					gameEngine.getGameState().getBoard());
+			        gameEngine.getGameState().getBoard());
 			if (!validation.isValid()) {
 				display.displayInvalidMoveError(from, to, validation.getError().getMessage());
 				List<String> suggestions = MoveValidator.generateMoveSuggestions(from,
-						gameEngine.getGameState().getBoard(), gameEngine.getCurrentTurn());
+				        gameEngine.getGameState().getBoard(), gameEngine.getCurrentTurn());
 				if (!suggestions.isEmpty()) {
 					System.out.println("Valid moves for this piece:");
 					for (String suggestion : suggestions) {
@@ -155,8 +159,8 @@ public class HumanPlayerController implements PlayerController {
 			IPiece capturedPiece = gameEngine.getGameState().getBoard().getPieceAt(to);
 			int moveNumber = gameEngine.getGameState().getMoveHistory().getMoves().size() / 2 + 1;
 			String playerColor = gameEngine.getCurrentTurn();
-			Move move = new Move(from, to, movingPiece, capturedPiece, "", moveNumber, playerColor, false, false, false,
-					false, promotionPiece);
+			Move move = new Move(from, to, movingPiece, capturedPiece, "", moveNumber, playerColor,
+			        false, false, false, false, promotionPiece);
 			return move;
 		}
 	}

@@ -58,7 +58,8 @@ public class DrawByRuleTest {
 		assertTrue(engine.movePiece("g1", "f3"), "Knight should move to f3");
 
 		// Now we should have had the same position 3 times
-		assertTrue(engine.getGameState().isThreefoldRepetition(), "Should detect threefold repetition");
+		assertTrue(engine.getGameState().isThreefoldRepetition(),
+		        "Should detect threefold repetition");
 	}
 
 	@Test
@@ -91,7 +92,8 @@ public class DrawByRuleTest {
 		// For test purposes, we can use reflection to set the private field
 		// This is not ideal but allows us to test the functionality without 100 moves
 		try {
-			java.lang.reflect.Field halfmoveField = MoveHistory.class.getDeclaredField("halfmoveClock");
+			java.lang.reflect.Field halfmoveField = MoveHistory.class
+			        .getDeclaredField("halfmoveClock");
 			halfmoveField.setAccessible(true);
 			halfmoveField.setInt(engine.getMoveHistory(), 99);
 		} catch (Exception e) {
@@ -118,7 +120,8 @@ public class DrawByRuleTest {
 
 		// Directly set the halfmove clock value
 		try {
-			java.lang.reflect.Field halfmoveField = MoveHistory.class.getDeclaredField("halfmoveClock");
+			java.lang.reflect.Field halfmoveField = MoveHistory.class
+			        .getDeclaredField("halfmoveClock");
 			halfmoveField.setAccessible(true);
 			halfmoveField.setInt(engine.getMoveHistory(), 99);
 		} catch (Exception e) {
@@ -131,7 +134,7 @@ public class DrawByRuleTest {
 
 		// The counter should be reset
 		assertEquals(0, engine.getMoveHistory().getHalfmoveClock(),
-				"Halfmove clock should be reset to 0 after pawn move");
+		        "Halfmove clock should be reset to 0 after pawn move");
 	}
 
 	@Test
@@ -147,7 +150,8 @@ public class DrawByRuleTest {
 
 		// Directly set the halfmove clock value
 		try {
-			java.lang.reflect.Field halfmoveField = MoveHistory.class.getDeclaredField("halfmoveClock");
+			java.lang.reflect.Field halfmoveField = MoveHistory.class
+			        .getDeclaredField("halfmoveClock");
 			halfmoveField.setAccessible(true);
 			halfmoveField.setInt(engine.getMoveHistory(), 99);
 		} catch (Exception e) {
@@ -160,7 +164,7 @@ public class DrawByRuleTest {
 
 		// The counter should be reset
 		assertEquals(0, engine.getMoveHistory().getHalfmoveClock(),
-				"Halfmove clock should be reset to 0 after capture");
+		        "Halfmove clock should be reset to 0 after capture");
 	}
 
 	@Test
@@ -192,7 +196,8 @@ public class DrawByRuleTest {
 
 		// Game should be over by threefold repetition
 		assertTrue(engine.getGameState().isThreefoldRepetition(), "Should be threefold repetition");
-		assertTrue(engine.getGameState().isGameOver(), "Game should be over by threefold repetition");
+		assertTrue(engine.getGameState().isGameOver(),
+		        "Game should be over by threefold repetition");
 	}
 
 	@Test
@@ -209,7 +214,8 @@ public class DrawByRuleTest {
 		// Verify it's stalemate and game is over
 		assertTrue(engine.getGameState().isStalemate("Black"), "Should be stalemate");
 		assertTrue(engine.getGameState().isGameOver(), "Game should be over by stalemate");
-		assertFalse(engine.getGameState().getBoard().isKingInCheck("Black"), "King should not be in check");
+		assertFalse(engine.getGameState().getBoard().isKingInCheck("Black"),
+		        "King should not be in check");
 	}
 
 	// Helper method to clear the board

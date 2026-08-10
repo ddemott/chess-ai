@@ -36,9 +36,11 @@ public class BugRegressionTest {
 		assertTrue(success, "En passant capture should succeed");
 
 		// The captured black pawn should be in the captured list
-		List<IPiece> capturedBlack = board.getCapturedPieces("Black");
-		boolean foundPawn = capturedBlack.stream().anyMatch(p -> p instanceof Pawn && p.getSide() == Side.BLACK);
-		assertTrue(foundPawn, "Captured black pawn should appear in captured pieces list after en passant");
+		List<IPiece> capturedBlack = board.getCapturedPieces(Side.BLACK);
+		boolean foundPawn = capturedBlack.stream()
+		        .anyMatch(p -> p instanceof Pawn && p.getSide() == Side.BLACK);
+		assertTrue(foundPawn,
+		        "Captured black pawn should appear in captured pieces list after en passant");
 	}
 
 	@Test
@@ -58,8 +60,10 @@ public class BugRegressionTest {
 		assertTrue(success, "Black en passant capture should succeed");
 
 		List<IPiece> capturedWhite = board.getCapturedPieces("White");
-		boolean foundPawn = capturedWhite.stream().anyMatch(p -> p instanceof Pawn && p.getSide() == Side.WHITE);
-		assertTrue(foundPawn, "Captured white pawn should appear in captured pieces list after en passant");
+		boolean foundPawn = capturedWhite.stream()
+		        .anyMatch(p -> p instanceof Pawn && p.getSide() == Side.WHITE);
+		assertTrue(foundPawn,
+		        "Captured white pawn should appear in captured pieces list after en passant");
 	}
 
 	// =========================================================================
@@ -85,9 +89,11 @@ public class BugRegressionTest {
 		assertTrue(success, "Promotion with capture should succeed");
 
 		// Verify the captured rook is tracked
-		List<IPiece> capturedBlack = board.getCapturedPieces("Black");
-		boolean foundRook = capturedBlack.stream().anyMatch(p -> p instanceof Rook && p.getSide() == Side.BLACK);
-		assertTrue(foundRook, "Captured black rook should appear in captured pieces list after promotion capture");
+		List<IPiece> capturedBlack = board.getCapturedPieces(Side.BLACK);
+		boolean foundRook = capturedBlack.stream()
+		        .anyMatch(p -> p instanceof Rook && p.getSide() == Side.BLACK);
+		assertTrue(foundRook,
+		        "Captured black rook should appear in captured pieces list after promotion capture");
 
 		// Verify the promoted piece is a Queen
 		IPiece promotedPiece = board.getPieceAt("b8");
@@ -110,8 +116,9 @@ public class BugRegressionTest {
 		boolean success = engine.movePiece("a7", "a8", "Q");
 		assertTrue(success, "Promotion without capture should succeed");
 
-		List<IPiece> capturedBlack = board.getCapturedPieces("Black");
-		assertTrue(capturedBlack.isEmpty(), "No pieces should be captured on a non-capture promotion");
+		List<IPiece> capturedBlack = board.getCapturedPieces(Side.BLACK);
+		assertTrue(capturedBlack.isEmpty(),
+		        "No pieces should be captured on a non-capture promotion");
 	}
 
 	// =========================================================================
@@ -128,13 +135,16 @@ public class BugRegressionTest {
 		engine.movePiece("e4", "d5"); // White captures black pawn
 
 		Board original = engine.getGameState().getBoard();
-		assertFalse(original.getCapturedPieces("Black").isEmpty(), "Original should have captured pieces");
+		assertFalse(original.getCapturedPieces(Side.BLACK).isEmpty(),
+		        "Original should have captured pieces");
 
 		Board cloned = original.clone();
-		assertEquals(original.getCapturedPieces("Black").size(), cloned.getCapturedPieces("Black").size(),
-				"Cloned board should have the same number of captured black pieces");
-		assertEquals(original.getCapturedPieces("White").size(), cloned.getCapturedPieces("White").size(),
-				"Cloned board should have the same number of captured white pieces");
+		assertEquals(original.getCapturedPieces(Side.BLACK).size(),
+		        cloned.getCapturedPieces(Side.BLACK).size(),
+		        "Cloned board should have the same number of captured black pieces");
+		assertEquals(original.getCapturedPieces("White").size(),
+		        cloned.getCapturedPieces("White").size(),
+		        "Cloned board should have the same number of captured white pieces");
 	}
 
 	@Test
@@ -147,12 +157,12 @@ public class BugRegressionTest {
 		Board original = engine.getGameState().getBoard();
 		Board cloned = original.clone();
 
-		int originalCount = original.getCapturedPieces("Black").size();
+		int originalCount = original.getCapturedPieces(Side.BLACK).size();
 
 		// Modify the cloned board's captured list shouldn't affect original
-		cloned.getCapturedPieces("Black").add(new Pawn(Side.BLACK, "a1"));
-		assertEquals(originalCount, original.getCapturedPieces("Black").size(),
-				"Modifying cloned captured list should not affect original");
+		cloned.getCapturedPieces(Side.BLACK).add(new Pawn(Side.BLACK, "a1"));
+		assertEquals(originalCount, original.getCapturedPieces(Side.BLACK).size(),
+		        "Modifying cloned captured list should not affect original");
 	}
 
 	// =========================================================================
@@ -170,14 +180,15 @@ public class BugRegressionTest {
 		State cloned = original.clone();
 
 		// Move history should have the same moves
-		assertEquals(original.getMoveHistory().getMoveCount(), cloned.getMoveHistory().getMoveCount(),
-				"Cloned state should have the same number of moves");
+		assertEquals(original.getMoveHistory().getMoveCount(),
+		        cloned.getMoveHistory().getMoveCount(),
+		        "Cloned state should have the same number of moves");
 
 		// Last move should match
 		assertNotNull(cloned.getMoveHistory().getLastMove());
 		assertEquals(original.getMoveHistory().getLastMove().getAlgebraicNotation(),
-				cloned.getMoveHistory().getLastMove().getAlgebraicNotation(),
-				"Last move notation should match after clone");
+		        cloned.getMoveHistory().getLastMove().getAlgebraicNotation(),
+		        "Last move notation should match after clone");
 	}
 
 	@Test
@@ -193,7 +204,7 @@ public class BugRegressionTest {
 
 		State cloned = original.clone();
 		assertEquals(originalClock, cloned.getMoveHistory().getHalfmoveClock(),
-				"Cloned state should preserve halfmove clock");
+		        "Cloned state should preserve halfmove clock");
 	}
 
 	@Test
@@ -208,7 +219,7 @@ public class BugRegressionTest {
 		// Undo on the clone should not affect original
 		assertTrue(cloned.undoLastMove());
 		assertEquals(2, original.getMoveHistory().getMoveCount(),
-				"Original move count should be unchanged after clone undo");
+		        "Original move count should be unchanged after clone undo");
 		assertTrue(original.getMoveHistory().canUndo(), "Original should still be able to undo");
 	}
 
@@ -256,7 +267,7 @@ public class BugRegressionTest {
 
 		// Position history should match move count
 		assertEquals(2, state.getMoveHistory().getPositionHistory().size(),
-				"Position history should have 2 entries after undo-all then redo-all");
+		        "Position history should have 2 entries after undo-all then redo-all");
 	}
 
 	// =========================================================================
@@ -329,6 +340,7 @@ public class BugRegressionTest {
 	void testMovePieceWithNullCoordinatesDoesNotThrow() {
 		Board board = new Board();
 		// These should return false gracefully, not throw NPE
-		assertDoesNotThrow(() -> board.movePiece("j1", "k2"), "Invalid positions should not throw exceptions");
+		assertDoesNotThrow(() -> board.movePiece("j1", "k2"),
+		        "Invalid positions should not throw exceptions");
 	}
 }

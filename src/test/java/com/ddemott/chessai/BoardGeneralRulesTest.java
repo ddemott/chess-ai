@@ -74,7 +74,8 @@ public class BoardGeneralRulesTest {
 		whiteBishop.setPosition("e4");
 		// Moving bishop off the e-file exposes king to check
 		board.setPieceAt("e4", null);
-		assertTrue(board.isKingInCheck("Black"), "Black king should be in check after discovered check");
+		assertTrue(board.isKingInCheck("Black"),
+		        "Black king should be in check after discovered check");
 	}
 
 	@Test
@@ -91,7 +92,8 @@ public class BoardGeneralRulesTest {
 		board.setPieceAt("e4", whiteBishop);
 		whiteBishop.setPosition("e4");
 		// Bishop tries to move off the e-file, exposing king to check
-		assertFalse(board.movePiece("e4", "d5"), "Bishop should NOT be able to move if it exposes king to check");
+		assertFalse(board.movePiece("e4", "d5"),
+		        "Bishop should NOT be able to move if it exposes king to check");
 	}
 
 	@Test
@@ -104,6 +106,7 @@ public class BoardGeneralRulesTest {
 		rook.setPosition("a1");
 		board.setPieceAt("a4", pawn);
 		pawn.setPosition("a4");
-		assertFalse(rook.isValidMove("a4", board), "Rook should NOT be able to capture own piece at a4");
+		assertFalse(rook.isValidMove("a4", board),
+		        "Rook should NOT be able to capture own piece at a4");
 	}
 }

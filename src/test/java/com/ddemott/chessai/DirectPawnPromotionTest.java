@@ -32,7 +32,8 @@ public class DirectPawnPromotionTest {
 		System.out.println(board.toString());
 
 		// Test 1: Try to move pawn to e8 WITHOUT specifying promotion piece
-		System.out.println("\n*** TEST 1: Moving e7 to e8 WITHOUT promotion piece specification ***");
+		System.out
+		        .println("\n*** TEST 1: Moving e7 to e8 WITHOUT promotion piece specification ***");
 		boolean result1 = board.movePiece("e7", "e8");
 		System.out.println("Move result: " + result1);
 
@@ -62,8 +63,8 @@ public class DirectPawnPromotionTest {
 		// Check what piece is on e8 now
 		var pieceOnE8 = board.getPieceAt("e8");
 		if (pieceOnE8 != null) {
-			System.out.println(
-					"Piece on e8: " + pieceOnE8.getClass().getSimpleName() + " (" + pieceOnE8.getColor() + ")");
+			System.out.println("Piece on e8: " + pieceOnE8.getClass().getSimpleName() + " ("
+			        + pieceOnE8.getColor() + ")");
 		} else {
 			System.out.println("No piece on e8");
 		}
@@ -71,7 +72,8 @@ public class DirectPawnPromotionTest {
 		System.out.println("\n=== CONCLUSION ===");
 		System.out.println("When moving a pawn to rank 8 (promotion rank):");
 		System.out.println("1. WITHOUT specifying promotion piece → Move is REJECTED");
-		System.out.println("2. WITH specifying promotion piece → Move succeeds and pawn transforms");
+		System.out
+		        .println("2. WITH specifying promotion piece → Move succeeds and pawn transforms");
 		System.out.println("3. You MUST use the console interface or GameEngine promotion methods");
 	}
 }

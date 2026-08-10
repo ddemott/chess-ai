@@ -35,7 +35,8 @@ public class EnPassantIntegrationTest {
 		System.out.println(engine.getBoardRepresentation());
 
 		// Move black pawn f7-f5 (creating en passant opportunity)
-		System.out.println("Black plays: f7 f5 (two-square pawn move - creates en passant opportunity)");
+		System.out.println(
+		        "Black plays: f7 f5 (two-square pawn move - creates en passant opportunity)");
 		boolean pawnTwoSquareMove = engine.movePiece("f7", "f5");
 		System.out.println("Move successful: " + pawnTwoSquareMove);
 		System.out.println(engine.getBoardRepresentation());
@@ -58,8 +59,8 @@ public class EnPassantIntegrationTest {
 		System.out.println("=== Verification ===");
 		Board finalBoard = engine.getGameState().getBoard();
 		boolean whitePawnAtF6 = finalBoard.getPieceAt("f6") != null
-				&& finalBoard.getPieceAt("f6").getClass().getSimpleName().equals("Pawn")
-				&& finalBoard.getPieceAt("f6").getColor().equals("White");
+		        && finalBoard.getPieceAt("f6").getClass().getSimpleName().equals("Pawn")
+		        && finalBoard.getPieceAt("f6").getColor().equals("White");
 		boolean blackPawnRemoved = finalBoard.getPieceAt("f5") == null;
 		boolean enPassantTargetCleared = finalBoard.getEnPassantTarget() == null;
 

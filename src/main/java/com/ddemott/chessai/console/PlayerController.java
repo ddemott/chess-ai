@@ -9,7 +9,7 @@ import com.ddemott.chessai.Move;
 public interface PlayerController {
 	/**
 	 * Selects a move for the current player.
-	 * 
+	 *
 	 * @param gameEngine
 	 *            The game engine instance
 	 * @return The move to play (or null to resign/exit)

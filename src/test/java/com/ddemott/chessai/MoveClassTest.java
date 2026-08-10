@@ -33,7 +33,8 @@ public class MoveClassTest {
 		System.out.println("Test 1: Move Creation");
 
 		Pawn pawn = new Pawn("White", "e2");
-		Move move = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false, false, false, null);
+		Move move = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false, false, false,
+		        null);
 
 		assertNotNull("Move created", move);
 		assertEqual("Move from position", "e2", move.getFrom());
@@ -53,7 +54,8 @@ public class MoveClassTest {
 		Pawn pawn = new Pawn("White", "e2");
 		Queen queen = new Queen("Black", "d8");
 
-		Move move = new Move("e2", "d3", pawn, queen, "exd3", 5, "White", true, false, false, false, null);
+		Move move = new Move("e2", "d3", pawn, queen, "exd3", 5, "White", true, false, false, false,
+		        null);
 
 		assertEqual("isCheck getter", true, move.isCheck());
 		assertEqual("isCheckmate getter", false, move.isCheckmate());
@@ -71,15 +73,18 @@ public class MoveClassTest {
 		Queen queen = new Queen("Black", "d8");
 
 		// Test normal capture
-		Move captureMove = new Move("e2", "d3", pawn, queen, "exd3", 1, "White", false, false, false, false, null);
+		Move captureMove = new Move("e2", "d3", pawn, queen, "exd3", 1, "White", false, false,
+		        false, false, null);
 		assertEqual("Normal capture detection", true, captureMove.isCapture());
 
 		// Test en passant
-		Move enPassantMove = new Move("e5", "d6", pawn, null, "exd6", 1, "White", false, false, false, true, null);
+		Move enPassantMove = new Move("e5", "d6", pawn, null, "exd6", 1, "White", false, false,
+		        false, true, null);
 		assertEqual("En passant capture detection", true, enPassantMove.isCapture());
 
 		// Test non-capture
-		Move nonCaptureMove = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false, false, false, null);
+		Move nonCaptureMove = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false,
+		        false, false, null);
 		assertEqual("Non-capture detection", false, nonCaptureMove.isCapture());
 
 		System.out.println("✅ Move capture detection tests passed\n");
@@ -89,7 +94,8 @@ public class MoveClassTest {
 		System.out.println("Test 4: Move toString Method");
 
 		Pawn pawn = new Pawn("White", "e2");
-		Move move = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false, false, false, null);
+		Move move = new Move("e2", "e4", pawn, null, "e4", 1, "White", false, false, false, false,
+		        null);
 
 		assertEqual("toString returns algebraic notation", "e4", move.toString());
 

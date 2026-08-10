@@ -14,7 +14,8 @@ public class MinMaxStrategy implements AIStrategy {
 	// Expose both move and score for display
 	public MoveResult calculateBestMoveWithScore(State state, String color) {
 		Side side = color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK;
-		MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, side, true);
+		MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, side,
+		        true);
 		return result;
 	}
 
@@ -29,11 +30,13 @@ public class MinMaxStrategy implements AIStrategy {
 	@Override
 	public String calculateBestMove(State state, String color) {
 		Side side = color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK;
-		MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, side, true);
+		MoveResult result = minMax(state, maxDepth, Integer.MIN_VALUE, Integer.MAX_VALUE, side,
+		        true);
 		return result != null ? result.move() : null;
 	}
 
-	private MoveResult minMax(State state, int depth, int alpha, int beta, Side side, boolean maximizingPlayer) {
+	private MoveResult minMax(State state, int depth, int alpha, int beta, Side side,
+	        boolean maximizingPlayer) {
 		// Penalize threefold repetition and fifty-move rule as a draw
 		if (state.isThreefoldRepetition() || state.isFiftyMoveRule()) {
 			return new MoveResult(GameConstants.DRAW_SCORE, null);
@@ -47,8 +50,9 @@ public class MinMaxStrategy implements AIStrategy {
 		if (possibleMoves.isEmpty()) {
 			if (state.getBoard().isKingInCheck(side)) {
 				// Checkmate
-				return new MoveResult(maximizingPlayer ? -GameConstants.CHECKMATE_SCORE : GameConstants.CHECKMATE_SCORE,
-						null);
+				return new MoveResult(maximizingPlayer
+				        ? -GameConstants.CHECKMATE_SCORE
+				        : GameConstants.CHECKMATE_SCORE, null);
 			} else {
 				// Stalemate
 				return new MoveResult(GameConstants.DRAW_SCORE, null);
@@ -62,7 +66,8 @@ public class MinMaxStrategy implements AIStrategy {
 			return Boolean.compare(c2, c1); // true (capture) comes before false
 		});
 
-		MoveResult bestMove = new MoveResult(maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE, null);
+		MoveResult bestMove = new MoveResult(
+		        maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE, null);
 
 		for (String move : possibleMoves) {
 			State newState = state.clone();
@@ -92,7 +97,8 @@ public class MinMaxStrategy implements AIStrategy {
 				continue;
 			}
 
-			MoveResult result = minMax(newState, depth - 1, alpha, beta, side.flip(), !maximizingPlayer);
+			MoveResult result = minMax(newState, depth - 1, alpha, beta, side.flip(),
+			        !maximizingPlayer);
 
 			if (maximizingPlayer) {
 				if (result.value() > bestMove.value() || bestMove.move() == null) {

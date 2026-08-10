@@ -4,10 +4,12 @@ package com.ddemott.chessai.ai;
  * Enum representing different AI difficulty levels
  */
 public enum AIDifficulty {
-	BEGINNER(1, "Beginner", "Very weak, makes basic moves"), EASY(2, "Easy", "Weak, looks ahead 2 moves"), INTERMEDIATE(
-			3, "Intermediate", "Moderate difficulty, looks ahead 3 moves"), ADVANCED(4, "Advanced",
-					"Strong, looks ahead 4 moves"), EXPERT(5, "Expert", "Very strong, looks ahead 5 moves"), MASTER(6,
-							"Master", "Extremely strong, looks ahead 6 moves");
+	BEGINNER(1, "Beginner", "Very weak, makes basic moves"), EASY(2, "Easy",
+	        "Weak, looks ahead 2 moves"), INTERMEDIATE(3, "Intermediate",
+	                "Moderate difficulty, looks ahead 3 moves"), ADVANCED(4, "Advanced",
+	                        "Strong, looks ahead 4 moves"), EXPERT(5, "Expert",
+	                                "Very strong, looks ahead 5 moves"), MASTER(6, "Master",
+	                                        "Extremely strong, looks ahead 6 moves");
 
 	private final int depth;
 	private final String displayName;

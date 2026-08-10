@@ -21,7 +21,8 @@ public class ChessGameEdgeCasesTest {
 				}
 			}
 		}
-		assertTrue(board.isStalemate("White") || board.isStalemate("Black") || board.isCheckmate("White") == false);
+		assertTrue(board.isStalemate("White") || board.isStalemate("Black")
+		        || board.isCheckmate("White") == false);
 	}
 
 	@Test

@@ -7,14 +7,15 @@ package com.ddemott.chessai;
 public record Coordinate(int row, int col) {
 
 	public Coordinate {
-		if (row < 0 || row >= GameConstants.BOARD_SIZE || col < 0 || col >= GameConstants.BOARD_SIZE) {
+		if (row < 0 || row >= GameConstants.BOARD_SIZE || col < 0
+		        || col >= GameConstants.BOARD_SIZE) {
 			throw new IllegalArgumentException("Coordinate out of bounds: " + row + "," + col);
 		}
 	}
 
 	/**
 	 * Converts an algebraic notation string (e.g., "e4") to a Coordinate.
-	 * 
+	 *
 	 * @param position
 	 *            The position string.
 	 * @return The Coordinate, or null if invalid.
@@ -32,7 +33,8 @@ public record Coordinate(int row, int col) {
 		int row = position.charAt(1) - '1';
 		int col = column - 'a';
 
-		if (row < 0 || row >= GameConstants.BOARD_SIZE || col < 0 || col >= GameConstants.BOARD_SIZE) {
+		if (row < 0 || row >= GameConstants.BOARD_SIZE || col < 0
+		        || col >= GameConstants.BOARD_SIZE) {
 			return null;
 		}
 
@@ -41,7 +43,7 @@ public record Coordinate(int row, int col) {
 
 	/**
 	 * Converts this coordinate to algebraic notation (e.g., "e4").
-	 * 
+	 *
 	 * @return The position string.
 	 */
 	public String toString() {

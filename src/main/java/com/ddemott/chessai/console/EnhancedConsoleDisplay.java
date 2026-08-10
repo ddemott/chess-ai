@@ -151,20 +151,22 @@ public class EnhancedConsoleDisplay {
 		if (isKingInCheck(currentSide)) {
 			if (isCheckmate(currentSide)) {
 				System.out.println(
-						colorText("CHECKMATE! " + getOpponentColor(currentPlayer) + " wins!", ANSI_RED + ANSI_BOLD));
+				        colorText("CHECKMATE! " + getOpponentColor(currentPlayer) + " wins!",
+				                ANSI_RED + ANSI_BOLD));
 			} else {
-				System.out
-						.println(colorText("CHECK! " + currentPlayer + " king is under attack!", ANSI_RED + ANSI_BOLD));
+				System.out.println(colorText("CHECK! " + currentPlayer + " king is under attack!",
+				        ANSI_RED + ANSI_BOLD));
 			}
 		} else if (isStalemate(currentSide)) {
-			System.out.println(colorText("STALEMATE! The game is a draw.", ANSI_YELLOW + ANSI_BOLD));
+			System.out
+			        .println(colorText("STALEMATE! The game is a draw.", ANSI_YELLOW + ANSI_BOLD));
 		}
 
 		// Last move display
 		Move lastMove = gameState.getMoveHistory().getLastMove();
 		if (lastMove != null) {
-			String lastMoveText = "Last move: " + lastMove.getAlgebraicNotation() + " (" + lastMove.getFrom() + " → "
-					+ lastMove.getTo() + ")";
+			String lastMoveText = "Last move: " + lastMove.getAlgebraicNotation() + " ("
+			        + lastMove.getFrom() + " → " + lastMove.getTo() + ")";
 			System.out.println(colorText(lastMoveText, ANSI_CYAN));
 		}
 	}
@@ -288,7 +290,8 @@ public class EnhancedConsoleDisplay {
 	 * Display enhanced error message for invalid moves
 	 */
 	public void displayInvalidMoveError(String from, String to, String reason) {
-		System.out.println(colorText("❌ Invalid move: " + from + " to " + to, ANSI_RED + ANSI_BOLD));
+		System.out
+		        .println(colorText("❌ Invalid move: " + from + " to " + to, ANSI_RED + ANSI_BOLD));
 		System.out.println(colorText("Reason: " + reason, ANSI_RED));
 		System.out.println();
 	}

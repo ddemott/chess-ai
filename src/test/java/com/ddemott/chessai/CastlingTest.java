@@ -158,13 +158,14 @@ public class CastlingTest {
 			IPiece nothingAtH1 = board.getPieceAt("h1");
 
 			boolean correctKingPosition = kingAtG1 != null && kingAtG1 instanceof King
-					&& kingAtG1.getColor().equals("White");
+			        && kingAtG1.getColor().equals("White");
 			boolean correctRookPosition = rookAtF1 != null && rookAtF1 instanceof Rook
-					&& rookAtF1.getColor().equals("White");
+			        && rookAtF1.getColor().equals("White");
 			boolean kingMoved = nothingAtE1 == null;
 			boolean rookMoved = nothingAtH1 == null;
 
-			return castlingSuccessful && correctKingPosition && correctRookPosition && kingMoved && rookMoved;
+			return castlingSuccessful && correctKingPosition && correctRookPosition && kingMoved
+			        && rookMoved;
 		} catch (Exception e) {
 			System.out.println("  Error: " + e.getMessage());
 			return false;
@@ -190,13 +191,14 @@ public class CastlingTest {
 			IPiece nothingAtA1 = board.getPieceAt("a1");
 
 			boolean correctKingPosition = kingAtC1 != null && kingAtC1 instanceof King
-					&& kingAtC1.getColor().equals("White");
+			        && kingAtC1.getColor().equals("White");
 			boolean correctRookPosition = rookAtD1 != null && rookAtD1 instanceof Rook
-					&& rookAtD1.getColor().equals("White");
+			        && rookAtD1.getColor().equals("White");
 			boolean kingMoved = nothingAtE1 == null;
 			boolean rookMoved = nothingAtA1 == null;
 
-			return castlingSuccessful && correctKingPosition && correctRookPosition && kingMoved && rookMoved;
+			return castlingSuccessful && correctKingPosition && correctRookPosition && kingMoved
+			        && rookMoved;
 		} catch (Exception e) {
 			System.out.println("  Error: " + e.getMessage());
 			return false;
@@ -336,9 +338,9 @@ public class CastlingTest {
 			IPiece blackKingAtG8 = board.getPieceAt("g8");
 
 			boolean whiteKingCorrect = whiteKingAtG1 != null && whiteKingAtG1 instanceof King
-					&& whiteKingAtG1.getColor().equals("White");
+			        && whiteKingAtG1.getColor().equals("White");
 			boolean blackKingCorrect = blackKingAtG8 != null && blackKingAtG8 instanceof King
-					&& blackKingAtG8.getColor().equals("Black");
+			        && blackKingAtG8.getColor().equals("Black");
 
 			return whiteCastling && blackCastling && whiteKingCorrect && blackKingCorrect;
 		} catch (Exception e) {

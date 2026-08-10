@@ -7,7 +7,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class GetPieceDisplayTest {
 	@Test
 	void testGetPieceDisplay() {
-		EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(null); // null state is fine for this test
+		EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(null); // null state is fine for
+		                                                                   // this test
 		IPiece whiteQueen = new Queen("White", "d1");
 		IPiece blackKnight = new Knight("Black", "g8");
 		IPiece nullPiece = null;

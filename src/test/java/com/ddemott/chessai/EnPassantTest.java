@@ -142,8 +142,8 @@ public class EnPassantTest {
 
 			// Verify results
 			boolean whitePawnAtD6 = board.getPieceAt("d6") != null
-					&& board.getPieceAt("d6").getClass().getSimpleName().equals("Pawn")
-					&& board.getPieceAt("d6").getColor().equals("White");
+			        && board.getPieceAt("d6").getClass().getSimpleName().equals("Pawn")
+			        && board.getPieceAt("d6").getColor().equals("White");
 			boolean blackPawnRemoved = board.getPieceAt("d5") == null;
 			boolean enPassantTargetCleared = board.getEnPassantTarget() == null;
 
@@ -174,8 +174,8 @@ public class EnPassantTest {
 
 			// Verify results
 			boolean blackPawnAtE3 = board.getPieceAt("e3") != null
-					&& board.getPieceAt("e3").getClass().getSimpleName().equals("Pawn")
-					&& board.getPieceAt("e3").getColor().equals("Black");
+			        && board.getPieceAt("e3").getClass().getSimpleName().equals("Pawn")
+			        && board.getPieceAt("e3").getColor().equals("Black");
 			boolean whitePawnRemoved = board.getPieceAt("e4") == null;
 			boolean enPassantTargetCleared = board.getEnPassantTarget() == null;
 

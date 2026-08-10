@@ -29,7 +29,8 @@ public class Queen extends Piece {
 		// Valid rook move (horizontal/vertical)
 		boolean isRookMove = currentCoords[0] == newCoords[0] || currentCoords[1] == newCoords[1];
 		// Valid bishop move (diagonal)
-		boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math.abs(newCoords[1] - currentCoords[1]);
+		boolean isBishopMove = Math.abs(newCoords[0] - currentCoords[0]) == Math
+		        .abs(newCoords[1] - currentCoords[1]);
 		// Invalid L-shape (knight move) - not strictly necessary as the rook/bishop
 		// check handles it, but safe to keep
 		int rowDiff = Math.abs(newCoords[0] - currentCoords[0]);
@@ -60,7 +61,8 @@ public class Queen extends Piece {
 		String currentPosition = getPosition();
 		int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
 
-		int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}, {1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+		int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 }, { 1, 1 }, { 1, -1 },
+		        { -1, 1 }, { -1, -1 } };
 
 		for (int[] direction : directions) {
 			int row = currentCoords[0];

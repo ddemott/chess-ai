@@ -215,8 +215,8 @@ public class PawnPromotionTest {
 
 	private static void assertEqual(String message, Object expected, Object actual) {
 		if (expected == null ? actual != null : !expected.equals(actual)) {
-			throw new AssertionError(
-					"Assertion failed: " + message + ". Expected: " + expected + ", Actual: " + actual);
+			throw new AssertionError("Assertion failed: " + message + ". Expected: " + expected
+			        + ", Actual: " + actual);
 		}
 	}
 }

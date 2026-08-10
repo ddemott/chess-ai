@@ -87,18 +87,21 @@ public class Board {
 				if (myPiece == null || otherPiece == null) {
 					identical = false;
 					diff.append(String.format("Mismatch at %s: This=[%s], Other=[%s]\n", pos,
-							(myPiece == null ? "Empty" : myPiece.getSide() + " " + myPiece.getClass().getSimpleName()),
-							(otherPiece == null
-									? "Empty"
-									: otherPiece.getSide() + " " + otherPiece.getClass().getSimpleName())));
+					        (myPiece == null
+					                ? "Empty"
+					                : myPiece.getSide() + " " + myPiece.getClass().getSimpleName()),
+					        (otherPiece == null
+					                ? "Empty"
+					                : otherPiece.getSide() + " "
+					                        + otherPiece.getClass().getSimpleName())));
 				} else {
 					// Both present, check equality
 					if (myPiece.getSide() != otherPiece.getSide()
-							|| !myPiece.getClass().equals(otherPiece.getClass())) {
+					        || !myPiece.getClass().equals(otherPiece.getClass())) {
 						identical = false;
-						diff.append(String.format("Mismatch at %s: This=[%s %s], Other=[%s %s]\n", pos,
-								myPiece.getSide(), myPiece.getClass().getSimpleName(), otherPiece.getSide(),
-								otherPiece.getClass().getSimpleName()));
+						diff.append(String.format("Mismatch at %s: This=[%s %s], Other=[%s %s]\n",
+						        pos, myPiece.getSide(), myPiece.getClass().getSimpleName(),
+						        otherPiece.getSide(), otherPiece.getClass().getSimpleName()));
 					}
 				}
 			}
@@ -110,11 +113,13 @@ public class Board {
 		if (myEnPassant == null) {
 			if (otherEnPassant != null) {
 				identical = false;
-				diff.append(String.format("En Passant Target: This=[null], Other=[%s]\n", otherEnPassant));
+				diff.append(String.format("En Passant Target: This=[null], Other=[%s]\n",
+				        otherEnPassant));
 			}
 		} else if (!myEnPassant.equals(otherEnPassant)) {
 			identical = false;
-			diff.append(String.format("En Passant Target: This=[%s], Other=[%s]\n", myEnPassant, otherEnPassant));
+			diff.append(String.format("En Passant Target: This=[%s], Other=[%s]\n", myEnPassant,
+			        otherEnPassant));
 		}
 
 		return identical ? "Boards are identical" : diff.toString();
@@ -126,7 +131,7 @@ public class Board {
 			return null; // Out of bounds or invalid
 		}
 		if (coords[0] < 0 || coords[0] >= GameConstants.BOARD_SIZE || coords[1] < 0
-				|| coords[1] >= GameConstants.BOARD_SIZE) {
+		        || coords[1] >= GameConstants.BOARD_SIZE) {
 			return null; // Out of bounds
 		}
 		return board[coords[0]][coords[1]];
@@ -138,7 +143,7 @@ public class Board {
 			return; // Out of bounds or invalid
 		}
 		if (coords[0] < 0 || coords[0] >= GameConstants.BOARD_SIZE || coords[1] < 0
-				|| coords[1] >= GameConstants.BOARD_SIZE) {
+		        || coords[1] >= GameConstants.BOARD_SIZE) {
 			return; // Out of bounds
 		}
 		board[coords[0]][coords[1]] = piece;
@@ -153,7 +158,7 @@ public class Board {
 		if (coord == null) {
 			return null;
 		}
-		return new int[]{coord.row(), coord.col()};
+		return new int[]{ coord.row(), coord.col() };
 	}
 
 	public String convertCoordinatesToPosition(int row, int col) {
@@ -211,8 +216,9 @@ public class Board {
 		}
 		// If this is a pawn moving to the last rank, it must specify a promotion piece
 		if (piece instanceof Pawn) {
-			boolean isPromotionRank = (piece.getSide() == Side.WHITE && toCoords[0] == GameConstants.RANK_8)
-					|| (piece.getSide() == Side.BLACK && toCoords[0] == GameConstants.RANK_1);
+			boolean isPromotionRank = (piece.getSide() == Side.WHITE
+			        && toCoords[0] == GameConstants.RANK_8)
+			        || (piece.getSide() == Side.BLACK && toCoords[0] == GameConstants.RANK_1);
 			if (isPromotionRank) {
 				return false; // Must use movePiece(from, to, promotionPiece) for promotions
 			}
@@ -248,7 +254,7 @@ public class Board {
 
 	/**
 	 * Checks if moving a piece would expose the king to check
-	 * 
+	 *
 	 * @param from
 	 *            Starting position
 	 * @param to
@@ -274,7 +280,8 @@ public class Board {
 		int dRow = Integer.signum(pieceCoords[0] - kingCoords[0]);
 		int dCol = Integer.signum(pieceCoords[1] - kingCoords[1]);
 		boolean isOrthogonal = (dRow == 0 || dCol == 0);
-		boolean isDiagonal = (Math.abs(pieceCoords[0] - kingCoords[0]) == Math.abs(pieceCoords[1] - kingCoords[1]));
+		boolean isDiagonal = (Math.abs(pieceCoords[0] - kingCoords[0]) == Math
+		        .abs(pieceCoords[1] - kingCoords[1]));
 		if (!isOrthogonal && !isDiagonal) {
 			// Not on a pin line, just check normal check exposure
 			Board clonedBoard = this.clone();
@@ -318,7 +325,7 @@ public class Board {
 			if (att != null) {
 				if (att.getSide() == opponentSide) {
 					if ((isOrthogonal && (att instanceof Rook || att instanceof Queen))
-							|| (isDiagonal && (att instanceof Bishop || att instanceof Queen))) {
+					        || (isDiagonal && (att instanceof Bishop || att instanceof Queen))) {
 						pinningAttacker = att;
 					}
 				}
@@ -346,13 +353,13 @@ public class Board {
 		int moveVecCol = targetCoords[1] - kingCoords[1];
 		// Must be collinear with pin direction
 		boolean collinear = (dRow == 0 ? moveVecRow == 0 : moveVecRow % dRow == 0)
-				&& (dCol == 0 ? moveVecCol == 0 : moveVecCol % dCol == 0);
+		        && (dCol == 0 ? moveVecCol == 0 : moveVecCol % dCol == 0);
 		// Must be in the same direction
 		boolean sameDirection = (dRow == 0 || Integer.signum(moveVecRow) == dRow)
-				&& (dCol == 0 || Integer.signum(moveVecCol) == dCol);
+		        && (dCol == 0 || Integer.signum(moveVecCol) == dCol);
 		// Must not go past the attacker
 		boolean notPastAttacker = isBetweenInclusive(targetCoords[0], kingCoords[0], attRow)
-				&& isBetweenInclusive(targetCoords[1], kingCoords[1], attCol);
+		        && isBetweenInclusive(targetCoords[1], kingCoords[1], attCol);
 		if (!(collinear && sameDirection && notPastAttacker)) {
 			return true; // Illegal move for pinned piece
 		}
@@ -485,12 +492,14 @@ public class Board {
 								String from = parts[0];
 								String to = parts[1];
 
-								// Filter out moves that would expose the king to check (e.g., pinned pieces)
+								// Filter out moves that would expose the king to check (e.g.,
+								// pinned pieces)
 								if (wouldExposeKingToCheck(from, to)) {
 									continue;
 								}
 
-								// Filter out moves that capture own pieces (Self-Capture Safety Net)
+								// Filter out moves that capture own pieces (Self-Capture Safety
+								// Net)
 								IPiece captured = getPieceAt(to);
 								if (captured != null && captured.getSide() == side) {
 									continue;
@@ -530,7 +539,7 @@ public class Board {
 
 	/**
 	 * Get the current en passant target square
-	 * 
+	 *
 	 * @return the target square (e.g., "e3") or null if no en passant is possible
 	 */
 	public String getEnPassantTarget() {
@@ -539,7 +548,7 @@ public class Board {
 
 	/**
 	 * Set the en passant target square
-	 * 
+	 *
 	 * @param target
 	 *            the target square (e.g., "e3") or null to clear
 	 */
@@ -678,7 +687,8 @@ public class Board {
 	 * approach to avoid infinite loops during castling validation
 	 */
 	public boolean isSquareUnderAttack(String position, String defendingColor) {
-		return isSquareUnderAttack(position, defendingColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
+		return isSquareUnderAttack(position,
+		        defendingColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
 	}
 
 	public boolean isSquareUnderAttack(String position, Side defendingSide) {
@@ -710,7 +720,8 @@ public class Board {
 							return true;
 						}
 					} else {
-						// For king pieces, only check normal moves (not castling) to avoid recursion
+						// For king pieces, only check normal moves (not castling) to avoid
+						// recursion
 						int[] targetCoords = convertPositionToCoordinates(position);
 						int dx = Math.abs(targetCoords[0] - row);
 						int dy = Math.abs(targetCoords[1] - col);
@@ -824,20 +835,22 @@ public class Board {
 
 							// For pawn promotion, check if any promotion is legal
 							if (piece instanceof Pawn) {
-								boolean isPromotionRank = (piece.getSide() == Side.WHITE && toRow == 7)
-										|| (piece.getSide() == Side.BLACK && toRow == 0);
+								boolean isPromotionRank = (piece.getSide() == Side.WHITE
+								        && toRow == 7)
+								        || (piece.getSide() == Side.BLACK && toRow == 0);
 								if (isPromotionRank) {
 									// Try all promotion pieces
-									String[] promotions = {"Q", "R", "B", "N"};
+									String[] promotions = { "Q", "R", "B", "N" };
 									for (String promotionPiece : promotions) {
 										Board clonedBoard = this.clone();
-										IPiece promotedPiece = clonedBoard.createPromotionPiece(promotionPiece,
-												piece.getColor(), to);
+										IPiece promotedPiece = clonedBoard.createPromotionPiece(
+										        promotionPiece, piece.getColor(), to);
 										if (promotedPiece != null) {
 											clonedBoard.setPieceAt(from, null);
 											clonedBoard.setPieceAt(to, promotedPiece);
 
-											// If this promotion doesn't leave king in check, it's legal
+											// If this promotion doesn't leave king in check, it's
+											// legal
 											if (!clonedBoard.isKingInCheck(piece.getSide())) {
 												piece.setPosition(oldPosition); // Restore
 												return false; // Found a legal promotion move
@@ -870,7 +883,7 @@ public class Board {
 	/**
 	 * Checks if a piece is pinned (can't move because it would expose the king to
 	 * check)
-	 * 
+	 *
 	 * @param position
 	 *            Position of the piece to check
 	 * @return true if the piece is pinned, false otherwise
@@ -895,7 +908,8 @@ public class Board {
 		int dRow = Integer.signum(pieceCoords[0] - kingCoords[0]);
 		int dCol = Integer.signum(pieceCoords[1] - kingCoords[1]);
 		boolean isOrthogonal = (dRow == 0 || dCol == 0);
-		boolean isDiagonal = (Math.abs(pieceCoords[0] - kingCoords[0]) == Math.abs(pieceCoords[1] - kingCoords[1]));
+		boolean isDiagonal = (Math.abs(pieceCoords[0] - kingCoords[0]) == Math
+		        .abs(pieceCoords[1] - kingCoords[1]));
 		if (isOrthogonal || isDiagonal) {
 			// Check for pinning attacker in the direction from piece away from king
 			int attRow = pieceCoords[0] + dRow;
@@ -905,12 +919,14 @@ public class Board {
 				if (att != null) {
 					if (att.getSide() != piece.getSide()) {
 						if ((isOrthogonal && (att instanceof Rook || att instanceof Queen))
-								|| (isDiagonal && (att instanceof Bishop || att instanceof Queen))) {
+						        || (isDiagonal
+						                && (att instanceof Bishop || att instanceof Queen))) {
 							// Check that there are no other pieces between piece and attacker
 							int checkRow = kingCoords[0] + dRow;
 							int checkCol = kingCoords[1] + dCol;
 							boolean clear = true;
-							while ((checkRow != pieceCoords[0] || checkCol != pieceCoords[1]) && clear) {
+							while ((checkRow != pieceCoords[0] || checkCol != pieceCoords[1])
+							        && clear) {
 								if (board[checkRow][checkCol] != null) {
 									clear = false;
 								}
@@ -965,7 +981,7 @@ public class Board {
 
 	/**
 	 * Move piece with optional pawn promotion
-	 * 
+	 *
 	 * @param from
 	 *            Starting position
 	 * @param to
@@ -995,7 +1011,7 @@ public class Board {
 		if (piece instanceof Pawn) {
 			int[] toCoords = convertPositionToCoordinates(to);
 			boolean isPromotionRank = (piece.getSide() == Side.WHITE && toCoords[0] == 7)
-					|| (piece.getSide() == Side.BLACK && toCoords[0] == 0);
+			        || (piece.getSide() == Side.BLACK && toCoords[0] == 0);
 
 			if (isPromotionRank) {
 				// Must specify promotion piece when moving to promotion rank
@@ -1082,8 +1098,8 @@ public class Board {
 	 */
 	private boolean isValidPromotionPiece(String promotionPiece) {
 		// Only Queen, Rook, Bishop, and Knight are allowed for promotion
-		return promotionPiece.equals("Q") || promotionPiece.equals("R") || promotionPiece.equals("B")
-				|| promotionPiece.equals("N");
+		return promotionPiece.equals("Q") || promotionPiece.equals("R")
+		        || promotionPiece.equals("B") || promotionPiece.equals("N");
 	}
 
 	/**
@@ -1096,15 +1112,15 @@ public class Board {
 		}
 
 		switch (pieceType) {
-			case "Q" :
+			case "Q":
 				return new Queen(side, position);
-			case "R" :
+			case "R":
 				return new Rook(side, position);
-			case "B" :
+			case "B":
 				return new Bishop(side, position);
-			case "N" :
+			case "N":
 				return new Knight(side, position);
-			default :
+			default:
 				return null;
 		}
 	}
@@ -1146,7 +1162,7 @@ public class Board {
 	 * Convert the current board position to Forsyth–Edwards Notation (FEN). This
 	 * method generates the piece placement portion of the FEN string. Full FEN
 	 * requires additional game state information that this method doesn't provide.
-	 * 
+	 *
 	 * @return The piece placement portion of FEN string representing the current
 	 *         board position.
 	 */
@@ -1195,10 +1211,11 @@ public class Board {
 	 * Get captured pieces for each side
 	 */
 	public List<IPiece> getCapturedPieces(String color) {
-		if (color.equalsIgnoreCase("White")) {
-			return capturedWhitePieces;
-		} else {
-			return capturedBlackPieces;
-		}
+		// Wrapper for legacy String support
+		return getCapturedPieces(color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
+	}
+
+	public List<IPiece> getCapturedPieces(Side side) {
+		return side == Side.WHITE ? capturedWhitePieces : capturedBlackPieces;
 	}
 }

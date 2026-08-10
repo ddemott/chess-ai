@@ -48,7 +48,8 @@ public class ChessRulesTest {
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8"));
 		engine.getGameState().getBoard().setPieceAt("c1", new Bishop("White", "c1"));
-		assertTrue(isInsufficientMaterial(engine), "King and bishop vs king should be insufficient material");
+		assertTrue(isInsufficientMaterial(engine),
+		        "King and bishop vs king should be insufficient material");
 
 		// Test king and knight vs king
 		engine = new GameEngine(1);
@@ -56,7 +57,8 @@ public class ChessRulesTest {
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8"));
 		engine.getGameState().getBoard().setPieceAt("b1", new Knight("White", "b1"));
-		assertTrue(isInsufficientMaterial(engine), "King and knight vs king should be insufficient material");
+		assertTrue(isInsufficientMaterial(engine),
+		        "King and knight vs king should be insufficient material");
 
 		// Test sufficient material (king and pawn)
 		engine = new GameEngine(1);
@@ -79,20 +81,23 @@ public class ChessRulesTest {
 		// Try to move the pinned bishop
 		boolean bishopCanMove = engine.movePiece("e2", "d3");
 		assertFalse(bishopCanMove, "Pinned bishop should not be able to move");
-		assertEquals("B", getPieceAt(engine.getBoardRepresentation(), "e2"), "Bishop should still be on e2");
+		assertEquals("B", getPieceAt(engine.getBoardRepresentation(), "e2"),
+		        "Bishop should still be on e2");
 
 		// Try moving bishop along the pin line (should still be illegal as it exposes
 		// king)
 		bishopCanMove = engine.movePiece("e2", "e3");
-		assertFalse(bishopCanMove, "Pinned bishop should not be able to move even along pin line if it exposes king");
+		assertFalse(bishopCanMove,
+		        "Pinned bishop should not be able to move even along pin line if it exposes king");
 	}
 
 	// Helper methods
 	private void clearBoard(GameEngine engine) {
-		String[] allSquares = {"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2",
-				"h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-				"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7",
-				"b7", "c7", "d7", "e7", "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"};
+		String[] allSquares = { "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
+		        "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4",
+		        "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5", "b5", "c5", "d5", "e5", "f5", "g5",
+		        "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7", "b7", "c7", "d7", "e7",
+		        "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8" };
 		for (String sq : allSquares) {
 			engine.getGameState().getBoard().setPieceAt(sq, null);
 		}
@@ -104,10 +109,11 @@ public class ChessRulesTest {
 		int whiteKnights = 0, blackKnights = 0;
 		int otherPieces = 0;
 
-		String[] allSquares = {"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2",
-				"h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-				"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7",
-				"b7", "c7", "d7", "e7", "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"};
+		String[] allSquares = { "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
+		        "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4",
+		        "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5", "b5", "c5", "d5", "e5", "f5", "g5",
+		        "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7", "b7", "c7", "d7", "e7",
+		        "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8" };
 
 		for (String sq : allSquares) {
 			IPiece piece = board.getPieceAt(sq);
@@ -138,9 +144,12 @@ public class ChessRulesTest {
 
 		// King and (Bishop or Knight) vs King
 		if ((whiteBishops == 1 && blackBishops == 0 && whiteKnights == 0 && blackKnights == 0)
-				|| (whiteBishops == 0 && blackBishops == 1 && whiteKnights == 0 && blackKnights == 0)
-				|| (whiteKnights == 1 && blackKnights == 0 && whiteBishops == 0 && blackBishops == 0)
-				|| (whiteKnights == 0 && blackKnights == 1 && whiteBishops == 0 && blackBishops == 0))
+		        || (whiteBishops == 0 && blackBishops == 1 && whiteKnights == 0
+		                && blackKnights == 0)
+		        || (whiteKnights == 1 && blackKnights == 0 && whiteBishops == 0
+		                && blackBishops == 0)
+		        || (whiteKnights == 0 && blackKnights == 1 && whiteBishops == 0
+		                && blackBishops == 0))
 			return true;
 
 		return false;

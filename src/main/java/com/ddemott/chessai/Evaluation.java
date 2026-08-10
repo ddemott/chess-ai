@@ -13,20 +13,6 @@ import java.util.List;
  */
 public class Evaluation {
 
-	/**
-	 * Evaluates the board state and returns a score based on the given color's
-	 * perspective.
-	 * 
-	 * @param board
-	 *            The board to evaluate.
-	 * @param color
-	 *            The color to evaluate from (e.g., "White" or "Black").
-	 * @return The evaluation score.
-	 */
-	public int evaluateBoard(Board board, String color) {
-		return evaluateBoard(board, color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
-	}
-
 	public int evaluateBoard(Board board, Side side) {
 		int totalValue = 0;
 		IPiece[][] pieces = board.getBoardArray();
@@ -47,12 +33,12 @@ public class Evaluation {
 					// but we should optimize it later.
 					if (isPieceGuarded(piece, board)) {
 						totalValue += piece.getSide() == side
-								? GameConstants.PIECE_SAFETY_MULTIPLIER * value
-								: -GameConstants.PIECE_SAFETY_MULTIPLIER * value;
+						        ? GameConstants.PIECE_SAFETY_MULTIPLIER * value
+						        : -GameConstants.PIECE_SAFETY_MULTIPLIER * value;
 					} else {
 						totalValue -= piece.getSide() == side
-								? GameConstants.PIECE_SAFETY_MULTIPLIER * value
-								: -GameConstants.PIECE_SAFETY_MULTIPLIER * value;
+						        ? GameConstants.PIECE_SAFETY_MULTIPLIER * value
+						        : -GameConstants.PIECE_SAFETY_MULTIPLIER * value;
 					}
 				}
 			}
@@ -71,13 +57,15 @@ public class Evaluation {
 		// Check and checkmate evaluation
 		// Use optimized Board methods instead of local slow implementations
 		if (board.isKingInCheck(opponentSide)) {
-			totalValue += GameConstants.CHECK_BONUS; // Opponent's King is in check, add a moderate positive score
+			totalValue += GameConstants.CHECK_BONUS; // Opponent's King is in check, add a moderate
+			                                         // positive score
 		}
 		if (board.isCheckmate(opponentSide)) {
 			totalValue += GameConstants.CHECKMATE_SCORE; // Opponent's King is in checkmate
 		}
 		if (board.isKingInCheck(side)) {
-			totalValue -= GameConstants.CHECK_BONUS; // Own King is in check, add a moderate negative score
+			totalValue -= GameConstants.CHECK_BONUS; // Own King is in check, add a moderate
+			                                         // negative score
 		}
 		if (board.isCheckmate(side)) {
 			totalValue -= GameConstants.CHECKMATE_SCORE; // Own King is in checkmate
@@ -87,34 +75,28 @@ public class Evaluation {
 	}
 
 	/**
-	 * Checks if the King of the given color is in check. Deprecated: Use
-	 * Board.isKingInCheck instead
+	 * Checks if the King of the given side is in check.
 	 */
-	public boolean isInCheck(Board board, String color) {
-		return board.isKingInCheck(color);
+	public boolean isInCheck(Board board, Side side) {
+		return board.isKingInCheck(side);
 	}
 
 	/**
-	 * Checks if the King of the given color is in checkmate. Deprecated: Use
-	 * Board.isCheckmate instead
+	 * Checks if the King of the given side is in checkmate.
 	 */
-	public boolean isCheckmate(Board board, String color) {
-		return board.isCheckmate(color);
+	public boolean isCheckmate(Board board, Side side) {
+		return board.isCheckmate(side);
 	}
 
 	/**
-	 * Finds the King piece of the given color on the board.
-	 * 
+	 * Finds the King piece of the given side on the board.
+	 *
 	 * @param board
 	 *            The board to search.
-	 * @param color
-	 *            The color of the King to find.
+	 * @param side
+	 *            The side of the King to find.
 	 * @return The King piece if found, null otherwise.
 	 */
-	public IPiece findKing(Board board, String color) {
-		return findKing(board, color.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK);
-	}
-
 	public IPiece findKing(Board board, Side side) {
 		IPiece[][] pieces = board.getBoardArray();
 		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
@@ -130,7 +112,7 @@ public class Evaluation {
 
 	/**
 	 * Checks if a piece is guarded by any friendly pieces.
-	 * 
+	 *
 	 * @param piece
 	 *            The piece to check.
 	 * @param board
@@ -156,7 +138,7 @@ public class Evaluation {
 	/**
 	 * Evaluates the safety of the King, including factors like castling status and
 	 * pawn shield.
-	 * 
+	 *
 	 * @param board
 	 *            The board to evaluate.
 	 * @param side
@@ -189,7 +171,7 @@ public class Evaluation {
 
 	/**
 	 * Checks if the King is castled based on its position.
-	 * 
+	 *
 	 * @param kingPosition
 	 *            The position of the King.
 	 * @param board
@@ -198,12 +180,12 @@ public class Evaluation {
 	 */
 	public boolean isCastled(String kingPosition, Board board) {
 		return kingPosition.equals("g1") || kingPosition.equals("c1") || kingPosition.equals("g8")
-				|| kingPosition.equals("c8");
+		        || kingPosition.equals("c8");
 	}
 
 	/**
 	 * Evaluates the presence of a pawn shield in front of the King.
-	 * 
+	 *
 	 * @param king
 	 *            The King piece to evaluate.
 	 * @param board
@@ -283,7 +265,7 @@ public class Evaluation {
 	 */
 	public int evaluateCenterControl(Board board, Side side) {
 		int score = 0;
-		String[] centerSquares = {"e4", "d4", "e5", "d5"};
+		String[] centerSquares = { "e4", "d4", "e5", "d5" };
 
 		for (String pos : centerSquares) {
 			// Check if we occupy it

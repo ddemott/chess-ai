@@ -17,7 +17,8 @@ public class EnhancedIOTest {
 	void testMoveValidation() {
 		GameEngine engine = new GameEngine(3);
 		// Test valid move
-		MoveValidationResult result = MoveValidator.validateMove("e2", "e4", "White", engine.getGameState().getBoard());
+		MoveValidationResult result = MoveValidator.validateMove("e2", "e4", "White",
+		        engine.getGameState().getBoard());
 		assertTrue(result.isValid(), "Valid move e2-e4");
 		assertNull(result.getError(), "No error for valid move");
 
@@ -50,7 +51,7 @@ public class EnhancedIOTest {
 		EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
 		// Test that error display doesn't crash
 		assertDoesNotThrow(() -> display.displayInvalidMoveError("e2", "e5", "Test error message"),
-				"Error message display should not throw");
+		        "Error message display should not throw");
 		// Test move validation feedback
 		String feedback = display.validateMoveWithFeedback("e3", "e4");
 		assertNotNull(feedback, "Feedback for invalid move");
@@ -107,7 +108,7 @@ public class EnhancedIOTest {
 		// Test that captured piece can be added to display
 		if (capturedPawn != null) {
 			assertDoesNotThrow(() -> display.addCapturedPiece(capturedPawn),
-					"Captured piece tracking should not throw");
+			        "Captured piece tracking should not throw");
 		}
 	}
 
@@ -119,10 +120,11 @@ public class EnhancedIOTest {
 		var suggestions = display.generateMoveSuggestions("White");
 		assertNotNull(suggestions, "Suggestions generated");
 		// Test suggestion display doesn't crash
-		assertDoesNotThrow(() -> display.displayMoveSuggestions("White"), "Move suggestions display should not throw");
+		assertDoesNotThrow(() -> display.displayMoveSuggestions("White"),
+		        "Move suggestions display should not throw");
 		// Test move validator suggestions
-		var validatorSuggestions = MoveValidator.generateMoveSuggestions("e2", engine.getGameState().getBoard(),
-				"White");
+		var validatorSuggestions = MoveValidator.generateMoveSuggestions("e2",
+		        engine.getGameState().getBoard(), "White");
 		assertNotNull(validatorSuggestions, "Validator suggestions generated");
 	}
 
@@ -132,7 +134,7 @@ public class EnhancedIOTest {
 		EnhancedConsoleDisplay display = new EnhancedConsoleDisplay(engine.getGameState());
 		// Test enhanced board display
 		assertDoesNotThrow((org.junit.jupiter.api.function.Executable) display::displayBoard,
-				"Enhanced board display should not throw");
+		        "Enhanced board display should not throw");
 		// Test color enable/disable
 		assertDoesNotThrow((org.junit.jupiter.api.function.Executable) () -> {
 			display.disableColors();

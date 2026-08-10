@@ -41,7 +41,8 @@ public class Knight extends Piece {
 		String currentPosition = getPosition();
 		int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
 
-		int[][] directions = {{2, 1}, {2, -1}, {-2, 1}, {-2, -1}, {1, 2}, {1, -2}, {-1, 2}, {-1, -2}};
+		int[][] directions = { { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }, { 1, 2 }, { 1, -2 },
+		        { -1, 2 }, { -1, -2 } };
 
 		for (int[] direction : directions) {
 			int row = currentCoords[0] + direction[0];

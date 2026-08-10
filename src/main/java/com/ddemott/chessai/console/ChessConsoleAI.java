@@ -54,7 +54,8 @@ public class ChessConsoleAI {
 				}
 				String[] parts = input.split(" ");
 				if (parts.length != 2) {
-					System.out.println("Invalid input. Please enter moves in the format 'from to'.");
+					System.out
+					        .println("Invalid input. Please enter moves in the format 'from to'.");
 					continue;
 				}
 				String from = parts[0];

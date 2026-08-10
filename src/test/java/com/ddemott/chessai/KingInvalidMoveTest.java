@@ -15,9 +15,11 @@ public class KingInvalidMoveTest {
 		board.setPieceAt("e4", king);
 		king.setPosition("e4");
 		// Try to move two squares horizontally
-		assertFalse(king.isValidMove("g4", board), "King should NOT be able to move two squares horizontally");
+		assertFalse(king.isValidMove("g4", board),
+		        "King should NOT be able to move two squares horizontally");
 		// Try to move two squares vertically
-		assertFalse(king.isValidMove("e6", board), "King should NOT be able to move two squares vertically");
+		assertFalse(king.isValidMove("e6", board),
+		        "King should NOT be able to move two squares vertically");
 	}
 
 	@Test

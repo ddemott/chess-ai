@@ -46,7 +46,8 @@ public class Rook extends Piece {
 	}
 
 	private boolean isDestinationValid(int[] newCoords, Board board) {
-		IPiece pieceAtDestination = board.getPieceAt(board.convertCoordinatesToPosition(newCoords[0], newCoords[1]));
+		IPiece pieceAtDestination = board
+		        .getPieceAt(board.convertCoordinatesToPosition(newCoords[0], newCoords[1]));
 		return pieceAtDestination == null || pieceAtDestination.getSide() != side;
 	}
 
@@ -73,7 +74,7 @@ public class Rook extends Piece {
 		String currentPosition = getPosition();
 		int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
 
-		int[][] directions = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+		int[][] directions = { { 1, 0 }, { -1, 0 }, { 0, 1 }, { 0, -1 } };
 
 		for (int[] direction : directions) {
 			int row = currentCoords[0];
