@@ -26,7 +26,7 @@ public class PrintValidEscapes {
                             boolean valid = p.isValidMove(to, b);
                             p.setPosition(oldPpos);
                             if (valid) {
-                                Board clone = b.clone();
+                                Board clone = b.deepCopy();
                                 IPiece cp = clone.getPieceAt(from);
                                 if (cp!=null) {
                                     cp.setPosition(to);

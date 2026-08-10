@@ -284,7 +284,7 @@ public class Board {
 		        .abs(pieceCoords[1] - kingCoords[1]));
 		if (!isOrthogonal && !isDiagonal) {
 			// Not on a pin line, just check normal check exposure
-			Board clonedBoard = this.clone();
+			Board clonedBoard = this.deepCopy();
 			clonedBoard.setPieceAt(to, piece.clonePiece());
 			clonedBoard.setPieceAt(from, null);
 			return clonedBoard.isKingInCheck(piece.getSide());
@@ -310,7 +310,7 @@ public class Board {
 		}
 		if (!foundKing) {
 			// Not on a pin line, just check normal check exposure
-			Board clonedBoard = this.clone();
+			Board clonedBoard = this.deepCopy();
 			clonedBoard.setPieceAt(to, piece.clonePiece());
 			clonedBoard.setPieceAt(from, null);
 			return clonedBoard.isKingInCheck(piece.getSide());
@@ -336,7 +336,7 @@ public class Board {
 		}
 		if (pinningAttacker == null) {
 			// Not pinned, just check normal check exposure
-			Board clonedBoard = this.clone();
+			Board clonedBoard = this.deepCopy();
 			clonedBoard.setPieceAt(to, piece.clonePiece());
 			clonedBoard.setPieceAt(from, null);
 			return clonedBoard.isKingInCheck(piece.getSide());
@@ -364,7 +364,7 @@ public class Board {
 			return true; // Illegal move for pinned piece
 		}
 		// Otherwise, simulate the move and check for check
-		Board clonedBoard = this.clone();
+		Board clonedBoard = this.deepCopy();
 		clonedBoard.setPieceAt(to, piece.clonePiece());
 		clonedBoard.setPieceAt(from, null);
 		return clonedBoard.isKingInCheck(piece.getSide());
@@ -519,8 +519,7 @@ public class Board {
 		return board;
 	}
 
-	@Override
-	public Board clone() {
+	public Board deepCopy() {
 		Board newBoard = new Board(false); // Don't initialize - we'll copy pieces manually
 		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
 			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
@@ -774,7 +773,7 @@ public class Board {
 							}
 
 							// Simulate the move
-							Board clonedBoard = this.clone();
+							Board clonedBoard = this.deepCopy();
 
 							// Execute the move on the cloned board
 							IPiece clonedPiece = clonedBoard.getPieceAt(from);
@@ -842,7 +841,7 @@ public class Board {
 									// Try all promotion pieces
 									String[] promotions = { "Q", "R", "B", "N" };
 									for (String promotionPiece : promotions) {
-										Board clonedBoard = this.clone();
+										Board clonedBoard = this.deepCopy();
 										IPiece promotedPiece = clonedBoard.createPromotionPiece(
 										        promotionPiece, piece.getColor(), to);
 										if (promotedPiece != null) {
@@ -963,7 +962,7 @@ public class Board {
 				if (!piece.isValidMove(to, this)) {
 					continue;
 				}
-				Board clonedBoard = this.clone();
+				Board clonedBoard = this.deepCopy();
 				IPiece capturedPiece = clonedBoard.getPieceAt(to);
 				clonedBoard.setPieceAt(to, piece.clonePiece());
 				clonedBoard.setPieceAt(position, null);
@@ -1021,7 +1020,7 @@ public class Board {
 
 				// For promotion moves, simulate the promotion and check if it exposes king to
 				// check
-				Board clonedBoard = this.clone();
+				Board clonedBoard = this.deepCopy();
 				IPiece promotedPiece = createPromotionPiece(promotionPiece, piece.getColor(), to);
 				if (promotedPiece == null) {
 					return false;

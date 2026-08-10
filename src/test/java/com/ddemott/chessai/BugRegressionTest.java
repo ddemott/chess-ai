@@ -122,7 +122,7 @@ public class BugRegressionTest {
 	}
 
 	// =========================================================================
-	// Priority 1: Board.clone() copies captured pieces lists
+	// Priority 1: Board.deepCopy() copies captured pieces lists
 	// Bug: clone() didn't copy capturedWhitePieces/capturedBlackPieces.
 	// =========================================================================
 
@@ -138,7 +138,7 @@ public class BugRegressionTest {
 		assertFalse(original.getCapturedPieces(Side.BLACK).isEmpty(),
 		        "Original should have captured pieces");
 
-		Board cloned = original.clone();
+		Board cloned = original.deepCopy();
 		assertEquals(original.getCapturedPieces(Side.BLACK).size(),
 		        cloned.getCapturedPieces(Side.BLACK).size(),
 		        "Cloned board should have the same number of captured black pieces");
@@ -155,7 +155,7 @@ public class BugRegressionTest {
 		engine.movePiece("e4", "d5"); // capture
 
 		Board original = engine.getGameState().getBoard();
-		Board cloned = original.clone();
+		Board cloned = original.deepCopy();
 
 		int originalCount = original.getCapturedPieces(Side.BLACK).size();
 
@@ -166,7 +166,7 @@ public class BugRegressionTest {
 	}
 
 	// =========================================================================
-	// Priority 2: State.clone() properly copies MoveHistory without reflection
+	// Priority 2: State.deepCopy() properly copies MoveHistory without reflection
 	// Bug: Used reflection to access private fields, silently failed on error.
 	// =========================================================================
 
@@ -177,7 +177,7 @@ public class BugRegressionTest {
 		engine.movePiece("e7", "e5");
 
 		State original = engine.getGameState();
-		State cloned = original.clone();
+		State cloned = original.deepCopy();
 
 		// Move history should have the same moves
 		assertEquals(original.getMoveHistory().getMoveCount(),
@@ -202,7 +202,7 @@ public class BugRegressionTest {
 		int originalClock = original.getMoveHistory().getHalfmoveClock();
 		assertTrue(originalClock > 0, "Halfmove clock should be positive after knight moves");
 
-		State cloned = original.clone();
+		State cloned = original.deepCopy();
 		assertEquals(originalClock, cloned.getMoveHistory().getHalfmoveClock(),
 		        "Cloned state should preserve halfmove clock");
 	}
@@ -214,7 +214,7 @@ public class BugRegressionTest {
 		engine.movePiece("e7", "e5");
 
 		State original = engine.getGameState();
-		State cloned = original.clone();
+		State cloned = original.deepCopy();
 
 		// Undo on the clone should not affect original
 		assertTrue(cloned.undoLastMove());

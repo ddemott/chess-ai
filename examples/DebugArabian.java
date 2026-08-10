@@ -26,7 +26,7 @@ public class DebugArabian {
                             boolean valid = p.isValidMove(to, b);
                             p.setPosition(old);
                             if (valid) {
-                                Board clone = b.clone();
+                                Board clone = b.deepCopy();
                                 IPiece cp = clone.getPieceAt(from);
                                 if (cp != null) {
                                     cp.setPosition(to);

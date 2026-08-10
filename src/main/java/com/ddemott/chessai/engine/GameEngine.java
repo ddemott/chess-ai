@@ -103,7 +103,7 @@ public class GameEngine {
 				List<String> legalMoves = state.getAllPossibleMoves(getCurrentTurn());
 				for (String coordMove : legalMoves) {
 					// Simulate to get SAN
-					State simState = state.clone();
+					State simState = state.deepCopy();
 					String[] parts = coordMove.trim().split("\\s+");
 					if (parts.length < 2)
 						continue;

@@ -273,8 +273,8 @@ public class EnPassantTest {
 			board.movePiece("d7", "d5");
 
 			// Both adjacent white pawns should be able to capture en passant
-			Board boardCopy1 = board.clone();
-			Board boardCopy2 = board.clone();
+			Board boardCopy1 = board.deepCopy();
+			Board boardCopy2 = board.deepCopy();
 
 			boolean leftPawnCanCapture = boardCopy1.movePiece("c5", "d6");
 			boolean rightPawnCanCapture = boardCopy2.movePiece("e5", "d6");

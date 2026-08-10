@@ -42,7 +42,7 @@ public class King extends Piece {
 			// Prevent moving into check - simulate the move on a cloned board (to handle
 			// captures correctly)
 			String destSquare = newPosition;
-			Board clonedBoard = board.clone();
+			Board clonedBoard = board.deepCopy();
 			IPiece clonedKing = clonedBoard.getPieceAt(currentPosition);
 			if (clonedKing != null) {
 				clonedKing.setPosition(destSquare);

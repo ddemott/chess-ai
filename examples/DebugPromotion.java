@@ -13,7 +13,7 @@ public class DebugPromotion {
         System.out.println(engine.getBoardRepresentation());
         // Simulate promotion on clone and check king safety
         Board b = engine.getGameState().getBoard();
-        Board clone = b.clone();
+        Board clone = b.deepCopy();
         clone.setPieceAt("e7", null);
         clone.setPieceAt("e8", new Queen(Side.WHITE, "e8"));
         System.out.println("Clone white king in check after promotion? " + clone.isKingInCheck(Side.WHITE));

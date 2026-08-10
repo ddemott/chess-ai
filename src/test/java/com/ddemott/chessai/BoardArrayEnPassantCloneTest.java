@@ -23,7 +23,7 @@ class BoardArrayEnPassantCloneTest {
 	@Test
 	void testCloneCreatesDeepCopy() {
 		Board board = new Board();
-		Board copy = board.clone();
+		Board copy = board.deepCopy();
 		assertNotSame(board, copy);
 		assertNotSame(board.getBoardArray(), copy.getBoardArray());
 		// Changing copy should not affect original

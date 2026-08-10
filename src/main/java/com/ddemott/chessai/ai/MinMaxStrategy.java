@@ -70,7 +70,7 @@ public class MinMaxStrategy implements AIStrategy {
 		        maximizingPlayer ? Integer.MIN_VALUE : Integer.MAX_VALUE, null);
 
 		for (String move : possibleMoves) {
-			State newState = state.clone();
+			State newState = state.deepCopy();
 			String[] positions = move.split(" ");
 
 			// Handle promotion moves: "e7 e8 Q"
