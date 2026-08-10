@@ -14,14 +14,17 @@ if [[ -f target/checkstyle-result.xml ]]; then
 fi
 
 echo "Generating SpotBugs report (target/spotbugsXml.xml)..."
-set +e
-mvn -q -DskipTests com.github.spotbugs:spotbugs-maven-plugin:4.7.3:spotbugs
-SPOTBUGS_EXIT=$?
-set -e
-if [[ $SPOTBUGS_EXIT -eq 0 && -f target/spotbugsXml.xml ]]; then
-  cp target/spotbugsXml.xml config/spotbugs/baseline-spotbugs.xml || true
-else
-  echo "SpotBugs baseline not generated - plugin may not be available in local environment. Skipping SpotBugs baseline generation."
+# SpotBugs analyses compiled classes, so make sure they exist and are current.
+mvn -q -DskipTests compile
+# Version comes from the plugin declaration in pom.xml - single source of truth.
+if ! mvn -q -DskipTests spotbugs:spotbugs; then
+  echo "SpotBugs execution failed; cannot generate a baseline." >&2
+  exit 1
 fi
+if [[ ! -f target/spotbugsXml.xml ]]; then
+  echo "SpotBugs produced no report at target/spotbugsXml.xml; cannot generate a baseline." >&2
+  exit 1
+fi
+cp target/spotbugsXml.xml config/spotbugs/baseline-spotbugs.xml
 
 echo "Baselines created in config/checkstyle/ and config/spotbugs/"
