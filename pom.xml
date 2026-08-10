@@ -90,6 +90,11 @@
                     <configLocation>config/checkstyle/checkstyle.xml</configLocation>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>com.github.spotbugs</groupId>
+                <artifactId>spotbugs-maven-plugin</artifactId>
+                <version>4.10.3.0</version>
+            </plugin>
             <!-- Code formatting: `mvn spotless:apply` to format, `mvn spotless:check` to verify -->
             <plugin>
                 <groupId>com.diffplug.spotless</groupId>
