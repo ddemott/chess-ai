@@ -1,160 +1,157 @@
 package com.ddemott.chessai;
 
 import com.ddemott.chessai.engine.GameEngine;
-import com.ddemott.chessai.pieces.IPiece;
+import com.ddemott.chessai.pieces.*;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
- * Specific test for verifying that undo/redo operations maintain board state
- * integrity
+ * JUnit 5 test for undo/redo board integrity, including special moves
+ * (castling, en passant, promotion). Converted from main() harness per test
+ * conventions in CLAUDE.md.
  */
 public class UndoRedoBoardIntegrityTest {
 
-	public static void main(String[] args) {
-		System.out.println("=== Undo/Redo Board Integrity Test ===\n");
+	private GameEngine engine;
 
-		testBoardIntegrityAfterCapture();
-		testPiecePositionConsistency();
-		testTurnConsistency();
-
-		System.out.println("✅ All board integrity tests completed successfully!");
+	@BeforeEach
+	void setUp() {
+		engine = new GameEngine(3);
 	}
 
-	private static void testBoardIntegrityAfterCapture() {
-		System.out.println("Test 1: Board integrity after capture and undo");
+	private void clearBoard() {
+		engine.getGameState().getBoard().clearBoard();
+	}
 
-		GameEngine engine = new GameEngine(3);
-
-		// Record initial state
+	@Test
+	void testBoardIntegrityAfterCapture() {
 		String initialBoard = engine.getBoardRepresentation();
 
-		// Make moves that will likely result in a capture
-		engine.movePiece("e2", "e4");
-		engine.movePiece("d7", "d5"); // Force a pawn structure that could lead to capture
-		engine.movePiece("e4", "d5"); // Capture the pawn
+		assertTrue(engine.movePiece("e2", "e4"));
+		assertTrue(engine.movePiece("d7", "d5"));
+		assertTrue(engine.movePiece("e4", "d5"));
 
-		System.out.println("After capture sequence:");
-		System.out.println(engine.getBoardRepresentation());
-
-		// Verify that there are pieces captured
-		Move lastMove = engine.getLastMove();
-		if (lastMove != null && lastMove.isCapture()) {
-			System.out.println("✓ Capture move detected: " + lastMove.getAlgebraicNotation());
-		}
-
-		// Undo the capture
-		engine.undoLastMove();
-		System.out.println("After undoing capture:");
-		System.out.println(engine.getBoardRepresentation());
-
-		// Undo remaining moves
-		engine.undoLastMove();
-		engine.undoLastMove();
+		assertTrue(engine.undoLastMove());
+		assertTrue(engine.undoLastMove());
+		assertTrue(engine.undoLastMove());
 
 		String finalBoard = engine.getBoardRepresentation();
-		if (initialBoard.equals(finalBoard)) {
-			System.out.println("✓ Board state fully restored after undo sequence");
-		} else {
-			System.out.println("✗ Board state not properly restored");
-			System.out.println("Expected:\n" + initialBoard);
-			System.out.println("Got:\n" + finalBoard);
-		}
-
-		System.out.println();
+		assertEquals(initialBoard.trim(), finalBoard.trim(),
+		        "Board state fully restored after undo sequence");
 	}
 
-	private static void testPiecePositionConsistency() {
-		System.out.println("Test 2: Piece position consistency during undo/redo");
+	@Test
+	void testPiecePositionConsistency() {
+		assertTrue(engine.movePiece("g1", "f3"));
 
-		GameEngine engine = new GameEngine(3);
-
-		// Make a specific move
-		engine.movePiece("g1", "f3");
-
-		// Check that the knight moved
 		IPiece knightAtF3 = engine.getGameState().getBoard().getPieceAt("f3");
-		IPiece emptyAtG1 = engine.getGameState().getBoard().getPieceAt("g1");
+		IPiece atG1 = engine.getGameState().getBoard().getPieceAt("g1");
+		assertNotNull(knightAtF3, "Knight should be at f3");
+		assertNull(atG1, "g1 should be empty after move");
 
-		if (knightAtF3 != null && emptyAtG1 == null) {
-			System.out.println("✓ Knight correctly moved from g1 to f3");
-		} else {
-			System.out.println("✗ Knight move not properly recorded");
-		}
+		assertTrue(engine.undoLastMove());
 
-		// Undo the move
-		engine.undoLastMove();
-
-		// Check that the knight is back
 		IPiece knightBackAtG1 = engine.getGameState().getBoard().getPieceAt("g1");
-		IPiece emptyAtF3 = engine.getGameState().getBoard().getPieceAt("f3");
+		IPiece atF3 = engine.getGameState().getBoard().getPieceAt("f3");
+		assertNotNull(knightBackAtG1, "Knight should be restored to g1");
+		assertNull(atF3, "f3 should be empty after undo");
 
-		if (knightBackAtG1 != null && emptyAtF3 == null) {
-			System.out.println("✓ Knight correctly restored to g1 after undo");
-		} else {
-			System.out.println("✗ Knight not properly restored after undo");
-		}
-
-		// Redo the move
-		engine.redoLastMove();
-
-		// Check that the knight moved again
-		IPiece knightAtF3Again = engine.getGameState().getBoard().getPieceAt("f3");
-		IPiece emptyAtG1Again = engine.getGameState().getBoard().getPieceAt("g1");
-
-		if (knightAtF3Again != null && emptyAtG1Again == null) {
-			System.out.println("✓ Knight correctly moved to f3 again after redo");
-		} else {
-			System.out.println("✗ Knight not properly moved after redo");
-		}
-
-		System.out.println();
+		assertTrue(engine.redoLastMove());
+		assertNotNull(engine.getGameState().getBoard().getPieceAt("f3"),
+		        "Knight back at f3 after redo");
 	}
 
-	private static void testTurnConsistency() {
-		System.out.println("Test 3: Turn consistency during undo/redo operations");
+	@Test
+	void testTurnConsistency() {
+		assertEquals("White", engine.getCurrentTurn(), "Initial turn should be White");
 
-		GameEngine engine = new GameEngine(3);
+		assertTrue(engine.movePiece("e2", "e4"));
+		assertEquals("Black", engine.getCurrentTurn());
 
-		// Initial state should be White's turn
-		if ("White".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Initial turn is White");
-		}
-
-		// Make a move (White's turn)
-		engine.movePiece("e2", "e4");
-		if ("Black".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn switched to Black after White's move");
-		}
-
-		// Make AI move (Black's turn)
 		engine.makeAIMove();
-		if ("White".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn switched to White after Black's move");
-		}
+		assertEquals("White", engine.getCurrentTurn());
 
-		// Undo AI move
-		engine.undoLastMove();
-		if ("Black".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn correctly reverted to Black after undoing AI move");
-		}
+		assertTrue(engine.undoLastMove());
+		assertEquals("Black", engine.getCurrentTurn(), "Turn reverts correctly after undo AI");
 
-		// Undo player move
-		engine.undoLastMove();
-		if ("White".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn correctly reverted to White after undoing player move");
-		}
+		assertTrue(engine.undoLastMove());
+		assertEquals("White", engine.getCurrentTurn(), "Turn reverts correctly after undo player");
 
-		// Redo player move
-		engine.redoLastMove();
-		if ("Black".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn correctly switched to Black after redoing player move");
-		}
+		assertTrue(engine.redoLastMove());
+		assertEquals("Black", engine.getCurrentTurn(), "Turn after redo player");
 
-		// Redo AI move
-		engine.redoLastMove();
-		if ("White".equals(engine.getCurrentTurn())) {
-			System.out.println("✓ Turn correctly switched to White after redoing AI move");
-		}
+		assertTrue(engine.redoLastMove());
+		assertEquals("White", engine.getCurrentTurn(), "Turn after redo AI");
+	}
 
-		System.out.println();
+	@Test
+	void testUndoRedoCastling() {
+		clearBoard();
+		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+		engine.getGameState().getBoard().setPieceAt("h1", new Rook("White", "h1"));
+		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8"));
+		engine.getGameState().setCurrentTurn("White");
+
+		boolean castled = engine.movePiece("e1", "g1");
+		assertTrue(castled, "Kingside castling should succeed");
+
+		assertTrue(engine.undoLastMove(), "Undo castling should succeed");
+
+		// Verify restoration
+		assertTrue(engine.getGameState().getBoard().getPieceAt("e1") instanceof King,
+		        "King restored to e1");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("h1") instanceof Rook,
+		        "Rook restored to h1");
+		assertNull(engine.getGameState().getBoard().getPieceAt("g1"), "g1 empty after undo");
+		assertNull(engine.getGameState().getBoard().getPieceAt("f1"), "f1 empty after undo");
+
+		// Verify can castle again
+		assertTrue(engine.movePiece("e1", "g1"), "Castling should be possible again after undo");
+	}
+
+	@Test
+	void testUndoRedoEnPassant() {
+		clearBoard();
+		engine.getGameState().getBoard().setPieceAt("e5", new Pawn("White", "e5"));
+		engine.getGameState().getBoard().setPieceAt("d7", new Pawn("Black", "d7"));
+		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8"));
+		engine.getGameState().setCurrentTurn("Black");
+
+		assertTrue(engine.movePiece("d7", "d5")); // triggers en passant target
+
+		engine.getGameState().setCurrentTurn("White");
+		boolean enPassantCaptured = engine.movePiece("e5", "d6");
+		assertTrue(enPassantCaptured, "En passant should succeed");
+
+		assertTrue(engine.undoLastMove(), "Undo en passant should succeed");
+
+		assertNotNull(engine.getGameState().getBoard().getPieceAt("d5"),
+		        "Captured pawn restored on undo");
+		assertNotNull(engine.getGameState().getBoard().getPieceAt("e5"), "White pawn restored");
+	}
+
+	@Test
+	void testUndoRedoPromotion() {
+		clearBoard();
+		engine.getGameState().getBoard().setPieceAt("d7", new Pawn("White", "d7"));
+		engine.getGameState().getBoard().setPieceAt("e8", new Rook("Black", "e8")); // capture
+		                                                                            // target
+		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
+		engine.getGameState().getBoard().setPieceAt("a8", new King("Black", "a8"));
+		engine.getGameState().setCurrentTurn("White");
+
+		boolean promoted = engine.movePiece("d7", "e8", "Q");
+		assertTrue(promoted, "Promotion with capture should succeed");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("e8") instanceof Queen,
+		        "Should be Queen after promotion");
+
+		assertTrue(engine.undoLastMove(), "Undo promotion should succeed");
+
+		assertTrue(engine.getGameState().getBoard().getPieceAt("d7") instanceof Pawn,
+		        "Pawn restored on undo");
+		assertNotNull(engine.getGameState().getBoard().getPieceAt("e8"),
+		        "Captured piece restored on undo");
 	}
 }

@@ -47,9 +47,9 @@ public class CastlingIntegrationTest {
 		System.out.println("=== Verification ===");
 		Board finalBoard = engine.getGameState().getBoard();
 		boolean kingAtG1 = finalBoard.getPieceAt("g1") != null
-				&& finalBoard.getPieceAt("g1").getClass().getSimpleName().equals("King");
+		        && finalBoard.getPieceAt("g1").getClass().getSimpleName().equals("King");
 		boolean rookAtF1 = finalBoard.getPieceAt("f1") != null
-				&& finalBoard.getPieceAt("f1").getClass().getSimpleName().equals("Rook");
+		        && finalBoard.getPieceAt("f1").getClass().getSimpleName().equals("Rook");
 		boolean nothingAtE1 = finalBoard.getPieceAt("e1") == null;
 		boolean nothingAtH1 = finalBoard.getPieceAt("h1") == null;
 

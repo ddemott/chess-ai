@@ -98,8 +98,9 @@ public class State {
 			boolean isCheckmate = isCheck && board.isCheckmate(opponentSide);
 
 			// Record move in history with full state
-			moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString(), promotionPiece, isCheck,
-					isCheckmate, isCastle, isEnPassant, enPassantTargetBefore, wasFirstMove);
+			moveHistory.addMove(from, to, piece, capturedPiece, board, currentTurn.toString(),
+			        promotionPiece, isCheck, isCheckmate, isCastle, isEnPassant,
+			        enPassantTargetBefore, wasFirstMove);
 
 			toggleTurn();
 		}
@@ -179,11 +180,15 @@ public class State {
 			boolean isKingside = kingToCoords[1] > kingFromCoords[1];
 			String rookFrom, rookTo;
 			if (isKingside) {
-				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 7); // h-file (original)
-				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 5); // f-file (castled)
+				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 7); // h-file
+				                                                                   // (original)
+				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 5); // f-file
+				                                                                     // (castled)
 			} else {
-				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 0); // a-file (original)
-				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 3); // d-file (castled)
+				rookTo = board.convertCoordinatesToPosition(kingFromCoords[0], 0); // a-file
+				                                                                   // (original)
+				rookFrom = board.convertCoordinatesToPosition(kingFromCoords[0], 3); // d-file
+				                                                                     // (castled)
 			}
 			IPiece rook = board.getPieceAt(rookFrom);
 			if (rook != null) {
@@ -233,7 +238,8 @@ public class State {
 
 		// Re-execute the move using Board (handles castling, en passant, etc.)
 		if (moveToRedo.getPromotionPiece() != null) {
-			board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo(), moveToRedo.getPromotionPiece());
+			board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo(),
+			        moveToRedo.getPromotionPiece());
 		} else {
 			board.movePiece(moveToRedo.getFrom(), moveToRedo.getTo());
 		}
@@ -288,7 +294,7 @@ public class State {
 	/**
 	 * Checks if the game is over due to checkmate, stalemate, draws by repetition
 	 * or fifty-move rule
-	 * 
+	 *
 	 * @return true if the game is over, false otherwise
 	 */
 	public boolean isGameOver() {

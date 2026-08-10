@@ -32,7 +32,8 @@ public class SimpleEnPassantDemo {
 		System.out.println("\nStep 2: White pawn captures en passant e5 -> f6");
 		board.movePiece("e5", "f6");
 		System.out.println("Black pawn captured and removed from f5!");
-		System.out.println("En passant target cleared: " + (board.getEnPassantTarget() == null ? "Yes" : "No"));
+		System.out.println("En passant target cleared: "
+		        + (board.getEnPassantTarget() == null ? "Yes" : "No"));
 		printSimpleBoard(board);
 
 		System.out.println("\n✓ En passant capture completed successfully!");

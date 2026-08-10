@@ -47,7 +47,8 @@ public class BishopMovementTest {
 		bishop.setPosition("c1");
 		board.setPieceAt("e3", pawn);
 		pawn.setPosition("e3");
-		assertFalse(bishop.isValidMove("h6", board), "Bishop should NOT be able to move through own piece");
+		assertFalse(bishop.isValidMove("h6", board),
+		        "Bishop should NOT be able to move through own piece");
 	}
 
 	@Test
@@ -60,7 +61,9 @@ public class BishopMovementTest {
 		bishop.setPosition("c1");
 		board.setPieceAt("e3", pawn);
 		pawn.setPosition("e3");
-		assertFalse(bishop.isValidMove("h6", board), "Bishop should NOT be able to move through opponent's piece");
-		assertTrue(bishop.isValidMove("e3", board), "Bishop should be able to capture opponent's piece at e3");
+		assertFalse(bishop.isValidMove("h6", board),
+		        "Bishop should NOT be able to move through opponent's piece");
+		assertTrue(bishop.isValidMove("e3", board),
+		        "Bishop should be able to capture opponent's piece at e3");
 	}
 }

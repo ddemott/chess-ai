@@ -13,12 +13,14 @@ public class StateTest {
 	}
 
 	@Test
-	public void testGetSetCurrentTurn() {
+	public void testSetCurrentTurnWithSide() {
 		State state = new State();
-		state.setCurrentTurn("Black");
+		state.setCurrentTurn(Side.BLACK);
 		assertEquals("Black", state.getCurrentTurn());
-		state.setCurrentTurn("White");
+		assertEquals(Side.BLACK, state.getCurrentTurnSide());
+		state.setCurrentTurn(Side.WHITE);
 		assertEquals("White", state.getCurrentTurn());
+		assertEquals(Side.WHITE, state.getCurrentTurnSide());
 	}
 
 	@Test
@@ -28,7 +30,7 @@ public class StateTest {
 		board.clearBoard();
 		// Place white pawn on e7
 		board.setPieceAt("e7", new Pawn("White", "e7"));
-		state.setCurrentTurn("White");
+		state.setCurrentTurn(Side.WHITE);
 		// Move pawn to e8 and promote to Queen
 		boolean result = state.movePiece("e7", "e8", "Q");
 		assertTrue(result);
@@ -44,7 +46,7 @@ public class StateTest {
 		board.clearBoard();
 		// Place white pawn on e7
 		board.setPieceAt("e7", new Pawn("White", "e7"));
-		state.setCurrentTurn("White");
+		state.setCurrentTurn(Side.WHITE);
 		// Try to promote to an invalid piece
 		boolean result = state.movePiece("e7", "e8", "X");
 		assertFalse(result);

@@ -21,7 +21,8 @@ public class GameEngineTest {
 		GameEngine engine = new GameEngine(3);
 		boolean moveResult = engine.movePiece("e2", "e4");
 		assertTrue(moveResult, "Move e2-e4 should succeed");
-		assertEquals("Black", engine.getCurrentTurn(), "Turn should switch to Black after White moves");
+		assertEquals("Black", engine.getCurrentTurn(),
+		        "Turn should switch to Black after White moves");
 	}
 
 	@Test
@@ -54,11 +55,12 @@ public class GameEngineTest {
 		GameEngine engine = new GameEngine(2);
 		String boardState = engine.getBoardRepresentation();
 		assertNotNull(boardState, "Board state string should not be null");
-		assertTrue(boardState.contains("a b c d e f g h"), "Board state should contain column headers");
+		assertTrue(boardState.contains("a b c d e f g h"),
+		        "Board state should contain column headers");
 		State gameState = engine.getGameState();
 		assertNotNull(gameState, "Game state should be accessible");
 		assertEquals(engine.getCurrentTurn(), gameState.getCurrentTurn(),
-				"Current turn should match between engine and state");
+		        "Current turn should match between engine and state");
 	}
 
 	@Test
@@ -90,7 +92,8 @@ public class GameEngineTest {
 		assertTrue(pgn.contains("e4"), "PGN should contain move e4");
 		assertTrue(pgn.contains("e5"), "PGN should contain move e5");
 		// Test import (simulate saving and loading)
-		boolean loaded = engine.loadGameFromPGNData(new com.ddemott.chessai.MoveHistory.PGNGameData());
+		boolean loaded = engine
+		        .loadGameFromPGNData(new com.ddemott.chessai.MoveHistory.PGNGameData());
 		assertTrue(loaded, "Loading empty PGN data should succeed (no moves)");
 	}
 }

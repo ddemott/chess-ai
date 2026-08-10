@@ -39,7 +39,8 @@ public class NewFeaturesDemo {
 		// Create engines with different difficulties
 		System.out.println("Creating game engines with different AI difficulties...");
 
-		AIDifficulty[] testDifficulties = {AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE, AIDifficulty.EXPERT};
+		AIDifficulty[] testDifficulties = { AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE,
+		        AIDifficulty.EXPERT };
 
 		for (AIDifficulty difficulty : testDifficulties) {
 			System.out.println("\\n" + difficulty);
@@ -74,8 +75,8 @@ public class NewFeaturesDemo {
 		GameEngine engine = new GameEngine(AIDifficulty.INTERMEDIATE);
 
 		// Play a few moves
-		String[][] moves = {{"e2", "e4"}, {"e7", "e5"}, {"g1", "f3"}, {"b8", "c6"}, {"f1", "b5"}, {"a7", "a6"},
-				{"b5", "a4"}, {"g8", "f6"}};
+		String[][] moves = { { "e2", "e4" }, { "e7", "e5" }, { "g1", "f3" }, { "b8", "c6" },
+		        { "f1", "b5" }, { "a7", "a6" }, { "b5", "a4" }, { "g8", "f6" } };
 
 		for (String[] move : moves) {
 			engine.movePiece(move[0], move[1]);
@@ -109,23 +110,23 @@ public class NewFeaturesDemo {
 				// Verify move count matches
 				int originalMoves = engine.getMoveHistory().getMoves().size();
 				int loadedMoves = newEngine.getMoveHistory().getMoves().size();
-				System.out.println("Move count verification: " + originalMoves + " vs " + loadedMoves
-						+ (originalMoves == loadedMoves ? " ✅" : " ❌"));
+				System.out.println("Move count verification: " + originalMoves + " vs "
+				        + loadedMoves + (originalMoves == loadedMoves ? " ✅" : " ❌"));
 			}
 		}
 
 		// Demo PGN parsing
 		System.out.println("\\nDemo: PGN Parsing...");
 		String samplePGN = """
-				[Event "Demo Game"]
-				[Site "Local"]
-				[Date "2025.08.07"]
-				[White "Alice"]
-				[Black "Bob"]
-				[Result "1-0"]
+		        [Event "Demo Game"]
+		        [Site "Local"]
+		        [Date "2025.08.07"]
+		        [White "Alice"]
+		        [Black "Bob"]
+		        [Result "1-0"]
 
-				1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 1-0
-				""";
+		        1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 1-0
+		        """;
 
 		MoveHistory.PGNGameData gameData = MoveHistory.parsePGN(samplePGN);
 		System.out.println("Parsed PGN: " + gameData);
@@ -160,8 +161,8 @@ public class NewFeaturesDemo {
 				String[] positions = aiMove.split(" ");
 				engine.movePiece(positions[0], positions[1]);
 				if (engine.getLastMove() != null) {
-					System.out.println(
-							engine.getLastMove().getAlgebraicNotation() + " (" + aiMove + ") [" + thinkTime + "ms]");
+					System.out.println(engine.getLastMove().getAlgebraicNotation() + " (" + aiMove
+					        + ") [" + thinkTime + "ms]");
 				} else {
 					System.out.println(aiMove + " [" + thinkTime + "ms]");
 				}
@@ -178,7 +179,8 @@ public class NewFeaturesDemo {
 			System.out.println("Total moves: " + engine.getMoveHistory().getMoves().size());
 			System.out.println("Current turn: " + engine.getCurrentTurn());
 			System.out.println("\nSaving AI vs AI game...");
-			boolean saved = engine.saveGameToPGNFile("ai_vs_ai_demo.pgn", "AI_Beginner", "AI_Advanced", "*");
+			boolean saved = engine.saveGameToPGNFile("ai_vs_ai_demo.pgn", "AI_Beginner",
+			        "AI_Advanced", "*");
 			System.out.println("Save result: " + (saved ? "SUCCESS" : "FAILED"));
 		} catch (Exception e) {
 			System.out.println("Error in AI vs AI demo: " + e.getMessage());

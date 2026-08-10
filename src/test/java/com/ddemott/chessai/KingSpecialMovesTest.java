@@ -11,8 +11,8 @@ public class KingSpecialMovesTest {
 	public void testKingsideCastlingAllowed() {
 		Board board = new Board();
 		board.clearBoard();
-		King king = new King("White", "e1");
-		Rook rook = new Rook("White", "h1");
+		King king = new King(Side.WHITE, "e1");
+		Rook rook = new Rook(Side.WHITE, "h1");
 		board.setPieceAt("e1", king);
 		king.setPosition("e1");
 		board.setPieceAt("h1", rook);
@@ -25,8 +25,8 @@ public class KingSpecialMovesTest {
 	public void testQueensideCastlingAllowed() {
 		Board board = new Board();
 		board.clearBoard();
-		King king = new King("White", "e1");
-		Rook rook = new Rook("White", "a1");
+		King king = new King(Side.WHITE, "e1");
+		Rook rook = new Rook(Side.WHITE, "a1");
 		board.setPieceAt("e1", king);
 		king.setPosition("e1");
 		board.setPieceAt("a1", rook);
@@ -39,49 +39,54 @@ public class KingSpecialMovesTest {
 	public void testCastlingBlockedByPiece() {
 		Board board = new Board();
 		board.clearBoard();
-		King king = new King("White", "e1");
-		Rook rook = new Rook("White", "h1");
+		King king = new King(Side.WHITE, "e1");
+		Rook rook = new Rook(Side.WHITE, "h1");
 		board.setPieceAt("e1", king);
 		king.setPosition("e1");
 		board.setPieceAt("h1", rook);
 		rook.setPosition("h1");
 		// Place a piece between king and rook
-		Rook blocker = new Rook("White", "f1");
+		Rook blocker = new Rook(Side.WHITE, "f1");
 		board.setPieceAt("f1", blocker);
 		blocker.setPosition("f1");
-		assertFalse(king.isValidMove("g1", board), "King should NOT be able to castle king-side if path is blocked");
+		assertFalse(king.isValidMove("g1", board),
+		        "King should NOT be able to castle king-side if path is blocked");
 	}
 
 	@Test
 	public void testCastlingThroughCheck() {
 		Board board = new Board();
 		board.clearBoard();
-		King king = new King("White", "e1");
-		Rook rook = new Rook("White", "h1");
+		King king = new King(Side.WHITE, "e1");
+		Rook rook = new Rook(Side.WHITE, "h1");
 		board.setPieceAt("e1", king);
 		king.setPosition("e1");
 		board.setPieceAt("h1", rook);
 		rook.setPosition("h1");
 		// Place an opponent rook attacking f1
-		Rook oppRook = new Rook("Black", "f8");
+		Rook oppRook = new Rook(Side.BLACK, "f8");
 		board.setPieceAt("f8", oppRook);
 		oppRook.setPosition("f8");
-		assertFalse(king.isValidMove("g1", board), "King should NOT be able to castle through check");
+		assertFalse(king.isValidMove("g1", board),
+		        "King should NOT be able to castle through check");
 	}
 
 	@Test
 	public void testKingCannotMoveNextToOpponentKing() {
 		Board board = new Board();
 		board.clearBoard();
-		King whiteKing = new King("White", "e4");
-		King blackKing = new King("Black", "e6");
+		King whiteKing = new King(Side.WHITE, "e4");
+		King blackKing = new King(Side.BLACK, "e6");
 		board.setPieceAt("e4", whiteKing);
 		whiteKing.setPosition("e4");
 		board.setPieceAt("e6", blackKing);
 		blackKing.setPosition("e6");
 		// Try to move white king next to black king
-		assertFalse(whiteKing.isValidMove("e5", board), "King should NOT be able to move next to opponent king");
-		assertFalse(whiteKing.isValidMove("d5", board), "King should NOT be able to move next to opponent king");
-		assertFalse(whiteKing.isValidMove("f5", board), "King should NOT be able to move next to opponent king");
+		assertFalse(whiteKing.isValidMove("e5", board),
+		        "King should NOT be able to move next to opponent king");
+		assertFalse(whiteKing.isValidMove("d5", board),
+		        "King should NOT be able to move next to opponent king");
+		assertFalse(whiteKing.isValidMove("f5", board),
+		        "King should NOT be able to move next to opponent king");
 	}
 }

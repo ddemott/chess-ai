@@ -111,16 +111,18 @@ public class GameEngine {
 
 					try {
 						if (simState.movePiece(parts[0], parts[1], promotion)) {
-							String san = simState.getMoveHistory().getLastMove().getAlgebraicNotation();
+							String san = simState.getMoveHistory().getLastMove()
+							        .getAlgebraicNotation();
 							// Compare cleaned SAN strings
 							if (cleanSAN(san).equals(cleanSAN(bookMoveSAN))) {
-								Log.info("Playing book move: " + bookMoveSAN + " (" + coordMove + ")");
+								Log.info("Playing book move: " + bookMoveSAN + " (" + coordMove
+								        + ")");
 								return coordMove;
 							}
 						}
 					} catch (Exception e) {
-						Log.warn("Error checking book move '" + bookMoveSAN + "' against candidate '" + coordMove
-								+ "': " + e.getMessage());
+						Log.warn("Error checking book move '" + bookMoveSAN
+						        + "' against candidate '" + coordMove + "': " + e.getMessage());
 					}
 				}
 			}
@@ -199,13 +201,14 @@ public class GameEngine {
 		return state.getMoveHistory().exportToPGN(whitePlayer, blackPlayer, result);
 	}
 
-	public boolean saveGameToPGNFile(String filename, String whitePlayer, String blackPlayer, String result) {
+	public boolean saveGameToPGNFile(String filename, String whitePlayer, String blackPlayer,
+	        String result) {
 		return state.getMoveHistory().saveToPGNFile(filename, whitePlayer, blackPlayer, result);
 	}
 
 	/**
 	 * Load a game from a PGN file
-	 * 
+	 *
 	 * @param filename
 	 *            The PGN file to load
 	 * @return true if successfully loaded, false otherwise
@@ -221,7 +224,7 @@ public class GameEngine {
 
 	/**
 	 * Load a game from parsed PGN data
-	 * 
+	 *
 	 * @param gameData
 	 *            The parsed PGN data
 	 * @return true if successfully loaded, false otherwise
@@ -278,22 +281,22 @@ public class GameEngine {
 		char firstChar = san.charAt(0);
 		if (firstChar >= 'A' && firstChar <= 'Z') {
 			switch (firstChar) {
-				case 'N' :
+				case 'N':
 					pieceType = Knight.class;
 					break;
-				case 'B' :
+				case 'B':
 					pieceType = Bishop.class;
 					break;
-				case 'R' :
+				case 'R':
 					pieceType = Rook.class;
 					break;
-				case 'Q' :
+				case 'Q':
 					pieceType = Queen.class;
 					break;
-				case 'K' :
+				case 'K':
 					pieceType = King.class;
 					break;
-				default :
+				default:
 					Log.error("Unknown piece type in SAN: " + algebraicMove);
 					return false;
 			}
@@ -362,7 +365,8 @@ public class GameEngine {
 			Log.error("No legal move found for SAN: " + algebraicMove);
 			return false;
 		} else {
-			Log.error("Ambiguous SAN (found " + candidates.size() + " candidates): " + algebraicMove);
+			Log.error(
+			        "Ambiguous SAN (found " + candidates.size() + " candidates): " + algebraicMove);
 			return false;
 		}
 	}
@@ -392,8 +396,8 @@ public class GameEngine {
 				// work.
 
 				if (!replayState.movePiece(from, to, promotion)) {
-					String error = "Integrity Check Failed: Could not replay move " + move.getAlgebraicNotation() + " ("
-							+ from + "->" + to + ")";
+					String error = "Integrity Check Failed: Could not replay move "
+					        + move.getAlgebraicNotation() + " (" + from + "->" + to + ")";
 					Log.error(error);
 					throw new RuntimeException(error);
 				}
@@ -409,8 +413,8 @@ public class GameEngine {
 
 			// 4. Verify turn
 			if (!state.getCurrentTurn().equals(replayState.getCurrentTurn())) {
-				String error = "Integrity Check Failed: Turn mismatch! Current=" + state.getCurrentTurn() + ", Replay="
-						+ replayState.getCurrentTurn();
+				String error = "Integrity Check Failed: Turn mismatch! Current="
+				        + state.getCurrentTurn() + ", Replay=" + replayState.getCurrentTurn();
 				Log.error(error);
 				throw new RuntimeException(error);
 			}

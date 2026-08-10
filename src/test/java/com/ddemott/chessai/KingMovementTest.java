@@ -14,7 +14,7 @@ public class KingMovementTest {
 		board.setPieceAt("e4", king);
 		king.setPosition("e4");
 		// All adjacent squares
-		String[] moves = {"d3", "e3", "f3", "d4", "f4", "d5", "e5", "f5"};
+		String[] moves = { "d3", "e3", "f3", "d4", "f4", "d5", "e5", "f5" };
 		for (String move : moves) {
 			assertTrue(king.isValidMove(move, board), "King should be able to move to " + move);
 		}
@@ -28,9 +28,10 @@ public class KingMovementTest {
 		board.setPieceAt("e4", king);
 		king.setPosition("e4");
 		// Invalid moves (more than one square)
-		String[] invalidMoves = {"e6", "g4", "c4", "e2"};
+		String[] invalidMoves = { "e6", "g4", "c4", "e2" };
 		for (String move : invalidMoves) {
-			assertFalse(king.isValidMove(move, board), "King should NOT be able to move to " + move);
+			assertFalse(king.isValidMove(move, board),
+			        "King should NOT be able to move to " + move);
 		}
 	}
 }

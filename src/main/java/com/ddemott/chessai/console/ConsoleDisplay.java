@@ -37,6 +37,8 @@ public class ConsoleDisplay {
 		// But ConsoleDisplay is legacy. Let's use getSide() properly if possible.
 		// Piece.java implements getSide().
 		// IPiece interface has getSide().
-		return piece.getSide().toString().equalsIgnoreCase("White") ? symbol : Character.toLowerCase(symbol);
+		return piece.getSide().toString().equalsIgnoreCase("White")
+		        ? symbol
+		        : Character.toLowerCase(symbol);
 	}
 }

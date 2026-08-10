@@ -79,23 +79,23 @@ public class PGNLoadingTest {
 
 	private static boolean testPGNHeaderParsing() {
 		String pgnContent = """
-				[Event "Test Game"]
-				[Site "Local"]
-				[Date "2025.08.07"]
-				[Round "1"]
-				[White "Alice"]
-				[Black "Bob"]
-				[Result "1-0"]
+		        [Event "Test Game"]
+		        [Site "Local"]
+		        [Date "2025.08.07"]
+		        [Round "1"]
+		        [White "Alice"]
+		        [Black "Bob"]
+		        [Result "1-0"]
 
-				1. e4 e5 2. Nf3 Nc6 1-0
-				""";
+		        1. e4 e5 2. Nf3 Nc6 1-0
+		        """;
 
 		try {
 			MoveHistory.PGNGameData gameData = MoveHistory.parsePGN(pgnContent);
 
 			return gameData.event.equals("Test Game") && gameData.site.equals("Local")
-					&& gameData.date.equals("2025.08.07") && gameData.whitePlayer.equals("Alice")
-					&& gameData.blackPlayer.equals("Bob") && gameData.result.equals("1-0");
+			        && gameData.date.equals("2025.08.07") && gameData.whitePlayer.equals("Alice")
+			        && gameData.blackPlayer.equals("Bob") && gameData.result.equals("1-0");
 		} catch (Exception e) {
 			System.out.println("Exception in header parsing: " + e.getMessage());
 			return false;
@@ -104,22 +104,22 @@ public class PGNLoadingTest {
 
 	private static boolean testSimpleMoveListParsing() {
 		String pgnContent = """
-				[Event "Test Game"]
-				[White "Player1"]
-				[Black "Player2"]
-				[Result "*"]
+		        [Event "Test Game"]
+		        [White "Player1"]
+		        [Black "Player2"]
+		        [Result "*"]
 
-				1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *
-				""";
+		        1. e4 e5 2. Nf3 Nc6 3. Bb5 a6 *
+		        """;
 
 		try {
 			MoveHistory.PGNGameData gameData = MoveHistory.parsePGN(pgnContent);
 
 			// Should parse: e4, e5, Nf3, Nc6, Bb5, a6
 			return gameData.moves.size() == 6 && gameData.moves.get(0).equals("e4")
-					&& gameData.moves.get(1).equals("e5") && gameData.moves.get(2).equals("Nf3")
-					&& gameData.moves.get(3).equals("Nc6") && gameData.moves.get(4).equals("Bb5")
-					&& gameData.moves.get(5).equals("a6");
+			        && gameData.moves.get(1).equals("e5") && gameData.moves.get(2).equals("Nf3")
+			        && gameData.moves.get(3).equals("Nc6") && gameData.moves.get(4).equals("Bb5")
+			        && gameData.moves.get(5).equals("a6");
 		} catch (Exception e) {
 			System.out.println("Exception in move parsing: " + e.getMessage());
 			return false;
@@ -128,13 +128,13 @@ public class PGNLoadingTest {
 
 	private static boolean testCastlingMoves() {
 		String pgnContent = """
-				[Event "Castling Test"]
-				[White "Player1"]
-				[Black "Player2"]
-				[Result "*"]
+		        [Event "Castling Test"]
+		        [White "Player1"]
+		        [Black "Player2"]
+		        [Result "*"]
 
-				1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O O-O-O *
-				""";
+		        1. e4 e5 2. Nf3 Nc6 3. Bc4 Bc5 4. O-O O-O-O *
+		        """;
 
 		try {
 			MoveHistory.PGNGameData gameData = MoveHistory.parsePGN(pgnContent);
@@ -149,13 +149,13 @@ public class PGNLoadingTest {
 
 	private static boolean testPromotionMoves() {
 		String pgnContent = """
-				[Event "Promotion Test"]
-				[White "Player1"]
-				[Black "Player2"]
-				[Result "*"]
+		        [Event "Promotion Test"]
+		        [White "Player1"]
+		        [Black "Player2"]
+		        [Result "*"]
 
-				1. e4 e5 2. f4 d5 3. exd5 e4 4. d6 e3 5. d7 e2 6. d8=Q e1=N *
-				""";
+		        1. e4 e5 2. f4 d5 3. exd5 e4 4. d6 e3 5. d7 e2 6. d8=Q e1=N *
+		        """;
 
 		try {
 			MoveHistory.PGNGameData gameData = MoveHistory.parsePGN(pgnContent);

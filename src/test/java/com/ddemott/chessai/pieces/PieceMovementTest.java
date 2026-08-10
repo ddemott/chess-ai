@@ -27,7 +27,7 @@ public class PieceMovementTest {
 
 		// Test double move
 		assertTrue(whitePawn.isValidMove("e4", board),
-				"White pawn should be able to move two squares from starting position");
+		        "White pawn should be able to move two squares from starting position");
 
 		// Move the pawn to e4
 		boolean moveSuccess = board.movePiece("e2", "e4");
@@ -39,7 +39,7 @@ public class PieceMovementTest {
 
 		// Check that double move is no longer allowed
 		assertFalse(whitePawn.isValidMove("e6", board),
-				"Pawn should not be able to move two squares after initial move");
+		        "Pawn should not be able to move two squares after initial move");
 
 		// Place a black pawn for capture
 		IPiece blackPawn = new Pawn("Black", "d5");
@@ -53,7 +53,8 @@ public class PieceMovementTest {
 		assertEquals("Black", captureTarget.getColor(), "Pawn at d5 should be black");
 
 		// Test the diagonal capture
-		assertTrue(whitePawn.isValidMove("d5", board), "White pawn at e4 should be able to capture black pawn at d5");
+		assertTrue(whitePawn.isValidMove("d5", board),
+		        "White pawn at e4 should be able to capture black pawn at d5");
 
 		// Execute the capture
 		assertTrue(board.movePiece("e4", "d5"), "Capture move should succeed");

@@ -28,7 +28,8 @@ public class PinDetectionTest {
 
 		// Try to move the queen along the pin line toward the attacker (should succeed)
 		queenCanMove = engine.movePiece("e2", "e3");
-		assertTrue(queenCanMove, "Queen should be able to move along the pin line toward the attacker");
+		assertTrue(queenCanMove,
+		        "Queen should be able to move along the pin line toward the attacker");
 	}
 
 	@Test
@@ -90,10 +91,14 @@ public class PinDetectionTest {
 
 		// Set up multiple pins: White king on d4, pinned white pieces, black attackers
 		engine.getGameState().getBoard().setPieceAt("d4", new King("White", "d4"));
-		engine.getGameState().getBoard().setPieceAt("d5", new Queen("White", "d5")); // Vertically pinned
-		engine.getGameState().getBoard().setPieceAt("e4", new Bishop("White", "e4")); // Horizontally pinned
-		engine.getGameState().getBoard().setPieceAt("d8", new Rook("Black", "d8")); // Vertical attacker
-		engine.getGameState().getBoard().setPieceAt("h4", new Rook("Black", "h4")); // Horizontal attacker
+		engine.getGameState().getBoard().setPieceAt("d5", new Queen("White", "d5")); // Vertically
+		                                                                             // pinned
+		engine.getGameState().getBoard().setPieceAt("e4", new Bishop("White", "e4")); // Horizontally
+		                                                                              // pinned
+		engine.getGameState().getBoard().setPieceAt("d8", new Rook("Black", "d8")); // Vertical
+		                                                                            // attacker
+		engine.getGameState().getBoard().setPieceAt("h4", new Rook("Black", "h4")); // Horizontal
+		                                                                            // attacker
 		engine.getGameState().setCurrentTurn("White");
 
 		// Test queen movement - should only be able to move vertically
@@ -109,7 +114,8 @@ public class PinDetectionTest {
 		assertFalse(bishopCanMove, "Horizontally pinned bishop should not be able to move");
 
 		bishopCanMove = engine.movePiece("e4", "f4"); // Horizontal move along pin line
-		assertFalse(bishopCanMove, "Bishop should not be able to move horizontally even along pin line");
+		assertFalse(bishopCanMove,
+		        "Bishop should not be able to move horizontally even along pin line");
 	}
 
 	@Test
@@ -136,7 +142,9 @@ public class PinDetectionTest {
 
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("e2", new Rook("White", "e2"));
-		engine.getGameState().getBoard().setPieceAt("e3", new Bishop("Black", "e3")); // Not a pin, can be captured
+		engine.getGameState().getBoard().setPieceAt("e3", new Bishop("Black", "e3")); // Not a pin,
+		                                                                              // can be
+		                                                                              // captured
 		engine.getGameState().setCurrentTurn("White");
 
 		boolean rookCanCapture = engine.movePiece("e2", "e3"); // Capture the "attacker"

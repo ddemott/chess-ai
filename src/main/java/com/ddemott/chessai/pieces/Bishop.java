@@ -67,7 +67,7 @@ public class Bishop extends Piece {
 		String currentPosition = getPosition();
 		int[] currentCoords = board.convertPositionToCoordinates(currentPosition);
 
-		int[][] directions = {{1, 1}, {1, -1}, {-1, 1}, {-1, -1}};
+		int[][] directions = { { 1, 1 }, { 1, -1 }, { -1, 1 }, { -1, -1 } };
 
 		for (int[] direction : directions) {
 			int row = currentCoords[0];

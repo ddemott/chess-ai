@@ -13,14 +13,16 @@ public class AIvsAITest {
 	@Test
 	void testAIvsAIGameCreation() {
 		assertDoesNotThrow(() -> {
-			AIvsAIChessGame game = new AIvsAIChessGame(AIDifficulty.BEGINNER, AIDifficulty.ADVANCED);
+			AIvsAIChessGame game = new AIvsAIChessGame(AIDifficulty.BEGINNER,
+			        AIDifficulty.ADVANCED);
 			assertNotNull(game);
 		});
 	}
 
 	@Test
 	void testDifferentDifficultiesCompete() {
-		AIDifficulty[] difficulties = {AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE, AIDifficulty.EXPERT};
+		AIDifficulty[] difficulties = { AIDifficulty.BEGINNER, AIDifficulty.INTERMEDIATE,
+		        AIDifficulty.EXPERT };
 		for (AIDifficulty white : difficulties) {
 			for (AIDifficulty black : difficulties) {
 				GameEngine engine = new GameEngine(white, black);
@@ -70,9 +72,11 @@ public class AIvsAITest {
 	@Test
 	void testAISwitching() {
 		GameEngine engine = new GameEngine(AIDifficulty.BEGINNER);
-		assertEquals(AIDifficulty.BEGINNER, engine.getAIDifficulty(), "Initial AI difficulty should be BEGINNER");
+		assertEquals(AIDifficulty.BEGINNER, engine.getAIDifficulty(),
+		        "Initial AI difficulty should be BEGINNER");
 		engine.setAIDifficulty(AIDifficulty.EXPERT);
-		assertEquals(AIDifficulty.EXPERT, engine.getAIDifficulty(), "AI difficulty should switch to EXPERT");
+		assertEquals(AIDifficulty.EXPERT, engine.getAIDifficulty(),
+		        "AI difficulty should switch to EXPERT");
 		String aiMove = engine.getBestMove();
 		assertNotNull(aiMove, "AI should be able to make a move after switching difficulty");
 		assertFalse(aiMove.isEmpty(), "AI move should not be empty");

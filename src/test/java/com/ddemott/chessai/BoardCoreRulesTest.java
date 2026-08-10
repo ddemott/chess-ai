@@ -13,19 +13,21 @@ public class BoardCoreRulesTest {
 	@Test
 	void testEnPassantCapture() {
 		try {
-			com.ddemott.chessai.engine.GameEngine engine = new com.ddemott.chessai.engine.GameEngine(1);
+			com.ddemott.chessai.engine.GameEngine engine = new com.ddemott.chessai.engine.GameEngine(
+			        1);
 			engine.movePiece("e2", "e4"); // White
 			System.out.println(engine.getBoardRepresentation());
 			engine.movePiece("d7", "d5"); // Black
 			System.out.println(engine.getBoardRepresentation());
 			// En passant target should now be d6
-			System.out
-					.println("En passant target after d7-d5: " + engine.getGameState().getBoard().getEnPassantTarget());
+			System.out.println("En passant target after d7-d5: "
+			        + engine.getGameState().getBoard().getEnPassantTarget());
 			boolean enPassant = engine.movePiece("e4", "d5"); // White captures en passant
 			System.out.println("En passant move success: " + enPassant);
 			String board = engine.getBoardRepresentation();
 			System.out.println(board);
-			assertEquals("P", getPieceAt(board, "d5"), "White pawn should be on d5 after en passant");
+			assertEquals("P", getPieceAt(board, "d5"),
+			        "White pawn should be on d5 after en passant");
 			assertEquals(".", getPieceAt(board, "d6"), "d6 should be empty after en passant");
 		} catch (Exception e) {
 			fail("Test failed due to unexpected exception: " + e.getMessage());
@@ -69,7 +71,8 @@ public class BoardCoreRulesTest {
 		engine.movePiece("h4", "h3");
 		System.out.println(engine.getBoardRepresentation());
 		// Print pawn position before promotion
-		System.out.println("Pawn before promotion: " + getPieceAt(engine.getBoardRepresentation(), "a7"));
+		System.out.println(
+		        "Pawn before promotion: " + getPieceAt(engine.getBoardRepresentation(), "a7"));
 		boolean promoted = engine.movePiece("a7", "a8", "Q");
 		System.out.println("Promotion move success: " + promoted);
 		String board = engine.getBoardRepresentation();
@@ -92,7 +95,8 @@ public class BoardCoreRulesTest {
 		engine.getGameState().setCurrentTurn("Black"); // Black to move
 
 		// Verify stalemate
-		assertTrue(engine.getGameState().isStalemate("Black"), "Position should be stalemate for Black");
+		assertTrue(engine.getGameState().isStalemate("Black"),
+		        "Position should be stalemate for Black");
 	}
 
 	@Test
@@ -104,7 +108,7 @@ public class BoardCoreRulesTest {
 		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8"));
 
 		assertTrue(isInsufficientMaterial(engine.getGameState().getBoard()),
-				"King vs King should be insufficient material");
+		        "King vs King should be insufficient material");
 
 		// Test king and bishop vs king
 		engine = new GameEngine(1);
@@ -114,7 +118,7 @@ public class BoardCoreRulesTest {
 		engine.getGameState().getBoard().setPieceAt("c1", new Bishop("White", "c1"));
 
 		assertTrue(isInsufficientMaterial(engine.getGameState().getBoard()),
-				"King and bishop vs king should be insufficient material");
+		        "King and bishop vs king should be insufficient material");
 
 		// Test king and knight vs king
 		engine = new GameEngine(1);
@@ -124,7 +128,7 @@ public class BoardCoreRulesTest {
 		engine.getGameState().getBoard().setPieceAt("b1", new Knight("White", "b1"));
 
 		assertTrue(isInsufficientMaterial(engine.getGameState().getBoard()),
-				"King and knight vs king should be insufficient material");
+		        "King and knight vs king should be insufficient material");
 
 		// Test sufficient material (king and pawn)
 		engine = new GameEngine(1);
@@ -134,7 +138,7 @@ public class BoardCoreRulesTest {
 		engine.getGameState().getBoard().setPieceAt("e2", new Pawn("White", "e2"));
 
 		assertFalse(isInsufficientMaterial(engine.getGameState().getBoard()),
-				"King and pawn should be sufficient material");
+		        "King and pawn should be sufficient material");
 	}
 
 	@Test
@@ -143,11 +147,11 @@ public class BoardCoreRulesTest {
 
 		// Create a threefold repetition by moving knights back and forth
 		// Initial position
-		String[] sequence = {"g1", "f3", "g8", "f6", // Move out
-				"f3", "g1", "f6", "g8", // Move back
-				"g1", "f3", "g8", "f6", // Repeat
-				"f3", "g1", "f6", "g8", // Repeat
-				"g1", "f3", "g8", "f6" // Final repetition
+		String[] sequence = { "g1", "f3", "g8", "f6", // Move out
+		        "f3", "g1", "f6", "g8", // Move back
+		        "g1", "f3", "g8", "f6", // Repeat
+		        "f3", "g1", "f6", "g8", // Repeat
+		        "g1", "f3", "g8", "f6" // Final repetition
 		};
 
 		for (int i = 0; i < sequence.length; i += 2) {
@@ -156,10 +160,12 @@ public class BoardCoreRulesTest {
 			engine.movePiece(from, to);
 
 			// Record position in move history for repetition checking
-			engine.getGameState().getMoveHistory().addPosition(engine.getGameState().getBoard().toFEN());
+			engine.getGameState().getMoveHistory()
+			        .addPosition(engine.getGameState().getBoard().toFEN());
 		}
 
-		assertTrue(engine.getGameState().isThreefoldRepetition(), "Position should be repeated three times");
+		assertTrue(engine.getGameState().isThreefoldRepetition(),
+		        "Position should be repeated three times");
 	}
 
 	@Test
@@ -178,13 +184,15 @@ public class BoardCoreRulesTest {
 		}
 
 		// Now we're at 98 halfmoves (49 moves)
-		assertFalse(engine.getGameState().isFiftyMoveRule(), "49 moves should not trigger fifty move rule");
+		assertFalse(engine.getGameState().isFiftyMoveRule(),
+		        "49 moves should not trigger fifty move rule");
 
 		// Add 2 more halfmoves to reach 50 moves
 		engine.getGameState().getMoveHistory().updateHalfmoveClock(false, false);
 		engine.getGameState().getMoveHistory().updateHalfmoveClock(false, false);
 
-		assertTrue(engine.getGameState().isFiftyMoveRule(), "50 moves should trigger fifty move rule");
+		assertTrue(engine.getGameState().isFiftyMoveRule(),
+		        "50 moves should trigger fifty move rule");
 	}
 
 	@Test
@@ -212,11 +220,12 @@ public class BoardCoreRulesTest {
 		System.out.println(engine.getBoardRepresentation());
 
 		// Check if king is in check before move
-		System.out.println("Is king in check before move: " + engine.getGameState().getBoard().isKingInCheck("White"));
+		System.out.println("Is king in check before move: "
+		        + engine.getGameState().getBoard().isKingInCheck("White"));
 
 		// Debug the wouldExposeKingToCheck method
 		System.out.println("Would moving bishop expose king: "
-				+ engine.getGameState().getBoard().wouldExposeKingToCheck("e2", "d3"));
+		        + engine.getGameState().getBoard().wouldExposeKingToCheck("e2", "d3"));
 
 		// Try to move the pinned bishop
 		boolean bishopCanMove = engine.movePiece("e2", "d3");
@@ -229,15 +238,16 @@ public class BoardCoreRulesTest {
 		assertFalse(bishopCanMove, "Pinned bishop should not be able to move");
 
 		// Verify bishop is still on e2
-		assertEquals("B", getPieceAt(engine.getBoardRepresentation(), "e2"), "Bishop should still be on e2");
+		assertEquals("B", getPieceAt(engine.getBoardRepresentation(), "e2"),
+		        "Bishop should still be on e2");
 	}
 
 	@Test
 	void testPromotionToAllPieceTypes() {
 		GameEngine engine = new GameEngine(1);
 
-		String[] pieceTypes = {"Q", "R", "B", "N"};
-		String[] pieceNames = {"Queen", "Rook", "Bishop", "Knight"};
+		String[] pieceTypes = { "Q", "R", "B", "N" };
+		String[] pieceNames = { "Queen", "Rook", "Bishop", "Knight" };
 
 		for (int i = 0; i < pieceTypes.length; i++) {
 			// Clear for new test
@@ -259,7 +269,7 @@ public class BoardCoreRulesTest {
 			boolean promoted = engine.movePiece("a7", "a8", pieceTypes[i]);
 			assertTrue(promoted, "Pawn should promote to " + pieceNames[i]);
 			assertEquals(pieceTypes[i], getPieceAt(engine.getBoardRepresentation(), "a8"),
-					pieceNames[i] + " should be on a8");
+			        pieceNames[i] + " should be on a8");
 		}
 	}
 
@@ -319,10 +329,11 @@ public class BoardCoreRulesTest {
 
 	// Helper methods
 	private void clearBoard(GameEngine engine) {
-		String[] allSquares = {"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2",
-				"h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-				"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7",
-				"b7", "c7", "d7", "e7", "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"};
+		String[] allSquares = { "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
+		        "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4",
+		        "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5", "b5", "c5", "d5", "e5", "f5", "g5",
+		        "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7", "b7", "c7", "d7", "e7",
+		        "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8" };
 		for (String sq : allSquares) {
 			engine.getGameState().getBoard().setPieceAt(sq, null);
 		}
@@ -333,10 +344,11 @@ public class BoardCoreRulesTest {
 		int whiteKnights = 0, blackKnights = 0;
 		int otherPieces = 0;
 
-		String[] allSquares = {"a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2", "d2", "e2", "f2", "g2",
-				"h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4", "b4", "c4", "d4", "e4", "f4", "g4", "h4",
-				"a5", "b5", "c5", "d5", "e5", "f5", "g5", "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7",
-				"b7", "c7", "d7", "e7", "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8"};
+		String[] allSquares = { "a1", "b1", "c1", "d1", "e1", "f1", "g1", "h1", "a2", "b2", "c2",
+		        "d2", "e2", "f2", "g2", "h2", "a3", "b3", "c3", "d3", "e3", "f3", "g3", "h3", "a4",
+		        "b4", "c4", "d4", "e4", "f4", "g4", "h4", "a5", "b5", "c5", "d5", "e5", "f5", "g5",
+		        "h5", "a6", "b6", "c6", "d6", "e6", "f6", "g6", "h6", "a7", "b7", "c7", "d7", "e7",
+		        "f7", "g7", "h7", "a8", "b8", "c8", "d8", "e8", "f8", "g8", "h8" };
 
 		for (String sq : allSquares) {
 			IPiece piece = board.getPieceAt(sq);
@@ -367,9 +379,12 @@ public class BoardCoreRulesTest {
 
 		// King and (Bishop or Knight) vs King
 		if ((whiteBishops == 1 && blackBishops == 0 && whiteKnights == 0 && blackKnights == 0)
-				|| (whiteBishops == 0 && blackBishops == 1 && whiteKnights == 0 && blackKnights == 0)
-				|| (whiteKnights == 1 && blackKnights == 0 && whiteBishops == 0 && blackBishops == 0)
-				|| (whiteKnights == 0 && blackKnights == 1 && whiteBishops == 0 && blackBishops == 0))
+		        || (whiteBishops == 0 && blackBishops == 1 && whiteKnights == 0
+		                && blackKnights == 0)
+		        || (whiteKnights == 1 && blackKnights == 0 && whiteBishops == 0
+		                && blackBishops == 0)
+		        || (whiteKnights == 0 && blackKnights == 1 && whiteBishops == 0
+		                && blackBishops == 0))
 			return true;
 
 		return false;

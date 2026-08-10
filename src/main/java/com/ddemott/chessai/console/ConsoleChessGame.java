@@ -30,20 +30,20 @@ public class ConsoleChessGame {
 		String whiteLabel;
 		String blackLabel;
 		switch (mode) {
-			case 1 :
+			case 1:
 				whitePlayer = new HumanPlayerController(scanner, display);
 				blackPlayer = new HumanPlayerController(scanner, display);
 				whiteLabel = "Human (White)";
 				blackLabel = "Human (Black)";
 				break;
-			case 3 :
+			case 3:
 				whitePlayer = new AIPlayerController(AIDifficulty.INTERMEDIATE);
 				blackPlayer = new AIPlayerController(AIDifficulty.ADVANCED);
 				whiteLabel = "AI (White, Intermediate)";
 				blackLabel = "AI (Black, Advanced)";
 				break;
-			case 2 :
-			default :
+			case 2:
+			default:
 				whitePlayer = new HumanPlayerController(scanner, display);
 				blackPlayer = new AIPlayerController(AIDifficulty.ADVANCED);
 				whiteLabel = "Human (White)";
@@ -53,7 +53,9 @@ public class ConsoleChessGame {
 
 		while (true) {
 			String currentTurn = gameEngine.getCurrentTurn();
-			PlayerController currentPlayer = currentTurn.equals("White") ? whitePlayer : blackPlayer;
+			PlayerController currentPlayer = currentTurn.equals("White")
+			        ? whitePlayer
+			        : blackPlayer;
 			String playerLabel = currentTurn.equals("White") ? whiteLabel : blackLabel;
 			Move move = currentPlayer.selectMove(gameEngine);
 			if (move == null) {
@@ -62,7 +64,8 @@ public class ConsoleChessGame {
 			}
 			boolean moveSuccessful;
 			if (move.getPromotionPiece() != null) {
-				moveSuccessful = gameEngine.movePiece(move.getFrom(), move.getTo(), move.getPromotionPiece());
+				moveSuccessful = gameEngine.movePiece(move.getFrom(), move.getTo(),
+				        move.getPromotionPiece());
 			} else {
 				moveSuccessful = gameEngine.movePiece(move.getFrom(), move.getTo());
 			}
@@ -73,13 +76,14 @@ public class ConsoleChessGame {
 			Move lastMove = gameEngine.getLastMove();
 			StringBuilder moveMsg = new StringBuilder();
 			moveMsg.append("[" + playerLabel + "] ");
-			moveMsg.append(
-					lastMove.getAlgebraicNotation() + " (" + lastMove.getFrom() + " → " + lastMove.getTo() + ")");
+			moveMsg.append(lastMove.getAlgebraicNotation() + " (" + lastMove.getFrom() + " → "
+			        + lastMove.getTo() + ")");
 			moveMsg.append(" [Score: " + move.getScore() + "]");
 			if (lastMove.getCapturedPiece() != null) {
 				display.addCapturedPiece(lastMove.getCapturedPiece());
-				moveMsg.append(" *ATTACK* [Captured: " + lastMove.getCapturedPiece().getClass().getSimpleName() + " - "
-						+ lastMove.getCapturedPiece().getColor() + "]");
+				moveMsg.append(" *ATTACK* [Captured: "
+				        + lastMove.getCapturedPiece().getClass().getSimpleName() + " - "
+				        + lastMove.getCapturedPiece().getColor() + "]");
 			}
 			System.out.println(moveMsg.toString());
 			// Check for game end conditions
@@ -178,15 +182,15 @@ public class ConsoleChessGame {
 	 */
 	private static String getPieceFullName(String pieceCode) {
 		switch (pieceCode) {
-			case "Q" :
+			case "Q":
 				return "Queen";
-			case "R" :
+			case "R":
 				return "Rook";
-			case "B" :
+			case "B":
 				return "Bishop";
-			case "N" :
+			case "N":
 				return "Knight";
-			default :
+			default:
 				return "Unknown";
 		}
 	}

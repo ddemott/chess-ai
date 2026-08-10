@@ -39,40 +39,42 @@ public class MoveHistory {
 	/**
 	 * Adds a move to the history and generates its algebraic notation
 	 */
-	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
-			String playerColor) {
-		addMove(from, to, movingPiece, capturedPiece, board, playerColor, null, false, false, false, false, null,
-				false);
+	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece,
+	        Board board, String playerColor) {
+		addMove(from, to, movingPiece, capturedPiece, board, playerColor, null, false, false, false,
+		        false, null, false);
 	}
 
 	/**
 	 * Adds a move to the history with promotion support
 	 */
-	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
-			String playerColor, String promotionPiece) {
-		addMove(from, to, movingPiece, capturedPiece, board, playerColor, promotionPiece, false, false, false, false,
-				null, false);
+	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece,
+	        Board board, String playerColor, String promotionPiece) {
+		addMove(from, to, movingPiece, capturedPiece, board, playerColor, promotionPiece, false,
+		        false, false, false, null, false);
 	}
 
 	/**
 	 * Adds a move to the history with full state for check/checkmate, special move
 	 * flags, and undo support
 	 */
-	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece, Board board,
-			String playerColor, String promotionPiece, boolean isCheck, boolean isCheckmate, boolean isCastle,
-			boolean isEnPassant, String enPassantTargetBefore, boolean wasFirstMove) {
+	public void addMove(String from, String to, IPiece movingPiece, IPiece capturedPiece,
+	        Board board, String playerColor, String promotionPiece, boolean isCheck,
+	        boolean isCheckmate, boolean isCastle, boolean isEnPassant,
+	        String enPassantTargetBefore, boolean wasFirstMove) {
 		// Remove any moves after current position (for undo/redo support)
 		while (moves.size() > currentMoveIndex + 1) {
 			moves.remove(moves.size() - 1);
 		}
 
 		int moveNumber = (moves.size() / 2) + 1;
-		String algebraicNotation = generateAlgebraicNotation(from, to, movingPiece, capturedPiece, board,
-				promotionPiece, isCheck, isCheckmate, isCastle);
+		String algebraicNotation = generateAlgebraicNotation(from, to, movingPiece, capturedPiece,
+		        board, promotionPiece, isCheck, isCheckmate, isCastle);
 
 		Side side = playerColor.equalsIgnoreCase("White") ? Side.WHITE : Side.BLACK;
-		Move move = new Move(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber, side, isCheck,
-				isCheckmate, isCastle, isEnPassant, promotionPiece, enPassantTargetBefore, wasFirstMove);
+		Move move = new Move(from, to, movingPiece, capturedPiece, algebraicNotation, moveNumber,
+		        side, isCheck, isCheckmate, isCastle, isEnPassant, promotionPiece,
+		        enPassantTargetBefore, wasFirstMove);
 
 		moves.add(move);
 		currentMoveIndex++;
@@ -81,12 +83,14 @@ public class MoveHistory {
 	/**
 	 * Generates Standard Algebraic Notation (SAN) for a move with promotion support
 	 */
-	private String generateAlgebraicNotation(String from, String to, IPiece movingPiece, IPiece capturedPiece,
-			Board board, String promotionPiece, boolean isCheck, boolean isCheckmate, boolean isCastle) {
+	private String generateAlgebraicNotation(String from, String to, IPiece movingPiece,
+	        IPiece capturedPiece, Board board, String promotionPiece, boolean isCheck,
+	        boolean isCheckmate, boolean isCastle) {
 		StringBuilder notation = new StringBuilder();
 
 		// Handle castling
-		if (isCastle || (movingPiece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2)) {
+		if (isCastle
+		        || (movingPiece instanceof King && Math.abs(from.charAt(0) - to.charAt(0)) == 2)) {
 			if (to.charAt(0) > from.charAt(0)) {
 				notation.append("O-O");
 			} else {
@@ -304,7 +308,8 @@ public class MoveHistory {
 		LocalDateTime now = LocalDateTime.now();
 		pgn.append("[Event \"ChessAI Game\"]\n");
 		pgn.append("[Site \"Local\"]\n");
-		pgn.append("[Date \"").append(now.format(DateTimeFormatter.ofPattern("yyyy.MM.dd"))).append("\"]\n");
+		pgn.append("[Date \"").append(now.format(DateTimeFormatter.ofPattern("yyyy.MM.dd")))
+		        .append("\"]\n");
 		pgn.append("[Round \"1\"]\n");
 		pgn.append("[White \"").append(whitePlayer).append("\"]\n");
 		pgn.append("[Black \"").append(blackPlayer).append("\"]\n");
@@ -339,7 +344,8 @@ public class MoveHistory {
 	/**
 	 * Saves the game to a PGN file
 	 */
-	public boolean saveToPGNFile(String filename, String whitePlayer, String blackPlayer, String result) {
+	public boolean saveToPGNFile(String filename, String whitePlayer, String blackPlayer,
+	        String result) {
 		try {
 			String pgnContent = exportToPGN(whitePlayer, blackPlayer, result);
 			Path path = Paths.get(filename);
@@ -353,7 +359,7 @@ public class MoveHistory {
 
 	/**
 	 * Loads a game from a PGN file
-	 * 
+	 *
 	 * @param filename
 	 *            The PGN file to load
 	 * @return PGNGameData containing headers and moves, or null if failed
@@ -376,7 +382,7 @@ public class MoveHistory {
 
 	/**
 	 * Parses PGN content and extracts headers and moves
-	 * 
+	 *
 	 * @param pgnContent
 	 *            The PGN content as a string
 	 * @return PGNGameData containing parsed information
@@ -432,25 +438,25 @@ public class MoveHistory {
 		}
 
 		switch (key) {
-			case "Event" :
+			case "Event":
 				gameData.event = value;
 				break;
-			case "Site" :
+			case "Site":
 				gameData.site = value;
 				break;
-			case "Date" :
+			case "Date":
 				gameData.date = value;
 				break;
-			case "Round" :
+			case "Round":
 				gameData.round = value;
 				break;
-			case "White" :
+			case "White":
 				gameData.whitePlayer = value;
 				break;
-			case "Black" :
+			case "Black":
 				gameData.blackPlayer = value;
 				break;
-			case "Result" :
+			case "Result":
 				gameData.result = value;
 				break;
 		}
@@ -530,7 +536,8 @@ public class MoveHistory {
 
 		@Override
 		public String toString() {
-			return String.format("PGN Game: %s vs %s (%s) - %d moves", whitePlayer, blackPlayer, result, moves.size());
+			return String.format("PGN Game: %s vs %s (%s) - %d moves", whitePlayer, blackPlayer,
+			        result, moves.size());
 		}
 	}
 
@@ -612,7 +619,7 @@ public class MoveHistory {
 
 	/**
 	 * Updates the half-move clock
-	 * 
+	 *
 	 * @param isPawnMove
 	 *            true if a pawn was moved
 	 * @param isCapture

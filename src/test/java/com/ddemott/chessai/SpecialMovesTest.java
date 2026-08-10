@@ -18,7 +18,8 @@ public class SpecialMovesTest {
 		// Set up for kingside castling
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("h1", new Rook("White", "h1"));
-		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent king
+		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent
+		                                                                            // king
 
 		engine.getGameState().setCurrentTurn("White");
 
@@ -27,10 +28,14 @@ public class SpecialMovesTest {
 		assertTrue(castlingResult, "Kingside castling should be allowed");
 
 		// Verify king and rook positions after castling
-		assertNull(engine.getGameState().getBoard().getPieceAt("e1"), "Original king square should be empty");
-		assertNull(engine.getGameState().getBoard().getPieceAt("h1"), "Original rook square should be empty");
-		assertTrue(engine.getGameState().getBoard().getPieceAt("g1") instanceof King, "King should be on g1");
-		assertTrue(engine.getGameState().getBoard().getPieceAt("f1") instanceof Rook, "Rook should be on f1");
+		assertNull(engine.getGameState().getBoard().getPieceAt("e1"),
+		        "Original king square should be empty");
+		assertNull(engine.getGameState().getBoard().getPieceAt("h1"),
+		        "Original rook square should be empty");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("g1") instanceof King,
+		        "King should be on g1");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("f1") instanceof Rook,
+		        "Rook should be on f1");
 	}
 
 	@Test
@@ -41,7 +46,8 @@ public class SpecialMovesTest {
 		// Set up for queenside castling
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("a1", new Rook("White", "a1"));
-		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent king
+		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent
+		                                                                            // king
 
 		engine.getGameState().setCurrentTurn("White");
 
@@ -50,10 +56,14 @@ public class SpecialMovesTest {
 		assertTrue(castlingResult, "Queenside castling should be allowed");
 
 		// Verify king and rook positions after castling
-		assertNull(engine.getGameState().getBoard().getPieceAt("e1"), "Original king square should be empty");
-		assertNull(engine.getGameState().getBoard().getPieceAt("a1"), "Original rook square should be empty");
-		assertTrue(engine.getGameState().getBoard().getPieceAt("c1") instanceof King, "King should be on c1");
-		assertTrue(engine.getGameState().getBoard().getPieceAt("d1") instanceof Rook, "Rook should be on d1");
+		assertNull(engine.getGameState().getBoard().getPieceAt("e1"),
+		        "Original king square should be empty");
+		assertNull(engine.getGameState().getBoard().getPieceAt("a1"),
+		        "Original rook square should be empty");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("c1") instanceof King,
+		        "King should be on c1");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("d1") instanceof Rook,
+		        "Rook should be on d1");
 	}
 
 	@Test
@@ -64,8 +74,10 @@ public class SpecialMovesTest {
 		// Set up with pieces between king and rook
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("h1", new Rook("White", "h1"));
-		engine.getGameState().getBoard().setPieceAt("f1", new Bishop("White", "f1")); // Piece in between
-		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent king
+		engine.getGameState().getBoard().setPieceAt("f1", new Bishop("White", "f1")); // Piece in
+		                                                                              // between
+		engine.getGameState().getBoard().setPieceAt("e8", new King("Black", "e8")); // Need opponent
+		                                                                            // king
 
 		engine.getGameState().setCurrentTurn("White");
 
@@ -85,7 +97,8 @@ public class SpecialMovesTest {
 		// Ensure e8 is empty or contains a captureable piece if testing capture
 		// promotions
 		// For basic promotion test, leave e8 empty
-		engine.getGameState().getBoard().setPieceAt("e2", new Rook("Black", "e2")); // Rook checking the king
+		engine.getGameState().getBoard().setPieceAt("e2", new Rook("Black", "e2")); // Rook checking
+		                                                                            // the king
 
 		engine.getGameState().setCurrentTurn("White");
 
@@ -103,13 +116,15 @@ public class SpecialMovesTest {
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("h1", new Rook("White", "h1"));
 		// e8 intentionally left empty to allow a straight promotion
-		engine.getGameState().getBoard().setPieceAt("f8", new Rook("Black", "f8")); // Rook attacking f1
+		engine.getGameState().getBoard().setPieceAt("f8", new Rook("Black", "f8")); // Rook
+		                                                                            // attacking f1
 
 		engine.getGameState().setCurrentTurn("White");
 
 		// Test castling should fail
 		boolean castlingResult = engine.movePiece("e1", "g1");
-		assertFalse(castlingResult, "Castling should not be allowed when squares between are attacked");
+		assertFalse(castlingResult,
+		        "Castling should not be allowed when squares between are attacked");
 	}
 
 	@Test
@@ -135,9 +150,12 @@ public class SpecialMovesTest {
 		assertTrue(captureResult, "En passant capture should be allowed");
 
 		// Verify positions
-		assertNull(engine.getGameState().getBoard().getPieceAt("e5"), "Original white pawn square should be empty");
-		assertNull(engine.getGameState().getBoard().getPieceAt("d5"), "Black pawn should be captured");
-		assertTrue(engine.getGameState().getBoard().getPieceAt("d6") instanceof Pawn, "White pawn should be on d6");
+		assertNull(engine.getGameState().getBoard().getPieceAt("e5"),
+		        "Original white pawn square should be empty");
+		assertNull(engine.getGameState().getBoard().getPieceAt("d5"),
+		        "Black pawn should be captured");
+		assertTrue(engine.getGameState().getBoard().getPieceAt("d6") instanceof Pawn,
+		        "White pawn should be on d6");
 	}
 
 	@Test
@@ -148,7 +166,8 @@ public class SpecialMovesTest {
 		// Set up en passant scenario
 		engine.getGameState().getBoard().setPieceAt("e5", new Pawn("White", "e5"));
 		engine.getGameState().getBoard().setPieceAt("d7", new Pawn("Black", "d7"));
-		engine.getGameState().getBoard().setPieceAt("a5", new Pawn("White", "a5")); // Another pawn to move
+		engine.getGameState().getBoard().setPieceAt("a5", new Pawn("White", "a5")); // Another pawn
+		                                                                            // to move
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		// e8 intentionally left empty to allow a straight promotion
 
@@ -189,9 +208,9 @@ public class SpecialMovesTest {
 
 		// Verify promotion
 		assertTrue(engine.getGameState().getBoard().getPieceAt("e8") instanceof Queen,
-				"Pawn should be promoted to queen");
+		        "Pawn should be promoted to queen");
 		assertEquals("White", engine.getGameState().getBoard().getPieceAt("e8").getColor(),
-				"Promoted piece should be white");
+		        "Promoted piece should be white");
 	}
 
 	@Test
@@ -213,9 +232,9 @@ public class SpecialMovesTest {
 
 			// Verify promotion
 			assertTrue(engine.getGameState().getBoard().getPieceAt("e8") instanceof Knight,
-					"Pawn should be promoted to knight");
+			        "Pawn should be promoted to knight");
 			assertEquals("White", engine.getGameState().getBoard().getPieceAt("e8").getColor(),
-					"Promoted piece should be white");
+			        "Promoted piece should be white");
 		} catch (Exception e) {
 			fail("Test failed due to unexpected exception: " + e.getMessage());
 		}
@@ -228,7 +247,8 @@ public class SpecialMovesTest {
 
 		// Set up pawn promotion with capture scenario
 		engine.getGameState().getBoard().setPieceAt("d7", new Pawn("White", "d7"));
-		engine.getGameState().getBoard().setPieceAt("e8", new Rook("Black", "e8")); // Piece to capture
+		engine.getGameState().getBoard().setPieceAt("e8", new Rook("Black", "e8")); // Piece to
+		                                                                            // capture
 		engine.getGameState().getBoard().setPieceAt("e1", new King("White", "e1"));
 		engine.getGameState().getBoard().setPieceAt("a8", new King("Black", "a8"));
 
@@ -240,9 +260,9 @@ public class SpecialMovesTest {
 
 		// Verify promotion and capture
 		assertTrue(engine.getGameState().getBoard().getPieceAt("e8") instanceof Queen,
-				"Pawn should be promoted to queen");
+		        "Pawn should be promoted to queen");
 		assertEquals("White", engine.getGameState().getBoard().getPieceAt("e8").getColor(),
-				"Promoted piece should be white");
+		        "Promoted piece should be white");
 	}
 
 	// Helper method to clear the board

@@ -20,8 +20,8 @@ public class ChessAI {
 			Board cloned = board.clone();
 			String[] parts = move.split(" ");
 			cloned.movePiece(parts[0], parts[1]);
-			double value = minimax(cloned, maxDepth - 1, Double.NEGATIVE_INFINITY, Double.POSITIVE_INFINITY, false,
-					aiColor);
+			double value = minimax(cloned, maxDepth - 1, Double.NEGATIVE_INFINITY,
+			        Double.POSITIVE_INFINITY, false, aiColor);
 			if (value > bestValue || bestMove == null) {
 				bestValue = value;
 				bestMove = parts;
@@ -31,11 +31,11 @@ public class ChessAI {
 		return bestMove;
 	}
 
-	private double minimax(Board board, int depth, double alpha, double beta, boolean maximizingPlayer,
-			String aiColor) {
+	private double minimax(Board board, int depth, double alpha, double beta,
+	        boolean maximizingPlayer, String aiColor) {
 		String opponentColor = aiColor.equals("White") ? "Black" : "White";
-		if (depth == 0 || board.isCheckmate(aiColor) || board.isCheckmate(opponentColor) || board.isStalemate(aiColor)
-				|| board.isStalemate(opponentColor)) {
+		if (depth == 0 || board.isCheckmate(aiColor) || board.isCheckmate(opponentColor)
+		        || board.isStalemate(aiColor) || board.isStalemate(opponentColor)) {
 			return evaluateBoard(board, aiColor);
 		}
 		List<String> moves = board.getAllPossibleMoves(maximizingPlayer ? aiColor : opponentColor);

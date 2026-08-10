@@ -29,7 +29,8 @@ public class BugReproductionTest {
 		board.setPieceAt("b8", new Rook(Side.BLACK, "b8"));
 
 		// Assert initial state
-		assertTrue(board.isKingInCheck(Side.WHITE), "White King should be in check from Queen at f1");
+		assertTrue(board.isKingInCheck(Side.WHITE),
+		        "White King should be in check from Queen at f1");
 
 		// Verify threats on h2
 		boolean h2UnderAttack = board.isSquareUnderAttack("h2", Side.WHITE);
@@ -75,7 +76,8 @@ public class BugReproductionTest {
 					}
 
 					if (attacks) {
-						System.out.println("Attacker found: " + p.getClass().getSimpleName() + " at " + originalPos);
+						System.out.println("Attacker found: " + p.getClass().getSimpleName()
+						        + " at " + originalPos);
 					}
 					p.setPosition(originalPos);
 				}

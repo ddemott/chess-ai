@@ -26,8 +26,8 @@ class EvaluationTest {
 		board.setPiece(whiteKing, 7, 4); // e1
 		board.setPiece(blackKing, 0, 4); // e8
 		Evaluation eval = new Evaluation();
-		assertEquals(whiteKing, eval.findKing(board, "White"));
-		assertEquals(blackKing, eval.findKing(board, "Black"));
+		assertEquals(whiteKing, eval.findKing(board, Side.WHITE));
+		assertEquals(blackKing, eval.findKing(board, Side.BLACK));
 	}
 
 	@Test
@@ -103,7 +103,7 @@ class EvaluationTest {
 		Evaluation eval = new Evaluation();
 		class MockBoard extends Board {
 			public int[] convertPositionToCoordinates(String pos) {
-				return "e1".equals(pos) ? new int[]{7, 4} : new int[]{0, 0};
+				return "e1".equals(pos) ? new int[]{ 7, 4 } : new int[]{ 0, 0 };
 			}
 			public IPiece getPieceAt(String pos) {
 				return null;
@@ -130,16 +130,16 @@ class EvaluationTest {
 		class MockBoard extends Board {
 			public int[] convertPositionToCoordinates(String pos) {
 				switch (pos) {
-					case "g1" :
-						return new int[]{7, 6};
-					case "f2" :
-						return new int[]{6, 5};
-					case "g2" :
-						return new int[]{6, 6};
-					case "h2" :
-						return new int[]{6, 7};
-					default :
-						return new int[]{0, 0};
+					case "g1":
+						return new int[]{ 7, 6 };
+					case "f2":
+						return new int[]{ 6, 5 };
+					case "g2":
+						return new int[]{ 6, 6 };
+					case "h2":
+						return new int[]{ 6, 7 };
+					default:
+						return new int[]{ 0, 0 };
 				}
 			}
 			public IPiece getPieceAt(String pos) {
@@ -167,11 +167,13 @@ class EvaluationTest {
 		board.setPieceAt("h8", blackKing);
 		blackKing.setPosition("h8");
 
-		com.ddemott.chessai.pieces.Queen whiteQueen = new com.ddemott.chessai.pieces.Queen("White", "g7");
+		com.ddemott.chessai.pieces.Queen whiteQueen = new com.ddemott.chessai.pieces.Queen("White",
+		        "g7");
 		board.setPieceAt("g7", whiteQueen);
 		whiteQueen.setPosition("g7");
 
-		com.ddemott.chessai.pieces.Rook whiteRook = new com.ddemott.chessai.pieces.Rook("White", "h7");
+		com.ddemott.chessai.pieces.Rook whiteRook = new com.ddemott.chessai.pieces.Rook("White",
+		        "h7");
 		board.setPieceAt("h7", whiteRook);
 		whiteRook.setPosition("h7");
 
@@ -181,10 +183,10 @@ class EvaluationTest {
 		whiteKing.setPosition("e1");
 
 		// Test check
-		assertTrue(eval.isInCheck(board, "Black"));
+		assertTrue(eval.isInCheck(board, Side.BLACK));
 
 		// Test checkmate
-		assertTrue(eval.isCheckmate(board, "Black"));
+		assertTrue(eval.isCheckmate(board, Side.BLACK));
 	}
 
 	@Test
@@ -212,11 +214,38 @@ class EvaluationTest {
 				return java.util.Collections.emptyList();
 			}
 			public int[] convertPositionToCoordinates(String pos) {
-				return new int[]{6, 4};
+				return new int[]{ 6, 4 };
 			}
 		}
 		MockBoard board = new MockBoard();
 		int score = eval.evaluateBoard(board, Side.WHITE);
 		assertTrue(score >= 0);
+	}
+
+	@Test
+	void testEvaluateWithSide() {
+		// Validates the enum paths (Side.WHITE/Side.BLACK) for evaluateBoard,
+		// isInCheck,
+		// isCheckmate, findKing with edge coverage. Matches CLAUDE.md descriptive
+		// naming.
+		Evaluation eval = new Evaluation();
+		Board board = new Board();
+		board.clearBoard();
+		// Setup for edges
+		King whiteKing = new King("White", "e1");
+		board.setPieceAt("e1", whiteKing);
+		whiteKing.setPosition("e1");
+		King blackKing = new King("Black", "e8");
+		board.setPieceAt("e8", blackKing);
+		blackKing.setPosition("e8");
+
+		// The position is mirrored, so both sides must evaluate identically.
+		// Note: the score is negative here because neither lone King is guarded,
+		// which costs PIECE_SAFETY_MULTIPLIER * King value per side.
+		assertEquals(eval.evaluateBoard(board, Side.BLACK), eval.evaluateBoard(board, Side.WHITE));
+		assertFalse(eval.isInCheck(board, Side.WHITE));
+		assertFalse(eval.isCheckmate(board, Side.WHITE));
+		assertNotNull(eval.findKing(board, Side.WHITE));
+		assertNotNull(eval.findKing(board, Side.BLACK));
 	}
 }

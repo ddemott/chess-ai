@@ -59,12 +59,14 @@ public class PawnPromotionWithoutPieceTest {
 		System.out.println(engine.getBoardRepresentation());
 
 		// Now try to promote WITHOUT specifying the piece
-		System.out.println("\n5. *** TESTING: Moving White pawn from e7 to e8 WITHOUT specifying promotion piece ***");
+		System.out.println(
+		        "\n5. *** TESTING: Moving White pawn from e7 to e8 WITHOUT specifying promotion piece ***");
 		boolean promotionWithoutPiece = engine.movePiece("e7", "e8");
 		System.out.println("Move success (WITHOUT promotion piece): " + promotionWithoutPiece);
 
 		if (!promotionWithoutPiece) {
-			System.out.println("✅ EXPECTED BEHAVIOR: Move was rejected because no promotion piece was specified");
+			System.out.println(
+			        "✅ EXPECTED BEHAVIOR: Move was rejected because no promotion piece was specified");
 		} else {
 			System.out.println("❌ UNEXPECTED: Move succeeded without promotion piece!");
 		}
@@ -73,12 +75,14 @@ public class PawnPromotionWithoutPieceTest {
 		System.out.println(engine.getBoardRepresentation());
 
 		// Now try WITH specifying promotion piece
-		System.out.println("\n6. *** TESTING: Moving White pawn from e7 to e8 WITH Queen promotion ***");
+		System.out.println(
+		        "\n6. *** TESTING: Moving White pawn from e7 to e8 WITH Queen promotion ***");
 		boolean promotionWithPiece = engine.movePiece("e7", "e8", "Q");
 		System.out.println("Move success (WITH Queen promotion): " + promotionWithPiece);
 
 		if (promotionWithPiece) {
-			System.out.println("✅ EXPECTED BEHAVIOR: Move succeeded with promotion piece specified");
+			System.out
+			        .println("✅ EXPECTED BEHAVIOR: Move succeeded with promotion piece specified");
 		} else {
 			System.out.println("❌ UNEXPECTED: Move failed even with promotion piece!");
 		}
@@ -87,10 +91,12 @@ public class PawnPromotionWithoutPieceTest {
 		System.out.println(engine.getBoardRepresentation());
 
 		System.out.println("\n=== Summary ===");
-		System.out.println("When attempting to move a pawn to rank 8 without specifying promotion piece:");
+		System.out.println(
+		        "When attempting to move a pawn to rank 8 without specifying promotion piece:");
 		System.out.println("- The move is REJECTED (returns false)");
 		System.out.println("- The pawn remains in its original position");
 		System.out.println("- The game state is unchanged");
-		System.out.println("- You MUST specify a promotion piece (Q, R, B, or N) for the move to succeed");
+		System.out.println(
+		        "- You MUST specify a promotion piece (Q, R, B, or N) for the move to succeed");
 	}
 }

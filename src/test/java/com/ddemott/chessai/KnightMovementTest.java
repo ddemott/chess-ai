@@ -14,7 +14,7 @@ public class KnightMovementTest {
 		Knight knight = new Knight("White", "d4");
 		board.setPieceAt("d4", knight);
 		knight.setPosition("d4");
-		String[] validMoves = {"c6", "e6", "f5", "f3", "e2", "c2", "b3", "b5"};
+		String[] validMoves = { "c6", "e6", "f5", "f3", "e2", "c2", "b3", "b5" };
 		for (String move : validMoves) {
 			assertTrue(knight.isValidMove(move, board), "Knight should be able to move to " + move);
 		}
@@ -27,9 +27,11 @@ public class KnightMovementTest {
 		Knight knight = new Knight("White", "d4");
 		board.setPieceAt("d4", knight);
 		knight.setPosition("d4");
-		String[] invalidMoves = {"d5", "d6", "d3", "d2", "c4", "e4", "b4", "f4", "c5", "e5", "c3", "e3"};
+		String[] invalidMoves = { "d5", "d6", "d3", "d2", "c4", "e4", "b4", "f4", "c5", "e5", "c3",
+		        "e3" };
 		for (String move : invalidMoves) {
-			assertFalse(knight.isValidMove(move, board), "Knight should NOT be able to move to " + move);
+			assertFalse(knight.isValidMove(move, board),
+			        "Knight should NOT be able to move to " + move);
 		}
 	}
 
@@ -47,7 +49,8 @@ public class KnightMovementTest {
 		board.setPieceAt("e4", pawn2);
 		pawn2.setPosition("e4");
 		// Knight should still be able to move to c6 (jumping over pawns)
-		assertTrue(knight.isValidMove("c6", board), "Knight should be able to jump over pieces to c6");
+		assertTrue(knight.isValidMove("c6", board),
+		        "Knight should be able to jump over pieces to c6");
 	}
 
 	@Test
@@ -60,7 +63,8 @@ public class KnightMovementTest {
 		knight.setPosition("d4");
 		board.setPieceAt("c6", pawn);
 		pawn.setPosition("c6");
-		assertTrue(knight.isValidMove("c6", board), "Knight should be able to capture opponent's piece at c6");
+		assertTrue(knight.isValidMove("c6", board),
+		        "Knight should be able to capture opponent's piece at c6");
 	}
 
 	@Test
@@ -73,6 +77,7 @@ public class KnightMovementTest {
 		knight.setPosition("d4");
 		board.setPieceAt("c6", pawn);
 		pawn.setPosition("c6");
-		assertFalse(knight.isValidMove("c6", board), "Knight should NOT be able to capture own piece at c6");
+		assertFalse(knight.isValidMove("c6", board),
+		        "Knight should NOT be able to capture own piece at c6");
 	}
 }

@@ -16,7 +16,8 @@ public class PawnPromotionIntegrationTest {
 		engine.getGameState().getBoard().clearBoard();
 
 		// Place White pawn on 7th rank
-		engine.getGameState().getBoard().setPieceAt("e7", new com.ddemott.chessai.pieces.Pawn("White", "e7"));
+		engine.getGameState().getBoard().setPieceAt("e7",
+		        new com.ddemott.chessai.pieces.Pawn("White", "e7"));
 
 		// Test promotion move through GameEngine
 		System.out.println("Testing pawn promotion through GameEngine...");
@@ -25,7 +26,8 @@ public class PawnPromotionIntegrationTest {
 
 		// Verify the promoted piece
 		var piece = engine.getGameState().getBoard().getPieceAt("e8");
-		System.out.println("Piece at e8: " + (piece != null ? piece.getClass().getSimpleName() : "null"));
+		System.out.println(
+		        "Piece at e8: " + (piece != null ? piece.getClass().getSimpleName() : "null"));
 		System.out.println("Piece color: " + (piece != null ? piece.getColor() : "N/A"));
 
 		// Test move history notation

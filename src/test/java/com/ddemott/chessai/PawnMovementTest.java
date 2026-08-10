@@ -25,7 +25,7 @@ public class PawnMovementTest {
 		board.setPieceAt("e2", pawn);
 		pawn.setPosition("e2");
 		assertTrue(pawn.isValidMove("e4", board),
-				"Pawn should be able to move forward two squares from starting position");
+		        "Pawn should be able to move forward two squares from starting position");
 	}
 
 	@Test
@@ -61,7 +61,8 @@ public class PawnMovementTest {
 		pawn.setPosition("e2");
 		board.setPieceAt("e3", blocker);
 		blocker.setPosition("e3");
-		assertFalse(pawn.isValidMove("e3", board), "Pawn should NOT be able to move forward if blocked by own piece");
+		assertFalse(pawn.isValidMove("e3", board),
+		        "Pawn should NOT be able to move forward if blocked by own piece");
 	}
 
 	@Test
@@ -75,7 +76,7 @@ public class PawnMovementTest {
 		board.setPieceAt("e3", blocker);
 		blocker.setPosition("e3");
 		assertFalse(pawn.isValidMove("e3", board),
-				"Pawn should NOT be able to move forward if blocked by opponent's piece");
+		        "Pawn should NOT be able to move forward if blocked by opponent's piece");
 	}
 
 	@Test
@@ -92,7 +93,8 @@ public class PawnMovementTest {
 		board.movePiece("d7", "d5");
 		// Set en passant target
 		board.setEnPassantTarget("d6");
-		assertTrue(whitePawn.isValidMove("d6", board), "White pawn should be able to capture en passant at d6");
+		assertTrue(whitePawn.isValidMove("d6", board),
+		        "White pawn should be able to capture en passant at d6");
 	}
 
 	@Test
@@ -103,7 +105,9 @@ public class PawnMovementTest {
 		board.setPieceAt("e7", pawn);
 		pawn.setPosition("e7");
 		// Move pawn to e8 and promote to queen
-		assertTrue(board.movePiece("e7", "e8", "Q"), "Pawn should be able to promote to queen at e8");
-		assertTrue(board.getPieceAt("e8") instanceof Queen, "Pawn should be promoted to queen at e8");
+		assertTrue(board.movePiece("e7", "e8", "Q"),
+		        "Pawn should be able to promote to queen at e8");
+		assertTrue(board.getPieceAt("e8") instanceof Queen,
+		        "Pawn should be promoted to queen at e8");
 	}
 }

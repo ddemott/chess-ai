@@ -61,7 +61,8 @@ public class BoardKingCheckmateStalemateTest {
 		board.setPieceAt("h1", new com.ddemott.chessai.pieces.King("White", "h1"));
 		board.setPieceAt("f2", new com.ddemott.chessai.pieces.King("Black", "f2"));
 		board.setPieceAt("g3", new com.ddemott.chessai.pieces.Queen("Black", "g3"));
-		com.ddemott.chessai.pieces.King whiteKing = (com.ddemott.chessai.pieces.King) board.getPieceAt("h1");
+		com.ddemott.chessai.pieces.King whiteKing = (com.ddemott.chessai.pieces.King) board
+		        .getPieceAt("h1");
 		System.out.println("White king possible moves: " + whiteKing.getAllPossibleMoves(board));
 		assertTrue(board.isStalemate("White"));
 		assertFalse(board.isStalemate("Black"));

@@ -40,8 +40,8 @@ public class AttackDebugTest {
 			String square = "e" + i;
 			IPiece piece = board.getPieceAt(square);
 			if (piece != null) {
-				System.out.println(
-						"Piece at " + square + ": " + piece.getClass().getSimpleName() + " (" + piece.getColor() + ")");
+				System.out.println("Piece at " + square + ": " + piece.getClass().getSimpleName()
+				        + " (" + piece.getColor() + ")");
 			} else {
 				System.out.println("Piece at " + square + ": empty");
 			}

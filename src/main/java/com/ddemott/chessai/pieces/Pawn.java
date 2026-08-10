@@ -39,9 +39,9 @@ public class Pawn extends Piece {
 
 		// Forward move (two squares from starting position)
 		if (currentCoords[0] == startRow && colDiff == 0 && rowDiff == 2 * direction
-				&& board.getPieceAt(
-						board.convertCoordinatesToPosition(currentCoords[0] + direction, currentCoords[1])) == null
-				&& destinationPiece == null) {
+		        && board.getPieceAt(board.convertCoordinatesToPosition(currentCoords[0] + direction,
+		                currentCoords[1])) == null
+		        && destinationPiece == null) {
 			return true;
 		}
 
@@ -61,7 +61,7 @@ public class Pawn extends Piece {
 		// promotion rank
 		int targetRow = newCoords[0];
 		if ((side == Side.WHITE && targetRow == GameConstants.RANK_8)
-				|| (side == Side.BLACK && targetRow == GameConstants.RANK_1)) {
+		        || (side == Side.BLACK && targetRow == GameConstants.RANK_1)) {
 			// Forward move to promotion rank (empty square)
 			if (colDiff == 0 && rowDiff == direction && destinationPiece == null) {
 				return true;
@@ -106,7 +106,8 @@ public class Pawn extends Piece {
 		// Forward move (one square)
 		int row = currentCoords[0] + direction;
 		int col = currentCoords[1];
-		if (row >= 0 && row < 8 && board.getPieceAt(board.convertCoordinatesToPosition(row, col)) == null) {
+		if (row >= 0 && row < 8
+		        && board.getPieceAt(board.convertCoordinatesToPosition(row, col)) == null) {
 			String movePosition = board.convertCoordinatesToPosition(row, col);
 
 			// Check if this is a promotion move
@@ -124,13 +125,14 @@ public class Pawn extends Piece {
 			if (currentCoords[0] == startRow) {
 				row = currentCoords[0] + 2 * direction;
 				if (board.getPieceAt(board.convertCoordinatesToPosition(row, col)) == null) {
-					possibleMoves.add(currentPosition + " " + board.convertCoordinatesToPosition(row, col));
+					possibleMoves.add(
+					        currentPosition + " " + board.convertCoordinatesToPosition(row, col));
 				}
 			}
 		}
 
 		// Diagonal captures (left and right)
-		int[] captureDirections = {-1, 1}; // Left and right diagonals
+		int[] captureDirections = { -1, 1 }; // Left and right diagonals
 		for (int captureDir : captureDirections) {
 			int captureRow = currentCoords[0] + direction;
 			int captureCol = currentCoords[1] + captureDir;

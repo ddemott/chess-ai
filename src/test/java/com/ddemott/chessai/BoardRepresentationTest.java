@@ -8,7 +8,8 @@ class BoardRepresentationTest {
 	void testInitialBoardRepresentation() {
 		Board board = new Board();
 		String rep = board.getBoardRepresentation();
-		System.out.println("\n--- Board Representation ---\n" + rep + "\n---------------------------\n");
+		System.out.println(
+		        "\n--- Board Representation ---\n" + rep + "\n---------------------------\n");
 		// Check header and footer
 		assertTrue(rep.startsWith("  a b c d e f g h\n"));
 		assertTrue(rep.endsWith("  a b c d e f g h\n"));

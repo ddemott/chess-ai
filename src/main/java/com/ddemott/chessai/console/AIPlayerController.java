@@ -26,10 +26,11 @@ public class AIPlayerController implements PlayerController {
 				var board = gameEngine.getGameState().getBoard();
 				var movingPiece = board.getPieceAt(aiPositions[0]);
 				var capturedPiece = board.getPieceAt(aiPositions[1]);
-				int moveNumber = gameEngine.getGameState().getMoveHistory().getMoves().size() / 2 + 1;
+				int moveNumber = gameEngine.getGameState().getMoveHistory().getMoves().size() / 2
+				        + 1;
 				String playerColor = gameEngine.getCurrentTurn();
-				Move move = new Move(aiPositions[0], aiPositions[1], movingPiece, capturedPiece, "", moveNumber,
-						playerColor, false, false, false, false, null);
+				Move move = new Move(aiPositions[0], aiPositions[1], movingPiece, capturedPiece, "",
+				        moveNumber, playerColor, false, false, false, false, null);
 				move.setScore(score);
 				return move;
 			}
