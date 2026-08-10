@@ -598,31 +598,28 @@ public class Board {
 		for (int row = 0; row < GameConstants.BOARD_SIZE; row++) {
 			for (int col = 0; col < GameConstants.BOARD_SIZE; col++) {
 				IPiece piece = board[row][col];
-				if (piece != null && piece.getSide() == opponentSide) {
-					String piecePosition = convertCoordinatesToPosition(row, col);
-					// Temporarily update piece position for validation
-					String oldPosition = piece.getPosition();
-					piece.setPosition(piecePosition);
+				if (piece == null || piece.getSide() != opponentSide) {
+					continue;
+				}
 
-					// For non-king pieces, use normal validation
-					if (!(piece instanceof King)) {
-						if (piece.isValidMove(kingPosition, this)) {
-							piece.setPosition(oldPosition); // Restore
-							return true;
-						}
-					} else {
-						// For king pieces, do NOT count adjacent kings as attacking each other
-						// Kings cannot legally move next to each other
-						int[] targetCoords = convertPositionToCoordinates(kingPosition);
-						int dx = Math.abs(targetCoords[0] - row);
-						int dy = Math.abs(targetCoords[1] - col);
-						// If kings are adjacent, do NOT count as check
-						if (dx <= 1 && dy <= 1 && (dx != 0 || dy != 0)) {
-							piece.setPosition(oldPosition); // Restore
-							continue;
-						}
-					}
-					piece.setPosition(oldPosition); // Restore
+				// An opposing King never delivers check here. Two kings can never be
+				// legally adjacent, and calling King.isValidMove from this method would
+				// recurse back through isSquareUnderAttack. King adjacency is enforced
+				// for move legality by isSquareUnderAttack, which does treat an adjacent
+				// king as attacking.
+				if (piece instanceof King) {
+					continue;
+				}
+
+				String piecePosition = convertCoordinatesToPosition(row, col);
+				// Temporarily update piece position for validation, then always restore
+				String oldPosition = piece.getPosition();
+				piece.setPosition(piecePosition);
+				boolean attacksKing = piece.isValidMove(kingPosition, this);
+				piece.setPosition(oldPosition);
+
+				if (attacksKing) {
+					return true;
 				}
 			}
 		}
