@@ -37,6 +37,9 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-maven-
 
+      - name: Check formatting (Spotless)
+        run: mvn -q -B spotless:check
+
       - name: Build and run tests
         run: mvn -q -B test
 
