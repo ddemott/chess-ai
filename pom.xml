@@ -94,6 +94,9 @@
                 <groupId>com.github.spotbugs</groupId>
                 <artifactId>spotbugs-maven-plugin</artifactId>
                 <version>4.10.3.0</version>
+                <configuration>
+                    <excludeFilterFile>config/spotbugs/spotbugs-exclude.xml</excludeFilterFile>
+                </configuration>
             </plugin>
             <!-- Code formatting: `mvn spotless:apply` to format, `mvn spotless:check` to verify -->
             <plugin>

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+  SpotBugs exclusion filter for ChessAI.
+
+  Every entry here is a REVIEWED AND ACCEPTED finding, not a silenced one.
+  Each is matched by class AND method so the pattern stays enforced
+  everywhere else - a new EI_EXPOSE_REP in any other class, or in another
+  method of the same class, is still reported and still fails the build.
+
+  All current entries are EI_EXPOSE_REP / EI_EXPOSE_REP2. That detector flags
+  any constructor storing a mutable object or any getter returning one, which
+  also describes ordinary dependency injection and facade accessors. In each
+  case below, adding a defensive copy would change behaviour for the worse.
+
+  Re-review this file if the design changes. See PR #7 for the full analysis.
+
+-->
+<FindBugsFilter>
+
+  <!--
+    Move stores the pieces involved in a move, and undo depends on getting
+    the SAME object back. State.undo calls the getter twice in a row:
+
+        board.setPieceAt(capturedPos, lastMove.getCapturedPiece());
+        lastMove.getCapturedPiece().setPosition(capturedPos);
+
+    A defensive clone would place clone A on the board and then set the
+    position on clone B, which is discarded. The piece left on the board
+    would keep a stale position and undo would corrupt silently, with no
+    test failure to warn about it.
+  -->
+  <Match>
+    <Class name="com.ddemott.chessai.Move"/>
+    <Or>
+      <Method name="getMovingPiece"/>
+      <Method name="getCapturedPiece"/>
+      <Method name="&lt;init&gt;"/>
+    </Or>
+    <Or>
+      <Bug pattern="EI_EXPOSE_REP"/>
+      <Bug pattern="EI_EXPOSE_REP2"/>
+    </Or>
+  </Match>
+
+  <!--
+    Board.getBoardArray returns the live 8x8 array. It is read-only at every
+    call site, and it sits in the minimax evaluation path (Evaluation reads it
+    once per evaluated node). A shallow clone would still hand out every
+    mutable Piece it contains, so it would encapsulate nothing while adding an
+    allocation per node.
+  -->
+  <Match>
+    <Class name="com.ddemott.chessai.Board"/>
+    <Method name="getBoardArray"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+
+  <!--
+    Facade accessors. State exposes the live Board and MoveHistory, and
+    GameEngine exposes the live State - that is the documented architecture
+    (see docs/ARCHITECTURE.md and CLAUDE.md). getGameState alone has 27
+    callers in src/main. Returning copies would mean callers mutate a
+    throwaway and the real game never advances.
+  -->
+  <Match>
+    <Class name="com.ddemott.chessai.State"/>
+    <Or>
+      <Method name="getBoard"/>
+      <Method name="getMoveHistory"/>
+    </Or>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+  <Match>
+    <Class name="com.ddemott.chessai.engine.GameEngine"/>
+    <Method name="getGameState"/>
+    <Bug pattern="EI_EXPOSE_REP"/>
+  </Match>
+
+  <!--
+    Console layer collaborators, injected through the constructor and shared
+    on purpose. The display must observe the live Board/State or it would
+    render a frozen snapshot taken at construction time. The Scanner wraps
+    System.in and cannot be meaningfully copied at all.
+  -->
+  <Match>
+    <Or>
+      <Class name="com.ddemott.chessai.console.ChessConsole"/>
+      <Class name="com.ddemott.chessai.console.ChessConsoleAI"/>
+      <Class name="com.ddemott.chessai.console.ConsoleDisplay"/>
+      <Class name="com.ddemott.chessai.console.EnhancedConsoleDisplay"/>
+      <Class name="com.ddemott.chessai.console.HumanPlayerController"/>
+    </Or>
+    <Method name="&lt;init&gt;"/>
+    <Bug pattern="EI_EXPOSE_REP2"/>
+  </Match>
+
+</FindBugsFilter>
