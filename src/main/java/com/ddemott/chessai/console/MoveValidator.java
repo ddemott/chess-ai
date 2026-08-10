@@ -1,5 +1,7 @@
 package com.ddemott.chessai.console;
 
+import java.util.Collections;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.HashSet;
@@ -142,7 +144,13 @@ public class MoveValidator {
 		        Set<String> possibleDestinations) {
 			this.isValid = isValid;
 			this.error = error;
-			this.possibleDestinations = possibleDestinations;
+			// Defensive copy: this is an immutable result object, so the caller must
+			// not be able to mutate its contents afterwards. LinkedHashSet keeps the
+			// suggestion order stable. null is preserved - the failure paths above
+			// pass null when there are no suggestions to offer.
+			this.possibleDestinations = possibleDestinations == null
+			        ? null
+			        : Collections.unmodifiableSet(new LinkedHashSet<>(possibleDestinations));
 		}
 
 		public boolean isValid() {
